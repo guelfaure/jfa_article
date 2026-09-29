@@ -1,0 +1,119 @@
+%% normtrees-fr.sty -- notations pour les « arbres normatifs »
+%% Version française (soumission JFLA 2027), adaptée de normtrees.sty.
+%%
+%% Compatible avec la classe jflart : ce fichier ne charge AUCUN paquet de
+%% police (pas de mathptmx), ne redéfinit aucun paramètre typographique et
+%% ne déclare aucun environnement de théorème (la classe fournit déjà
+%% defi, theo, prop, lemm, coro, remark, exem).
+%%
+%% Conventions
+%%   \mathsf{...}   ensembles nommés, constantes, constructeurs, opérations
+%%   \mathit{...}   fonctions définies par équations (gagnant, select, Requis)
+%%   \mathcal{...}  domaines de valeurs et familles d'arbres
+%%   \mathbb{...}   ensembles usuels (B_3, N)
+%% Les identifiants en \mathsf sont écrits sans accents, comme dans le
+%% document de formalisation (Indemnite, Anciennete, SalaireDeReference...).
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{normtrees-fr}[2026/09/29 v1.0 Notations pour les arbres normatifs (FR)]
+
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{stmaryrd}   % \llbracket, \rrbracket (symboles seulement)
+
+%% --------------------------------------------------------------------
+%% Outils génériques
+%% --------------------------------------------------------------------
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\sem}[1]{\ensuremath{\llbracket #1\rrbracket}}  % crochets sémantiques
+\newcommand{\subtype}{\mathrel{<\!:}}                        % sous-typage des sources
+
+%% Ordre normatif
+\newcommand{\normgt}{\succ_{\mathit{norm}}}
+\newcommand{\normge}{\succeq_{\mathit{norm}}}
+\newcommand{\normlt}{\prec_{\mathit{norm}}}
+\newcommand{\normdown}{\mathop{\downarrow_{\mathit{norm}}}}
+
+%% --------------------------------------------------------------------
+%% Matières et domaines de valeurs (déf. 1)
+%% --------------------------------------------------------------------
+\newcommand{\Matter}{\ensuremath{\mathsf{Matiere}}}
+\newcommand{\Raw}{\ensuremath{\mathcal{V}}}                 % domaine : \Raw(m)
+\newcommand{\Money}{\ensuremath{\mathsf{Montant}}}
+\newcommand{\Duration}{\ensuremath{\mathsf{Duree}}}
+\newcommand{\DateT}{\ensuremath{\mathsf{Date}}}
+\newcommand{\IDCC}{\ensuremath{\mathsf{IDCC}}}
+% Matières utilisées dans les exemples
+\newcommand{\Indem}{\ensuremath{\mathsf{Indemnite}}}
+\newcommand{\IndemLeg}{\ensuremath{\mathsf{IndemniteLegale}}}
+\newcommand{\Senior}{\ensuremath{\mathsf{Anciennete}}}
+\newcommand{\Salary}{\ensuremath{\mathsf{SalaireDeReference}}}
+
+%% --------------------------------------------------------------------
+%% Favorabilité (déf. 2)
+%% --------------------------------------------------------------------
+\newcommand{\fav}[1]{\mathrel{\sqsubseteq_{#1}}}      % x \fav{m} y : y au moins aussi favorable
+\newcommand{\strictfav}[1]{\mathrel{\sqsubset_{#1}}}  % partie stricte
+\newcommand{\MatterOrd}{\ensuremath{\Matter^{\sqsubseteq}}}
+
+%% --------------------------------------------------------------------
+%% Dossiers (déf. 3) et constructeurs
+%% --------------------------------------------------------------------
+\newcommand{\Dossier}{\ensuremath{\mathsf{Dossier}}}
+\newcommand{\EmptyD}{\ensuremath{\mathbf{0}_\Dossier}}
+\newcommand{\Input}{\ensuremath{\mathsf{Saisir}}}      % \Input(D,m,x)
+\newcommand{\Prune}{\ensuremath{\mathsf{Elaguer}}}     % \Prune(D,m)
+\newcommand{\Resolve}{\ensuremath{\mathsf{Resoudre}}}  % \Resolve(D,m)
+% Partition des matières d'un dossier D (l'indice D est intégré)
+\newcommand{\Res}{\ensuremath{\mathsf{Res}_D}}
+\newcommand{\Unres}{\ensuremath{\mathsf{NonRes}_D}}
+\newcommand{\Undef}{\ensuremath{\mathsf{Indef}_D}}
+\newcommand{\UnresOf}[1]{\ensuremath{\mathsf{NonRes}_{#1}}}
+\newcommand{\dep}{\ensuremath{\mathit{dep}}}
+
+%% --------------------------------------------------------------------
+%% Sources, fonctions juridiques, candidats, politiques (déf. 4 à 7)
+%% --------------------------------------------------------------------
+\newcommand{\Source}{\ensuremath{\mathsf{Source}}}
+\newcommand{\CodeTravail}{\ensuremath{\mathsf{CodeTravail}}}
+\newcommand{\AccordCollectif}{\ensuremath{\mathsf{AccordCollectif}}}
+\newcommand{\ConvBranche}{\ensuremath{\mathsf{ConventionBranche}}}
+\newcommand{\AccordEntreprise}{\ensuremath{\mathsf{AccordEntreprise}}}
+\newcommand{\AccordInterpro}{\ensuremath{\mathsf{AccordInterprofessionnel}}}
+\newcommand{\Contrat}{\ensuremath{\mathsf{Contrat}}}
+\newcommand{\Syntec}{\ensuremath{\mathsf{Syntec}}}
+\newcommand{\Fun}{\ensuremath{\mathsf{Fonc}}}           % fonctions juridiques typées
+\newcommand{\Cand}{\ensuremath{\mathsf{Cand}}}          % candidats
+\newcommand{\Policy}{\ensuremath{\mathsf{OrdreSocial}}} % régimes d'articulation
+\newcommand{\Absolute}{\ensuremath{\mathsf{Absolu}}}
+\newcommand{\Social}{\ensuremath{\mathsf{Social}}}
+\newcommand{\Suppletive}{\ensuremath{\mathsf{Suppletif}}}
+\newcommand{\Herit}{\operatorname{Herit}}               % régimes hérités
+
+%% --------------------------------------------------------------------
+%% Tests trivalués et arbres normatifs (déf. 8 à 10)
+%% --------------------------------------------------------------------
+\newcommand{\Bthree}{\ensuremath{\mathbb{B}_3}}
+\newcommand{\true}{\ensuremath{\mathsf{vrai}}}
+\newcommand{\false}{\ensuremath{\mathsf{faux}}}
+\newcommand{\unknown}{\ensuremath{\mathord{?}}}
+\newcommand{\Tests}{\ensuremath{\mathsf{Tests}}}
+\newcommand{\child}{\ensuremath{\mathit{fils}}}
+\newcommand{\sib}{\ensuremath{\mathit{freres}}}
+\newcommand{\desc}{\ensuremath{\mathit{desc}}}
+
+%% --------------------------------------------------------------------
+%% Élagage et demandes
+%% --------------------------------------------------------------------
+\newcommand{\Cut}{\ensuremath{\mathsf{Filtrage}}}
+\newcommand{\Select}{\ensuremath{\mathsf{Retenue}}}
+\newcommand{\redD}{\ensuremath{\to_{D}}}               % un pas d'élagage dans D
+\newcommand{\nf}[1]{\ensuremath{{#1}{\downarrow_D}}}   % forme normale de #1 dans D
+\newcommand{\NeedFacts}{\ensuremath{\mathit{Requis}}}  % \NeedFacts_D(m)
+
+%% --------------------------------------------------------------------
+%% Résolution
+%% --------------------------------------------------------------------
+\newcommand{\Winner}{\ensuremath{\mathit{gagnant}}}    % \Winner_D(a,b)
+\newcommand{\ApplyPolicy}{\ensuremath{\mathit{select}}}
+
+\endinput

@@ -1,0 +1,803 @@
+% Version française de « Normative Trees: Selecting the Applicable Rule in
+% French Labour Law » (soumission JURIX 2026), mise au format des JFLA.
+
+
+
+\documentclass[review]{jflart}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{normtrees-fr}
+
+
+\jfla{38}{2027}
+
+\title{Arbres normatifs : déterminer la règle applicable en droit du travail
+  français}
+\titlerunning{Arbres normatifs et règle applicable en droit du travail}
+
+\author[1,2]{Guel Faure}
+\author[2]{Jean Krivine}
+\author[1,3]{Eïtan Carta-Lag}
+\authorrunning{Faure, Krivine et Carta-Lag}
+
+\affil[1]{LUMO (SARL), Grenoble, France}
+\affil[2]{Université Paris Cité, CNRS, IRIF, F-75013, Paris, France}
+\affil[3]{Acquis De Droit (cabinet d'avocats), Grenoble, France}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  En droit du travail français, un calcul tel que celui de l'indemnité légale
+  de licenciement ou de la durée d'un préavis commence avant l'arithmétique :
+  il faut d'abord déterminer quelle règle est juridiquement habilitée à fournir
+  la formule. Pour une matière juridique donnée, plusieurs textes, ou plusieurs
+  versions temporelles d'un même texte, peuvent proposer des fonctions
+  concurrentes, et la manière dont elles s'articulent dépend du régime
+  d'articulation applicable. Nous modélisons cette couche de sélection de la
+  règle comme un processus de résolution déterministe, destiné à assister les
+  experts juridiques.
+\end{abstract}
+
+\section{Introduction}\label{sec:introduction}
+
+Supposons qu'une salariée demande quelle indemnité lui serait due en cas de
+licenciement, ou souhaite connaître la durée de son préavis. Même si toutes les
+formules candidates qui représentent fidèlement le droit français sont
+exécutables, la réponse ne peut se réduire à un nombre, ni même à une fonction.
+La question préalable est : \emph{quelle règle juridique est applicable à cette
+salariée, pour cette question, à la date juridiquement pertinente ?} Un
+assistant doit donc identifier le texte dont procède la règle, l'état de ce
+texte dans le temps et les faits qui permettent d'entrer dans sa branche, tout
+en conservant, pour contrôle, les alternatives écartées et le fondement de la
+sélection.
+
+Le droit du travail français rend cette question particulièrement visible, car
+ses sources ne s'articulent pas selon une hiérarchie monotone unique. L'ordre
+public absolu exclut toute dérogation contractuelle ou conventionnelle, même
+plus favorable ; l'ordre public social permet d'améliorer le socle légal en
+vertu du principe de faveur ; l'ordre public dérogatoire, ou les dispositions
+supplétives, autorisent des dérogations négociées dans un champ défini par le
+législateur~\cite{viepublique2021}. Le calcul en cause doit donc être identifié
+avant que la hiérarchie des sources puisse sélectionner une règle. Ainsi,
+l'article L2253-1 du \emph{Code du travail} dispose :
+\begin{quote}\itshape
+  Dans les matières énumérées au 1° à 13°, les stipulations de la convention de
+  branche ou de l'accord couvrant un champ territorial ou professionnel plus
+  large prévalent sur la convention d'entreprise conclue antérieurement ou
+  postérieurement à la date de leur entrée en vigueur, sauf lorsque la
+  convention d'entreprise assure des garanties au moins équivalentes. [\dots]
+\end{quote}
+Cette disposition illustre comment un texte peut empêcher qu'un calcul fourni
+par une source de rang supérieur soit écarté par une source de rang inférieur
+lorsque celle-ci produirait un résultat moins favorable. À l'inverse,
+l'article L2253-3 dispose :
+\begin{quote}\itshape
+  Dans les matières autres que celles mentionnées aux articles L. 2253-1 et
+  L. 2253-2, les stipulations de la convention d'entreprise conclue
+  antérieurement ou postérieurement à la date d'entrée en vigueur de la
+  convention de branche ou de l'accord couvrant un champ territorial ou
+  professionnel plus large prévalent sur celles ayant le même objet prévues par
+  la convention de branche ou l'accord couvrant un champ territorial ou
+  professionnel plus large. En l'absence d'accord d'entreprise, la convention
+  de branche ou l'accord couvrant un champ territorial ou professionnel plus
+  large s'applique.
+\end{quote}
+Pour ces autres matières, l'accord d'entreprise, s'il existe, écarte l'accord
+de branche ; à défaut, ce dernier demeure la règle de repli~\cite{frarticulation}.
+Ce schéma de priorité est issu de la réforme de 2017, qui a renforcé la
+négociation d'entreprise dans les champs fixés par la
+loi~\cite{viepublique2017}.
+
+Notre question de recherche est la suivante : \emph{comment un assistant
+juridique peut-il organiser et résoudre des calculs concurrents de droit du
+travail, identifier les informations nécessaires à leur sélection, et conserver
+explicites et contrôlables les choix qui en résultent, afin d'aider un expert
+juridique, éventuellement un grand modèle de langage (LLM), à construire une
+plaidoirie sur une base maîtrisée et transparente ?} Nous apportons plusieurs
+contributions en ce sens. Premièrement, nous définissons des \emph{candidats}
+typés par matière et indexés par leur source, représentants formels des textes
+juridiques qui définissent un calcul, et nous précisons comment ce calcul se
+comporte vis-à-vis des textes relatifs à la même matière mais situés à un
+niveau inférieur. Deuxièmement, nous organisons ces objets formels en
+\emph{forêts normatives} ordonnées par les sources et à arêtes prédicatives,
+qui représentent à la fois les dépendances hiérarchiques entre candidats et les
+conflits qui les opposent. Nous montrons enfin comment une boucle interactive
+pourrait assister l'expert juridique dans la sélection et le calcul du droit
+applicable.
+
+Notre contribution est délibérément circonscrite : elle ne prétend pas saisir
+toutes les caractéristiques du droit du travail, et elle ne traite pas le
+problème de la traduction de textes juridiques rédigés en langue naturelle en
+fonctions calculables qui les implémentent fidèlement.
+
+\section{Travaux connexes et positionnement}\label{sec:related}
+
+\paragraph{Règles juridiques exécutables.}
+Les travaux dits \emph{Rules as Code} étudient l'évaluation, la représentation
+et l'exécution disciplinées des dispositions juridiques~\cite{ali2025}.
+LegalRuleML structure règles, sources, exceptions et
+métadonnées~\cite{nazarenko2016,legalruleml} ; L4 dote les contrats d'une
+sémantique d'exécution déontique et temporelle~\cite{watt2023} ; Catala modélise
+les règles par défaut et les exceptions de la loi~\cite{merigoux2021}. Le présent
+travail commence là où ce problème est supposé résolu : les textes juridiques
+y sont représentés par des objets formels qui contiennent la partie
+calculatoire du droit. On fait abstraction du langage formel utilisé
+concrètement pour implémenter ces fonctions.
+
+\paragraph{Gestion des exceptions dans Catala.}
+Catala résout les définitions concurrentes d'une variable par une logique des
+défauts à priorités~\cite{merigoux2021} : la sélection dépend de conditions
+d'applicabilité et d'un ordre statique entre exceptions, jamais des valeurs que
+produiraient les définitions. Le principe de faveur dépend au contraire du
+résultat ; l'encoder en Catala impose de conditionner une exception à
+une comparaison de valeurs placée dans le texte inférieur, pour chaque paire de
+sources. Les arbres normatifs attachent la politique au candidat supérieur,
+fixent une fois pour toutes l'ordre de favorabilité de chaque matière, et
+procèdent par un \emph{fold} uniforme le long du chemin des sources. Les deux
+approches sont complémentaires : Catala structure les exceptions au sein d'un
+texte ; les arbres normatifs articulent des textes concurrents.
+
+\paragraph{Raisonnement défaisable et conflits de normes.}
+Les conflits entre normes sont classiquement traités par des règles
+défaisables munies d'une relation de priorité, elle-même éventuellement
+dérivée par des règles~\cite{prakkensartor1996,prakkensartor1997}, et par des
+logiques défaisables dans lesquelles \emph{lex superior}, \emph{lex specialis}
+et \emph{lex posterior} instancient la relation de
+supériorité~\cite{governatori2021} ; les versions temporelles d'un texte y sont
+traitées comme des modifications de normes~\cite{governatori2005}. Les arbres
+normatifs s'en distinguent sur trois points. D'abord, la priorité n'est pas une
+propriété du couple de normes mais de la norme supérieure, qui énonce comment
+elle tolère les sources inférieures ; \emph{lex superior} (\(\Absolute\)), son
+inverse (\(\Suppletive\)) et le principe de faveur, qui dépend du résultat
+(\(\Social\)), coexistent ainsi le long d'un même chemin. Ensuite, la sélection
+sous \(\Social\) exige d'évaluer les deux candidats, ce que des priorités
+statiques ou dérivées par des règles n'expriment pas. Enfin, un fait manquant
+bloque la résolution et engendre une demande, au lieu de laisser une règle
+s'appliquer par défaut. En contrepartie, la portée est plus étroite : candidats
+d'une seule matière, frères mutuellement exclusifs plutôt qu'une relation
+générale de spécificité, et politiques non encore dérivées de textes tiers
+(section~\ref{sec:conclusion}).
+
+\paragraph{Modèles du raisonnement juridique.}
+Plusieurs approches modélisent le raisonnement juridique comme un processus
+structuré de construction et de résolution d'arguments
+juridiques~\cite{gordon1993pleadings,benchcapon2009argumentation}. Notre travail
+s'y rattache tout en étant délibérément plus étroit : il automatise
+partiellement les parties de ce processus gouvernées par des calculs
+formalisés, des conditions d'applicabilité et des politiques d'arbitrage. Les
+jugements interprétatifs et stratégiques de l'expert juridique sont représentés
+abstraitement par \(\Input\), tandis que leurs conséquences pour l'élagage, la
+sélection et l'exécution restent explicites et contrôlables.
+
+\section{Notations et terminologie}\label{sec:notations}
+
+\begin{defi}[Matières et domaines de valeurs]\label{def:types}
+Une \emph{matière} \(m\in\Matter\) est une grandeur juridique nommée, par
+exemple \(\Salary\), \(\Senior\), \(\Indem\), \(\IndemLeg\), \(\IDCC\) ou
+\(\DateT\). Chaque matière possède un \emph{domaine de valeurs} \(\Raw(m)\),
+l'ensemble de ses valeurs brutes possibles :
+\[
+\begin{array}{c}
+ \Raw(\Salary)=\Raw(\Indem)=\Raw(\IndemLeg)=\Money,\\
+ \Raw(\Senior)=\Duration,\quad
+ \Raw(\DateT)=\mathsf{Date},\quad
+ \Raw(\IDCC)=\mathbb N
+\end{array}
+\]
+où \(\Money\) et \(\Duration\) désignent les montants et les durées. Des
+matières distinctes peuvent partager un même domaine : \(\Indem\) et \(\Salary\)
+sont toutes deux des montants, mais ce sont des grandeurs juridiques
+différentes, et les fonctions juridiques (définition~\ref{def:rule-package})
+sont typées par les matières, non par les domaines. La matière \(\IDCC\) est un
+identifiant, qui détermine la convention collective applicable.
+\end{defi}
+
+\begin{defi}[Ordre de favorabilité]\label{def:favorable}
+Une matière \(m\) peut être munie d'un ordre total \(\fav{m}\) sur \(\Raw(m)\) ;
+on lit \(x\fav{m}y\) : « \(y\) est au moins aussi favorable au salarié
+que~\(x\) », et \(x\strictfav{m}y\) désigne sa partie stricte. Le sens de
+l'ordre dépend de la matière :
+\(\fav{\mathsf{IndemniteRupture}}=\mathord{\leq}\),
+\(\fav{\mathsf{RetenueSurSalaire}}=\mathord{\geq}\), et
+\(\false\strictfav{\mathsf{Indemnisable}}\true\).
+\end{defi}
+
+On note \(\MatterOrd\subseteq\Matter\) les matières munies d'un tel ordre.
+Seules ces matières admettent des candidats de politique \(\Social\), ce
+qu'impose la cohérence (section~\ref{sec:consistency}) ; la comparaison porte
+sur les valeurs que les candidats concurrents produisent pour le dossier
+considéré, et non sur les textes eux-mêmes.
+
+\begin{defi}[Dossier]\label{def:dossier}
+Un dossier \(D\) est donné par un couple
+\(D:=(\mathcal M_D,\nu_D)\in\Dossier\), où \(\mathcal M_D\subseteq\Matter\) est
+l'ensemble des matières juridiques soulevées par le dossier et \(\nu_D\) sa
+valuation courante :
+\[
+\nu_D:\prod_{m\in\mc M_D}\left(\Raw(m)\uplus\mc T(m)\right).
+\]
+\end{defi}
+
+La valuation attribue à chaque matière exactement l'un des deux états suivants. Une
+matière est \emph{résolue} lorsque \(\nu_D\) lui associe une valeur brute, et
+\emph{non résolue} lorsque \(\nu_D\) lui associe l'arbre normatif qu'il reste à
+résoudre. Une matière \(m\in\Matter\setminus\mc M_D\) est \emph{indéfinie}
+dans~\(D\). Ainsi
+\[
+\begin{aligned}
+\Res&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\Raw(m)\},\\
+\Unres&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\mc T(m)\},\\
+\Undef&:= \{m\in\Matter \mid m\not\in \mc M_D\}.
+\end{aligned}
+\]
+
+\begin{defi}[Sources juridiques et ordre normatif]\label{def:source-order}
+Les sources juridiques forment un ensemble partiellement ordonné
+\((\Source,\normge)\), où \(\normge\) modélise l'\emph{ordre normatif}. La
+relation stricte \(s\normgt s'\) signifie que la source \(s\) est au-dessus de
+la source \(s'\) dans la hiérarchie des sources. On note
+\(\normdown(s):=\{s'\in\Source\mid s'\normlt s\}\).
+\end{defi}
+
+L'ensemble \(\Source\) est interprété comme le type sommet de la relation de
+sous-typage \({\subtype}\subseteq\Source\times\Source\), qui classe les sources
+selon la taxonomie en usage en droit du travail français. On emploie parfois
+\(s\in\Source\) comme synonyme de \(s\subtype\Source\). Par exemple
+\[
+\CodeTravail\subtype\Source,\quad
+\AccordCollectif\subtype\Source,\quad
+\Contrat\subtype\Source,
+\]
+et, pour tout type \(s\) parmi \(\AccordInterpro\), \(\ConvBranche\) et
+\(\AccordEntreprise\), on a \(s\subtype\AccordCollectif\). La relation de sous-typage ne doit pas être
+confondue avec l'ordre normatif. Pour tous \(s_i\in\Source\), on exige
+\[
+\begin{array}{rll}
+s_0\normlt s_1&\implies& {s_0 \not\subtype s_1} \wedge {s_1\not\subtype s_0}\\
+{s_0\subtype s_1}\wedge {s_1\normlt s_2}\wedge {s_3\subtype s_2}& \implies &s_0\normlt s_3\quad \text{(clôture par sous-typage)}
+\end{array}
+\]
+
+\begin{defi}[Fonction juridique]\label{def:rule-package}
+Une fonction juridique encode la partie calculatoire d'un texte juridique. On
+la note \(f\in\Fun\) ; c'est un couple \(f=(\sigma_f,\phi_f)\) où, pour
+\(n\in\mathbb N\) et \(m_0,\ldots,m_n,m\in\Matter\),
+\[
+ \sigma_f=(m_0,\ldots,m_n)\longrightarrow m,
+ \qquad
+ \phi_f:\prod_{i=0}^{n}\Raw(m_i)\longrightarrow\Raw(m).
+\]
+On note \(\Fun_m:=\{f\in\Fun\mid\exists \vec m:\sigma_f=\vec m\to m\}\)
+l'ensemble des fonctions juridiques qui produisent la matière~\(m\).
+\end{defi}
+
+Ici \(\sigma_f\) est l'interface typée complète de \(f\), et \(\phi_f\) son
+calcul ordinaire. Les matières d'entrée d'une fonction identifient exactement
+les matières résolues du dossier dont elle a besoin.
+
+\begin{defi}[Politique d'arbitrage et extension par sous-typage]\label{def:arbitration-policy}
+Un \emph{régime d'articulation} (simplifié) est un élément de
+\(
+\Policy:= \{\Absolute, \Social, \Suppletive\}.
+\)
+Soit \(s \in \Source\) un type de source. Une \emph{politique d'arbitrage} pour
+\(s\) est une fonction partielle finie
+\[
+  p :
+  \normdown(s)
+  \rightharpoonup
+  \Policy .
+\]
+Pour tout \(t \in \normdown(s)\), soit
+\[
+  \Herit_{p}(t)
+  :=
+  \left\{
+    p(T)
+    \;\middle|\;
+    T \in \operatorname{dom}(p)
+    \text{ et }
+    t \subtype T
+  \right\}
+\]
+l'ensemble des régimes hérités par \(t\). La politique \(p\) est
+\emph{cohérente pour le sous-typage} si
+\(
+  \left|\Herit_{p}(t)\right| \leq 1
+\)
+pour tout \(t \in \normdown(s)\).
+L'\emph{extension par sous-typage} d'une politique \(p\) cohérente pour le
+sous-typage est la fonction totale
+\(
+  \widehat{p} :
+  \normdown(s)
+  \longrightarrow
+  \Policy \uplus \{\bot\}
+\)
+définie par
+\[
+  \widehat{p}(t)
+  :=
+  \begin{cases}
+    \rho,
+      & \text{si } \Herit_{p}(t)=\{\rho\},\\
+    \bot,
+      & \text{si } \Herit_{p}(t)=\varnothing.
+  \end{cases}
+\]
+\end{defi}
+
+Le type \(\Policy\) est une version simplifiée des régimes d'articulation : les
+régimes dérogatoire et supplétif, qui obéissent au même schéma de sélection,
+sont ici réunis sous \(\Suppletive\).
+
+\begin{defi}[Texte juridique et interprétation candidate]\label{def:candidate}
+Un texte juridique qui constitue une interprétation candidate pour une matière
+non résolue est modélisé par un triplet \(c=(s,f,p)\in\Cand\), avec
+\[
+ \Cand \subseteq \{(s,f,p) \mid s\in\Source,\ f\in\Fun,\ p: \normdown(s)\rightharpoonup \Policy \}.
+\]
+Ses projections sont \(s(c)=s\), \(f(c)=f\) et \(p(c)=p\). On dit que le
+candidat \(c\) est de matière \(m\) lorsque \(f(c)\in\Fun_m\)
+(définition~\ref{def:rule-package}). La matière identifie la sortie produite par
+le calcul, tandis que la source identifie le corpus juridique qui l'autorise.
+La fonction partielle \(p\) est une politique d'arbitrage cohérente pour le
+sous-typage (définition~\ref{def:arbitration-policy}). On note
+\(\sigma_c:=\sigma_{f(c)}\), \(\phi_c:=\phi_{f(c)}\) et
+\(\Cand_m:=\{c\in\Cand\mid f(c)\in\Fun_m\}\).
+\end{defi}
+
+La politique d'arbitrage \(p\) définit la manière dont \(c\) doit être comparé
+aux candidats de la même matière situés plus bas dans l'ordre normatif. C'est
+toujours l'extension \(\widehat p\) qui est utilisée en pratique (on note
+\(\widehat p(c)\) l'extension de \(p(c)\)), et \(p\) doit se comprendre comme
+une interprétation parcimonieuse du droit. Nous verrons que, pour un
+candidat~\(c\) et une source \(s\normlt s(c)\), \(\widehat p(c)(s)=\Absolute\)
+indique que \(c\) ne peut être remplacé par une autre interprétation \(c'\) dès
+lors que \(s(c')\subtype s\). À l'inverse, \(\widehat p(c)(s)=\Suppletive\)
+énonce que le candidat est remplacé par tout candidat \(c'\) tel que
+\(s(c')\subtype s\). Enfin, une politique \(\Social\) énonce que \(c\) ne peut
+être remplacé par un candidat issu d'une source inférieure que si cette
+alternative fournit un calcul au moins aussi favorable, au sens de la
+définition~\ref{def:favorable}. La sélection entre candidats au moyen des
+politiques d'arbitrage fait l'objet de la définition~\ref{def:apply-policy}.
+
+\begin{remark}[Contraintes juridiques sur l'attribution des politiques]
+La définition~\ref{def:candidate} permet délibérément de doter tout candidat de
+n'importe quelle politique. Il s'agit d'une sur-approximation : une instance
+juridiquement fidèle doit restreindre l'attribution des politiques selon les
+règles qui gouvernent les sources et les matières
+concernées~\cite{daugareilh2019sources}. Ces restrictions ne sont pas imposées
+par la présente définition de \(\Cand\) ; elles relèvent de la validation
+juridique d'une instance du modèle.
+\end{remark}
+
+\section{Arbres normatifs}\label{sec:forest}
+
+\subsection{Tests d'applicabilité}
+
+On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
+partir de constantes et de noms de matières. Pour un test \(t\),
+\(\dep(t)\subseteq\Matter\) est l'ensemble fini des noms de matières qui
+apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est une conjonction
+finie \(t_1\land\cdots\land t_k\) de tests atomiques, avec
+\(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\).
+
+On utilise la logique trivaluée \(\Bthree:=\{\true,\false,\unknown\}\), dont les
+valeurs signifient respectivement établi, exclu et actuellement inconnu, avec
+les connecteurs forts de Kleene~\cite{kleene1952introduction} : pour la
+conjonction, \(\false\) l'emporte sur \(\unknown\), qui l'emporte
+sur~\(\true\).
+
+\begin{defi}[Sémantique des tests]\label{def:applicability-predicate}
+Étant donné un dossier \(D=(\mc M_D,\nu_D)\), la valuation partielle
+\[
+ \widehat \nu_D(m):=
+ \begin{cases}
+  \nu_D(m),&m\in\Res,\\
+  \bot,&m\in\Unres\cup\Undef,
+ \end{cases}
+\]
+s'étend en une évaluation \(\sem{\cdot}_D:\Tests\to\Bthree\) qui renvoie
+\(\unknown\) dès que l'un de ses arguments vaut \(\bot\), et sinon la valeur
+booléenne ordinaire du test (par exemple \(\sem{\IDCC=1486}_D=\unknown\) lorsque
+\(\IDCC\notin\Res\)). Un test \(t\) est \emph{total} lorsque
+\(\dep(t)\subseteq\Res\) implique \(\sem{t}_D\in\{\true,\false\}\).
+\end{defi}
+
+\subsection{Arbres à arêtes prédicatives}
+
+\begin{defi}[Arbre normatif]\label{def:normative-tree}
+Pour une matière \(m\), un \emph{arbre normatif} \(\theta\in\mc T(m)\) est un
+quintuplet \(\theta=(V,E,r,\lambda,\pi)\) où \((V,E)\) est un arbre fini
+enraciné, de racine \(r\in V\), dont les arêtes sont orientées du père vers
+le fils, et
+\[
+ \lambda:V\setminus\{r\}\to\Cand_m,\qquad
+ \pi:E\to\{\text{prédicats d'applicabilité}\}.
+\]
+On note \(\pi(e)(D):=\sem{\pi(e)}_D\). Pour \(e\in E\), soit
+\(\dep(e):=\dep(\pi(e))\) ; pour \(u\in V\setminus\{r\}\) tel que
+\(\sigma_{\lambda(u)}=(m_0,\ldots,m_n)\to m\), soit
+\(\dep(u):=\{m_0,\ldots,m_n\}\) ; et
+\[
+ \dep(\theta):=\bigcup_{e\in E}\dep(e)\;\cup
+                      \bigcup_{u\in V\setminus\{r\}}\dep(u).
+\]
+Pour \(u\in V\), on utilise comme d'habitude \(\child(u)\), \(\sib_u(v)\) et
+\(\desc(v)\) (avec \(v\in\desc(v)\)) pour désigner respectivement les fils, les
+frères et les descendants d'un nœud.
+\end{defi}
+
+Comme tout nœud autre que la racine possède exactement une arête entrante,
+cette arête porte toutes les conditions d'applicabilité de son candidat, y
+compris les conditions temporelles.
+
+\paragraph{Exemple.} Considérons deux sources juridiques : \(\CodeTravail\) (le
+Code du travail) et \(\Syntec\subtype\ConvBranche\) (la convention collective
+applicable aux bureaux d'études techniques et aux sociétés de conseil). Un
+candidat du Code pour une matière \(m\) se situe au-dessus d'un candidat
+Syntec, puisque \(\CodeTravail\normgt\AccordCollectif\) et par clôture par
+sous-typage de l'ordre normatif. Soit \(e\in E\) l'arête qui relie le nœud du
+Code au nœud Syntec antérieur à 2021. La matière \(\IDCC\in\mathcal M_D\) du
+dossier enregistre l'identifiant de la convention collective applicable. On
+peut écrire un prédicat composé de deux tests :
+\[
+\begin{array}{l}
+ \pi(e):=
+ [\IDCC=1486]\land
+ [\DateT\in
+   [\text{déc.~}1987,\ \text{juil.~}2021[\,],\\
+ \widehat \nu_D(\IDCC)= 1486,\quad
+ \widehat \nu_D(\DateT)=\text{nov.~}2019.
+\end{array}
+\]
+Les deux tests sont établis, donc \(\pi(e)(D)=\true\) et la branche Syntec
+antérieure à 2021 est atteignable~\cite{frcode,syntec}. Si
+\(\widehat \nu_D(\IDCC)\) était indéfinie, le même prédicat vaudrait
+\(\unknown\), et non \(\false\). \emph{Cet exemple est développé à la
+section~\ref{sec:resolution}.}
+
+\subsection{Forêts normatives cohérentes}\label{sec:consistency}
+
+Nous supposons que les arbres normatifs encodent fidèlement le contenu
+calculatoire des textes qu'ils représentent ; le présent travail ne traite pas
+de cette traduction. Nous imposons en revanche les conditions suivantes,
+supposées dans toute la suite. Une \emph{forêt normative} est un ensemble fini
+\(\mc F\subseteq\bigcup_{m\in\Matter}\mc T(m)\) contenant au plus un arbre par
+matière ; on note \(\theta_m\) l'arbre de \(m\) lorsqu'il existe.
+
+\begin{defi}[Cohérence]\label{def:consistency}
+\(\mc F\) est \emph{cohérente} lorsque :
+\begin{enumerate}
+\item \emph{Les dépendances sont bien fondées.} Posons \(m'<_{\dep}m\) si et
+  seulement si \(\theta_m\in\mc F\) et \(m'\in\dep(\theta_m)\). La relation
+  \(<_{\dep}\) est acyclique.
+\item Pour tout \(\theta_m=(V,E,r,\lambda,\pi)\in\mc F\) et tout dossier \(D\) :
+\begin{enumerate}
+\item \emph{Les arbres reflètent \(\normgt\).} Pour tous \(v,w\in V\setminus\{r\}\),
+  \((v,w)\in E\Rightarrow s(\lambda(v))\normgt s(\lambda(w))\).
+\item \emph{Les frères sont mutuellement exclusifs.} Pour
+  \(v,v'\in\child(u)\) distincts, on n'a pas à la fois
+  \(\pi((u,v))(D)=\true\) et \(\pi((u,v'))(D)=\true\).
+\item \emph{La racine est exhaustive.} Il existe \(v\in\child(r)\) tel que
+  \(\pi((r,v))(D)\neq\false\).
+\item \emph{Les candidats sociaux sont comparables.} S'il existe
+  \(u\in V\setminus\{r\}\) et \(s\in\Source\) tels que
+  \(\widehat p(\lambda(u))(s)=\Social\), alors \(m\in\MatterOrd\).
+\item \emph{Les politiques d'arbitrage sont totales sur le sous-arbre.} Pour
+  tous \(u,v \in V\setminus\{r\}\),
+  \(v \in \desc(u)\setminus\{u\} \Longrightarrow
+  \widehat p(\lambda(u))
+    \bigl(s(\lambda(v))\bigr)
+  \neq \bot\).
+\end{enumerate}
+\end{enumerate}
+\end{defi}
+
+La condition~(b) fait d'une séparation horizontale un \emph{conflit} : un même
+scénario factuel ne peut satisfaire à la fois deux prédicats frères
+(exclusivité horizontale). Des frères peuvent représenter des conventions
+collectives différentes ou des versions temporelles différentes d'un même
+texte. Un candidat n'est jamais en conflit avec ses ancêtres, qui sont des
+sources supérieures situées sur le même chemin. La condition~(c) garantit
+qu'un arbre normatif contient toujours au moins un candidat applicable. Les conditions~(d) et~(e) assurent que les politiques
+d'arbitrage sont toujours bien définies.
+
+\section{Traitement des dossiers}\label{sec:op}
+
+\subsection{Constructeurs}
+Les dossiers sont construits et manipulés au moyen de quatre constructeurs,
+que nous définissons à présent.
+\begin{defi}[Constructeurs de dossiers]
+Les constructeurs de dossiers sont
+\[
+\begin{array}{lll}
+D &::=& \EmptyD \quad \text{le dossier vide}\\
+&& \mid \Input(D,m,v)\quad m\in\Undef,\ v\in\Raw(m)\uplus\mc T(m)\\
+&& \mid \Prune(D,m)\quad m\in\Unres \\
+&& \mid \Resolve(D,m)\quad m\in\Unres.
+\end{array}
+\]
+\end{defi}
+Les applications de \(\Input\) à un arbre forment la forêt
+\(\mc F_D:=\bigl(\nu_D(m)\bigr)_{m\in\Unres}\). Plus précisément,
+\(\Input(D,m,\theta)\) ajoute un nouvel arbre \(\theta\in\mc T(m)\), indexé par
+la matière nouvellement introduite \(m\), tandis que \(\Input(D,m,a)\), avec
+\(a\in\Raw(m)\), ajoute une matière résolue mais aucun arbre. Des saisies
+successives d'arbres pour des matières distinctes font donc apparaître
+plusieurs arbres normatifs dans \(\mc F_D\).
+
+Le dossier vide est \(\EmptyD=(\emptyset,[])\), où \([]\) désigne la valuation
+vide. Pour \(D=(\mc M_D,\nu_D)\), on note \(\nu_D-m\) la valuation restreinte
+\(\nu_D\mathrel\upharpoonright(\mc M_D\setminus\{m\})\), et
+\(\nu_D+[m\mapsto v]\) l'extension de \(\nu_D\) par une nouvelle entrée
+\(m\notin\mc M_D\) de valeur \(v\in\Raw(m)\uplus\mc T(m)\). Alors
+\begin{equation}
+\Input((\mc M_D,\nu_D),m,v)
+ :=(\mc M_D\cup\{m\},\nu_D+[m\mapsto v]).
+\label{eq:input}
+\end{equation}
+Cette opération ajoute un nouvel élément au dossier.
+
+\subsection{Élagage}
+
+L'élagage est une relation de réécriture sur les arbres normatifs, indexée par
+le dossier courant. Pour \(\theta=(V,E,r,\lambda,\pi)\) et
+\(W\subseteq V\setminus\{r\}\) clos par descendants, on note
+\(\theta\setminus W\) la restriction de \(\theta\) à \(V\setminus W\).
+
+\begin{defi}[Réduction]\label{def:reduction}
+Pour une arête \(e=(u,v)\in E\), on définit
+\[
+\begin{array}{lll}
+ (\Cut) & \theta\redD\theta\setminus\desc(v)
+   & \text{si }\pi(e)(D)=\false,\\[2pt]
+ (\Select) & \theta\redD\theta\setminus\bigcup_{w\in\sib_u(v)}\desc(w)
+   & \text{si }\pi(e)(D)=\true\text{ et }\sib_u(v)\neq\emptyset.
+\end{array}
+\]
+\end{defi}
+
+La règle \((\Cut)\) retire une arête dont le prédicat est faux ainsi que le
+sous-arbre devenu inatteignable ; la règle \((\Select)\) retient la branche dont
+le prédicat est établi et écarte ses frères.
+
+\begin{prop}[Formes normales]\label{prop:norm}
+Soit \(D\) un dossier dont la forêt \(\mc F_D\) est cohérente. Sur les arbres
+de \(\mc F_D\) et leurs réduits, \(\redD\) termine et est confluente. Tout
+\(\theta\in\mc F_D\) possède donc une unique forme normale, notée \(\nf\theta\).
+\end{prop}
+\begin{proof}
+Terminaison : chaque pas retire un sommet d'un arbre fini. Pour la confluence
+locale, on remarque que \(\pi(e)(D)\) ne dépend que de \(D\), et que des frères
+dans un réduit sont frères dans \(\theta\), de sorte que~(b) vaut dans tout
+réduit. Soient deux pas en \(e_i=(u_i,v_i)\), \(i=1,2\), qui retirent les
+ensembles clos par descendants \(W_1,W_2\). Si \(v_2\in W_1\), alors
+\(W_2\subseteq W_1\), et le pas en \(e_1\) soit s'applique encore dans
+\(\theta_2\) et donne \(\theta_1\), soit est un \((\Select)\) dont les
+sous-arbres frères sont tous inclus dans \(W_2\), auquel cas
+\(\theta_1=\theta_2\). Si aucune des deux cibles n'appartient à l'ensemble de
+l'autre, les deux pas s'appliquent encore et commutent. Le cas restant,
+\(v_1\in W_2\) et \(v_2\in W_1\), force \(v_1\) et \(v_2\) à être frères avec
+deux arêtes valant \(\true\), ce qu'exclut~(b). Le lemme de Newman permet de
+conclure.
+\end{proof}
+
+\begin{equation}
+\Prune((\mc M_D,\nu_D),m):=(\mc M_D,(\nu_D-m)+[m\mapsto\nf{\nu_D(m)}]).
+\label{eq:prune}
+\end{equation}
+
+\begin{lemm}[Structure des formes normales]\label{lem:linear}
+Soit \(\theta\in\mc T(m)\) un arbre d'une forêt cohérente et
+\(\theta'=\nf\theta=(V',E',r,\lambda',\pi')\).
+\begin{enumerate}
+\item Si \(\pi(e)(D)\neq \unknown\) pour toute arête \(e\in E'\), alors
+  \(\theta'\) est un chemin non vide \(r\to v_1\to\cdots\to v_k\) (\(k\geq1\))
+  dont toutes les arêtes valent \(\true\), et
+  \(s(\lambda(v_i))\normgt s(\lambda(v_{i+1}))\).
+\item Si une arête \(e\in E'\) vérifie \(\pi(e)(D)=\unknown\), alors
+  \(\dep(e)\cap(\Unres\cup\Undef)\neq\emptyset\).
+\end{enumerate}
+\end{lemm}
+\begin{proof}
+(1) Aucune arête de \(\theta'\) ne vaut \(\false\), sinon \((\Cut)\)
+s'appliquerait ; toute arête vaut donc \(\true\). Si un nœud avait deux fils,
+les deux arêtes vaudraient \(\true\), ce qui contredirait l'exclusion
+mutuelle~(b) ; \(\theta'\) est donc un chemin. La racine conserve au moins un
+fils par exhaustivité~(c) : son arête non fausse vaut \(\true\), et
+\((\Select)\) a retiré les autres. La monotonie des sources découle de~(a).
+(2) est la contraposée de la totalité
+(définition~\ref{def:applicability-predicate}).
+\end{proof}
+
+\subsection{Interaction : ce que l'assistant doit demander}
+
+Le lemme~\ref{lem:linear} identifie exactement ce qui bloque une résolution.
+Pour \(\theta'=\nf{\nu_D(m)}=(V',E',r,\lambda',\pi')\), on définit
+\[
+ \NeedFacts_D(m):=\Bigl(\bigcup_{e\in E',\ \pi(e)(D)=\unknown}\dep(e)
+   \;\cup\bigcup_{u\in V'\setminus\{r\}}\dep(u)\Bigr)
+   \cap(\Unres\cup\Undef).
+\]
+
+Lorsque \(\NeedFacts_D(m)=\emptyset\), l'arbre est un chemin de candidats
+exécutables et l'étape déterministe ci-dessous s'applique ; sinon, l'assistant
+soumet \(\NeedFacts_D(m)\) à l'expert (pour les matières indéfinies) ou les
+résout d'abord (pour les matières non résolues).
+
+\subsection{Résolution}\label{sec:resolution}
+
+Soit \(\theta'=\nf{\nu_D(m)}\) un chemin \(r\to v_1\to\cdots\to v_k\) dont tous
+les candidats sont exécutables, c'est-à-dire \(\dep(v_i)\subseteq\Res\). En
+renversant le chemin, on obtient la liste des candidats par sources croissantes
+\[
+ L_D(m):=[c_0,\ldots,c_n]:=[\lambda(v_k),\ldots,\lambda(v_1)],\qquad
+ s(c_0)\normlt\cdots\normlt s(c_n).
+\]
+Pour un candidat exécutable \(c\) tel que \(\sigma_c=(m_0,\ldots,m_q)\to m\),
+sa valeur, obtenue sans modifier le dossier, est
+\(D(c):=\phi_c(\nu_D(m_0),\ldots,\nu_D(m_q))\in\Raw(m)\).
+
+\begin{defi}[Application récursive des politiques]\label{def:apply-policy}
+Pour deux candidats \(a,b\in\Cand_m\) tels que \(s(a)\normlt s(b)\), on pose
+\[
+\Winner_D(a,b):=
+\begin{cases}
+ a,& \text{si } \widehat p(b)(s(a))=\Suppletive,\\
+ a,& \text{si } \widehat p(b)(s(a))=\Social \text{ et } D(b)\fav{m}D(a),\\
+ b,& \text{sinon,}
+\end{cases}
+\]
+\[
+ \ApplyPolicy_D([c]):=c,\qquad
+ \ApplyPolicy_D(a::b::L):=\ApplyPolicy_D(\Winner_D(a,b)::L).
+\]
+Pour \(c^*:=\ApplyPolicy_D(L_D(m))\),
+\begin{equation}
+ \Resolve((\mc M_D,\nu_D),m):=(\mc M_D,(\nu_D-m)+[m\mapsto D(c^*)]).
+ \label{eq:resolve}
+\end{equation}
+\end{defi}
+
+\paragraph{Suite de l'exemple.}
+Supposons que le chemin subsistant de notre exemple Syntec soit
+\(\CodeTravail \to \Syntec\), le candidat \(c_{\mathsf{Code}}\) du Code étant
+tel que
+\[
+p(c_{\mathsf{Code}})(\ConvBranche)=\Social,
+\quad\text{et donc}\quad
+\widehat p(c_{\mathsf{Code}})(\Syntec)=\Social.
+\]
+Le dossier donne
+\[
+\nu_D(\Salary)=3\,000\ \text{euros},\qquad
+\nu_D(\Senior)=10\ \text{ans},
+\]
+de sorte que \(D(c_{\mathsf{Code}})=7\,500\) euros et
+\(D(c_{\Syntec})=10\,000\) euros. Puisque
+\(D(c_{\mathsf{Code}})\fav{m}D(c_{\Syntec})\), le candidat Syntec l'emporte
+(définition~\ref{def:apply-policy}) ; si le candidat du Code avait été
+\(\Absolute\), il aurait prévalu quels que soient les montants. Si \(\Salary\)
+avait été indéfinie, on aurait eu \(\NeedFacts_D(m)=\{\Salary\}\), et
+l'assistant l'aurait demandée avant toute comparaison.
+
+\begin{theo}[Résolution]\label{thm:resolution}
+Soit \(D\) un dossier dont la forêt \(\mc F_D\) est cohérente et dont toutes
+les dépendances figurent dans le dossier : \(\dep(\theta_m)\subseteq\mc M_D\)
+pour tout \(m\in\Unres\). Il existe alors une suite finie de pas \(\Prune\) et
+\(\Resolve\) menant à un dossier \(D'\) tel que \(\UnresOf{D'}=\emptyset\).
+\end{theo}
+\begin{proof}
+Par récurrence sur \(|\Unres|\). S'il est nul, il n'y a rien à faire. Sinon,
+\(<_{\dep}\) est acyclique et \(\Unres\) est fini ; on peut donc choisir
+\(m\in\Unres\) minimal pour \(<_{\dep}\) parmi \(\Unres\). Aucun
+\(m'\in\Unres\) n'appartient à \(\dep(\theta_m)\) ; avec l'hypothèse,
+\(\dep(\theta_m)\subseteq\Res\). Par totalité, toute arête de \(\theta_m\) est
+décidée ; d'après le lemme~\ref{lem:linear}, \(\nf{\theta_m}\) est donc un
+chemin non vide dont les candidats ont toutes leurs entrées dans \(\Res\), et
+sont donc exécutables. Ainsi \(\Resolve(\Prune(D,m),m)\) est défini et fait
+passer \(m\) parmi les matières résolues sans modifier aucun autre arbre, ce qui fait
+strictement décroître \(|\Unres|\). La cohérence et l'hypothèse sur les
+dépendances sont préservées, puisqu'aucun arbre n'a été ajouté.
+\end{proof}
+
+\begin{coro}[Boucle interactive]\label{cor:loop}
+Soit \(\mc F\) une forêt finie cohérente (le référentiel) et
+\(\mathrm{dom}(\mc F)\) l'ensemble des matières qui possèdent un arbre dans
+\(\mc F\). Partons d'un dossier dont tous les arbres appartiennent à \(\mc F\),
+et supposons que l'expert réponde à toute demande portant sur une matière
+indéfinie \(m\) soit par une valeur brute, soit par \(\theta_m\in\mc F\)
+lorsque \(m\in\mathrm{dom}(\mc F)\). La boucle qui, de façon répétée,
+(i)~choisit \(m\in\Unres\) minimal pour \(<_{\dep}\), (ii)~élague, puis
+(iii)~demande \(\NeedFacts_D(m)\) s'il est non vide et résout \(m\) sinon,
+termine avec \(\Unres=\emptyset\) après au plus \(|\mathrm{dom}(\mc F)|\)
+saisies d'arbres. La suite des saisies et des pas constitue un journal de la
+résolution.
+\end{coro}
+\begin{proof}
+À chaque étape, \(\mc F_D\subseteq\mc F\) à l'élagage près, donc \(\mc F_D\)
+est cohérente : \(<_{\dep}\) restreinte à une sous-forêt reste acyclique et les
+conditions portant sur chaque arbre sont héritées. Par minimalité de \(m\),
+aucune matière de \(\Unres\) n'appartient à \(\dep(\theta_m)\) ; on a donc
+\(\NeedFacts_D(m)\subseteq\Undef\), et l'étape~(iii) est bien définie. Lorsque
+\(\NeedFacts_D(m)=\emptyset\), toutes les arêtes de \(\nf{\theta_m}\) sont
+décidées et ses candidats sont exécutables, si bien que \(\Resolve\) s'applique
+comme dans le théorème~\ref{thm:resolution}. Toute matière demandée appartient
+à \(\dep(\mc F):=\bigcup_{\theta\in\mc F}\dep(\theta)\), qui est fini. Soit
+\(I_D\) l'ensemble (croissant) des matières pour lesquelles un arbre a déjà
+été saisi. Le triplet
+\[
+ \bigl(|\mathrm{dom}(\mc F)\setminus I_D|,\;
+       |\dep(\mc F)\setminus\mc M_D|,\;
+       |\Unres|\bigr)
+\]
+décroît lexicographiquement à chaque itération : une saisie d'arbre fait
+décroître la première composante ; une saisie de valeur laisse la première
+inchangée et fait décroître la deuxième ; un pas \(\Resolve\) laisse les deux
+premières inchangées et fait décroître la troisième. La boucle termine donc,
+et elle ne peut s'arrêter qu'avec \(\Unres=\emptyset\).
+\end{proof}
+
+\section{Conclusion}\label{sec:conclusion}
+
+Le modèle développé dans cet article isole une étape du calcul juridique
+souvent laissée implicite : la sélection de la règle habilitée à effectuer le
+calcul. Il représente les règles juridiques exécutables comme des candidats
+typés par matière, les organise en arbres normatifs ordonnés par les sources et
+à arêtes prédicatives, et utilise des tests d'applicabilité trivalués pour
+distinguer les branches exclues de celles auxquelles il manque seulement de
+l'information. Il fournit ainsi la base d'un assistant interactif capable de
+demander les éléments manquants d'un dossier, d'élaguer l'arbre en
+conséquence, puis d'appliquer les politiques d'arbitrage pertinentes pour
+sélectionner un calcul exécutable. Le théorème de résolution montre que, sous
+des hypothèses de cohérence et d'acyclicité des dépendances, ce processus finit
+par résoudre toutes les matières du dossier.
+
+Plusieurs extensions rapprocheraient ce modèle de la structure du raisonnement
+juridique tel qu'il se pratique. D'abord, le référentiel devrait aussi contenir
+des règles juridiques non calculatoires. De telles règles auraient leurs
+propres sources et leurs propres conditions temporelles d'applicabilité, mais
+définiraient des politiques plutôt que des valeurs. En effet, la politique qui
+gouverne l'articulation de deux calculs n'est pas nécessairement énoncée dans
+l'un ou l'autre des textes qui les définissent : elle peut être fixée par une
+troisième disposition, de rang supérieur~\cite{moizard2025fragmentation}.
+Représenter explicitement ces dispositions permettrait de distinguer la
+provenance d'un calcul de celle de la règle qui gouverne son articulation avec
+d'autres calculs.
+
+Ensuite, l'élagage devrait être doté d'une sémantique formelle de provenance.
+Outre l'arbre subsistant, la procédure devrait renvoyer un objet de
+dérivation qui enregistre les branches neutralisées et les raisons de leur
+exclusion : quels prédicats ont été évalués, quelles valeurs du dossier ont été
+utilisées, et quelles comparaisons de politiques ont déterminé le résultat. Une
+telle trace fournirait la matière nécessaire au contrôle de la résolution et à
+sa transformation en une explication juridiquement signifiante.
+
+Enfin, le langage d'interaction pourrait comporter un opérateur de choix, en
+alternative à \(\Input\). Au lieu d'engager le dossier sur une valeur unique,
+cet opérateur le scinderait selon plusieurs hypothèses admissibles et
+résoudrait indépendamment chacun des dossiers obtenus. L'assistant pourrait
+ainsi explorer des interprétations concurrentes d'un fait incertain ou d'une
+qualification juridique, comparer leurs conséquences et soutenir la
+construction de demandes principales et subsidiaires, par exemple lorsqu'une
+clause contractuelle est écartée par un candidat légal de politique absolue.
+
+\paragraph{Remerciements.}
+Des outils d'IA générative ont été utilisés comme suit. OpenAI GPT-5 a
+relevé une incohérence de notre définition des politiques d'arbitrage au regard
+du droit français. Claude Fable 5.1 (Anthropic) a été utilisé au fil des
+versions successives pour relire les définitions formelles et les
+démonstrations, proposer des formulations plus compactes des
+définitions~\ref{def:types} et~\ref{def:favorable} et de l'une des conditions
+de cohérence, et suggérer des références bibliographiques manquantes. Tous les
+textes et références produits par IA ont été vérifiés, corrigés et validés par
+les auteurs. Le modèle, les définitions et les résultats sont ceux des auteurs.
+
+\bibliographystyle{alpha-fr}
+\bibliography{references-fr}
+
+\end{document}
