@@ -377,30 +377,29 @@ juridique d'une instance du modèle.
 
 \subsection{Tests d'applicabilité}
 
-On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
-partir de constantes, de noms de matières et des opérateurs de comparaisons classiques. Pour un test \(t\),
+On fixe un ensemble \(\Tests\) de \emph{tests}, écrits chacun à
+partir de constantes, de noms de matières, des opérateurs de comparaisons classiques entre valeurs et clos par disjonction. Pour un test \(t\),
 \(\dep(t)\subseteq\Matter\) est l'ensemble fini des noms de matières qui
-apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est un ensemble fini $P\subseteq\Tests$ de tests atomiques, avec
-\(\dep(\{t_1,\cdots, t_k\}):=\bigcup_i\dep(t_i)\). 
+apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est un ensemble fini $P\subseteq\Tests$ de tests, avec
+\(\dep(P):=\bigcup_{t\in P}\dep(t)\). 
 
 On utilise la logique trivaluée \(\Bthree:=\{\true,\false,\unknown\}\), dont les
 valeurs signifient respectivement établi, exclu et actuellement inconnu, avec
 les connecteurs forts de Kleene~\cite{kleene1952introduction} : pour la
 conjonction, \(\false\) l'emporte sur \(\unknown\), qui l'emporte
-sur~\(\true\).
+sur~\(\true\), et l'ordre inverse pour la disjonction.
 
 \begin{defi}[Sémantique des tests]\label{def:applicability-predicate}
-Étant donné un dossier \(D=(\mc M_D,\nu_D)\), la valuation partielle
+Étant donné un dossier \(D=(\mc M_D,\nu_D)\), l'evaluation d'un test $t$ est donnée par
 \[
- \widehat \nu_D(m):=
- \begin{cases}
-  \nu_D(m),&m\in\Res,\\
-  \bot,&m\in\Unres\cup\Undef,
- \end{cases}
+\begin{array}{rll}
+\sem{t}_D &=& \sem{t\{\nu_D(m_i)/m_i\}}_D, m_i\in\dep(t)\cap\Res \\\\
+\sem{t}_D &=& \sem{t\{\unknown/m_i\}}_D, m_i\in\dep(t)\cap(\Unres \cup\Undef)\\\\
+\sem{t\mathrel{\mathit{op}} t'}_D &=& \sem{t}_D\mathrel{\mathit{op}}\sem{t'}_D \\\\
+\sem{\mathit{const}}_D &=& \mathit{const}
+\end{array}
 \]
-s'étend en une évaluation \(\sem{\cdot}_D:\Tests\to\Bthree\) telle que $\sem{t}_D=\unknown$ quand il existe $m\in\dep(t)$ telle que $\nu_D(m)=\bot$, et sinon la valeur
-booléenne ordinaire du test (par exemple \(\sem{\IDCC=1486}_D=\unknown\) lorsque
-\(\IDCC\notin\Res\)). Un test \(t\) est \emph{total} lorsque
+Un test \(t\) est \emph{total} lorsque
 \(\dep(t)\subseteq\Res\) implique \(\sem{t}_D\in\{\true,\false\}\).
 \end{defi}
 
