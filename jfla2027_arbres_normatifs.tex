@@ -303,13 +303,12 @@ Pour tout \(t \in \normdown(s)\), soit
   \right\}
 \]
 l'ensemble des régimes hérités par \(t\). La politique \(p\) est
-\emph{cohérente pour le sous-typage} si
+\emph{cohérente (pour le sous-typage)} si
 \(
   \left|\Herit_{p}(t)\right| \leq 1
 \)
 pour tout \(t \in \normdown(s)\).
-L'\emph{extension par sous-typage} d'une politique \(p\) cohérente pour le
-sous-typage est la fonction totale
+L'\emph{extension par sous-typage} d'une politique \(p\) cohérente est la fonction totale
 \(
   \widehat{p} :
   \normdown(s)
@@ -379,11 +378,10 @@ juridique d'une instance du modèle.
 \subsection{Tests d'applicabilité}
 
 On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
-partir de constantes et de noms de matières. Pour un test \(t\),
+partir de constantes, de noms de matières et des opérateurs de comparaisons classiques. Pour un test \(t\),
 \(\dep(t)\subseteq\Matter\) est l'ensemble fini des noms de matières qui
-apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est une conjonction
-finie \(t_1\land\cdots\land t_k\) de tests atomiques, avec
-\(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\).
+apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est un ensemble fini $P\subseteq\Tests$ de tests atomiques, avec
+\(\dep(\{t_1,\cdots, t_k\}):=\bigcup_i\dep(t_i)\). 
 
 On utilise la logique trivaluée \(\Bthree:=\{\true,\false,\unknown\}\), dont les
 valeurs signifient respectivement établi, exclu et actuellement inconnu, avec
@@ -400,8 +398,7 @@ sur~\(\true\).
   \bot,&m\in\Unres\cup\Undef,
  \end{cases}
 \]
-s'étend en une évaluation \(\sem{\cdot}_D:\Tests\to\Bthree\) qui renvoie
-\(\unknown\) dès que l'un de ses arguments vaut \(\bot\), et sinon la valeur
+s'étend en une évaluation \(\sem{\cdot}_D:\Tests\to\Bthree\) telle que $\sem{t}_D=\unknown$ quand il existe $m\in\dep(t)$ telle que $\nu_D(m)=\bot$, et sinon la valeur
 booléenne ordinaire du test (par exemple \(\sem{\IDCC=1486}_D=\unknown\) lorsque
 \(\IDCC\notin\Res\)). Un test \(t\) est \emph{total} lorsque
 \(\dep(t)\subseteq\Res\) implique \(\sem{t}_D\in\{\true,\false\}\).
@@ -416,17 +413,16 @@ enraciné, de racine \(r\in V\), dont les arêtes sont orientées du père vers
 le fils, et
 \[
  \lambda:V\setminus\{r\}\to\Cand_m,\qquad
- \pi:E\to\{\text{prédicats d'applicabilité}\}.
+ \pi:E\to \mc P(\Tests).
 \]
-On note \(\pi(e)(D):=\sem{\pi(e)}_D\). Pour \(e\in E\), soit
-\(\dep(e):=\dep(\pi(e))\) ; pour \(u\in V\setminus\{r\}\) tel que
-\(\sigma_{\lambda(u)}=(m_0,\ldots,m_n)\to m\), soit
+ Pour \(e\in E\), on note \(\pi(e)(D):=\bigwedge_{t\in\pi(e)} \sem{t}_D\) et \(\dep(e):=\bigcup_{t\in\pi(e)}\dep(t)\) ; pour \(u\in V\setminus\{r\}\) tel que
+\(\sigma_{\lambda(u)}=(m_0,\ldots,m_n)\to m\), on note
 \(\dep(u):=\{m_0,\ldots,m_n\}\) ; et
 \[
  \dep(\theta):=\bigcup_{e\in E}\dep(e)\;\cup
                       \bigcup_{u\in V\setminus\{r\}}\dep(u).
 \]
-Pour \(u\in V\), on utilise comme d'habitude \(\child(u)\), \(\sib_u(v)\) et
+Pour \(u\in V\), on utilise  \(\child(u)\), \(\sib_u(v)\) et
 \(\desc(v)\) (avec \(v\in\desc(v)\)) pour désigner respectivement les fils, les
 frères et les descendants d'un nœud.
 \end{defi}
@@ -446,10 +442,7 @@ dossier enregistre l'identifiant de la convention collective applicable. On
 peut écrire un prédicat composé de deux tests :
 \[
 \begin{array}{l}
- \pi(e):=
- [\IDCC=1486]\land
- [\DateT\in
-   [\text{déc.~}1987,\ \text{juil.~}2021[\,],\\
+ \pi(e):=\{\IDCC=1486, \DateT\in [\text{déc.~}1987,\ \text{juil.~}2021[\,\}\\
  \widehat \nu_D(\IDCC)= 1486,\quad
  \widehat \nu_D(\DateT)=\text{nov.~}2019.
 \end{array}
