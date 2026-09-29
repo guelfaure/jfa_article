@@ -1,5 +1,7 @@
 % Version française de « Normative Trees: Selecting the Applicable Rule in
 % French Labour Law » (soumission JURIX 2026), mise au format des JFLA.
+% Version bis : exemple fil rouge tiré du corpus Catala, architecture
+% d'A-Lex, figures, opérateur de point de choix.
 
 
 
@@ -7,6 +9,19 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{normtrees-fr}
+\usepackage{fancyvrb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,babel}
+\colorlet{elague}{black!40}
+
+% Notations ajoutées dans la version bis
+\newcommand{\ALex}{A-Lex}
+\newcommand{\Choix}{\ensuremath{\mathsf{Choix}}}
+\newcommand{\Categorie}{\ensuremath{\mathsf{Categorie}}}
+\newcommand{\Cadre}{\ensuremath{\mathsf{IngenieurOuCadre}}}
+\newcommand{\Etam}{\ensuremath{\mathsf{Etam}}}
+\newcommand{\Presence}{\ensuremath{\mathsf{AnneesDePresence}}}
+\newcommand{\MoisRem}{\ensuremath{\mathsf{MoisDeRemuneration}}}
 
 
 \jfla{38}{2027}
@@ -37,7 +52,10 @@
   concurrentes, et la manière dont elles s'articulent dépend du régime
   d'articulation applicable. Nous modélisons cette couche de sélection de la
   règle comme un processus de résolution déterministe, destiné à assister les
-  experts juridiques.
+  experts juridiques. Nous l'illustrons sur un exemple tiré d'un corpus de droit
+  du travail écrit en Catala, et l'étendons par un point de choix qui fait appel
+  à l'utilisateur pour construire des demandes principales et subsidiaires. Ce
+  modèle fournit l'architecture de l'assistant A-Lex.
 \end{abstract}
 
 \section{Introduction}\label{sec:introduction}
@@ -103,14 +121,122 @@ comporte vis-à-vis des textes relatifs à la même matière mais situés à un
 niveau inférieur. Deuxièmement, nous organisons ces objets formels en
 \emph{forêts normatives} ordonnées par les sources et à arêtes prédicatives,
 qui représentent à la fois les dépendances hiérarchiques entre candidats et les
-conflits qui les opposent. Nous montrons enfin comment une boucle interactive
-pourrait assister l'expert juridique dans la sélection et le calcul du droit
-applicable.
+conflits qui les opposent. Troisièmement, nous montrons comment une boucle
+interactive assiste l'expert juridique dans la sélection et le calcul du droit
+applicable, et nous la dotons d'un \emph{point de choix}, qui fait appel à
+l'utilisateur lorsqu'un fait ou une qualification est discuté et permet
+d'ordonner des demandes principales et subsidiaires. Un exemple fil rouge, tiré
+d'un corpus de droit du travail écrit en Catala, accompagne chaque étape
+(section~\ref{sec:exemple}).
+
+\paragraph{Architecture d'\ALex{}.}
+Ce modèle fournit l'architecture d'\ALex{}, l'assistant juridique que nous
+développons. \ALex{} exécute un corpus de droit du travail écrit en
+Catala~\cite{merigoux2021,corpuslumo}, dans lequel chaque source, le Code du
+travail ou une convention collective, est un module qui rend sa propre réponse
+à une même question. Les modules des sources ne comparent pas leurs réponses :
+la comparaison sous l'ordre public social relève d'un module de concours
+distinct, et le régime d'articulation qui décide du concours à mener n'est pas
+encodé : le corpus le laisse, à dessein, hors du code. Ce régime est porté ici
+par les politiques d'arbitrage des candidats, que la forêt normative organise.
+Les notions introduites ici organisent les composants du prototype d'\ALex{}. Un indexeur lit les modules
+Catala et en extrait les candidats ; un moteur d'élagage construit la forêt exhaustive,
+la réduit au dossier et formule les questions à poser ; la sélection finale
+applique les politiques d'arbitrage aux valeurs que calcule le code Catala
+compilé ; un gestionnaire de scénarios enregistre les points de choix et en tire
+les demandes subsidiaires.
 
 Notre contribution est délibérément circonscrite : elle ne prétend pas saisir
 toutes les caractéristiques du droit du travail, et elle ne traite pas le
 problème de la traduction de textes juridiques rédigés en langue naturelle en
 fonctions calculables qui les implémentent fidèlement.
+
+\section{Exemple fil rouge}\label{sec:exemple}
+
+\paragraph{Le dossier.}
+Une salariée d'une société de conseil relevant de la convention collective
+Syntec (IDCC~1486) reçoit, en mars 2025, la notification de son licenciement,
+qui n'est pas prononcé pour faute grave. Elle compte dix ans d'ancienneté et
+son salaire de référence est de 3\,000 euros. Sa classification est discutée :
+son employeur la range parmi les ETAM (employés, techniciens et agents de
+maîtrise) ; elle soutient relever des ingénieurs et cadres. La matière en cause
+est l'indemnité de licenciement. Le dossier initial contient la date de la
+notification, l'ancienneté et le salaire de référence ; la convention applicable
+et la catégorie restent à établir.
+
+\paragraph{Les textes en Catala.}
+Nous reprenons les textes tels que les écrit le corpus~\cite{corpuslumo}, où
+chaque bloc de code est placé sous l'article qu'il traduit ; la
+figure~\ref{fig:catala} en reproduit deux extraits. L'article R.~1234-2 du Code
+du travail, dans sa version en vigueur depuis le 27~septembre 2017, fixe le
+montant plancher : un quart de mois de salaire par année d'ancienneté jusqu'à
+dix ans, un tiers au-delà~\cite{frcode}. L'article 4.5 de la convention Syntec,
+en vigueur depuis le 1\textsuperscript{er}~mai 2023, fixe un barème propre, qui
+distingue les ETAM des ingénieurs et cadres~\cite{syntec} ; avant cette date,
+l'article~19 de la convention s'appliquait.
+
+\begin{figure}
+\begin{Verbatim}[frame=single, label={Code du travail, article R. 1234-2}]
+champ d'application MontantIndemnitéDeLicenciement_Loi:
+  étiquette plancher_légal_r1234_2
+  définition montant_du_plancher
+    sous condition années_ancienneté <= 10,0
+    conséquence égal à
+      montant_du_salaire_de_référence * années_ancienneté * (1,0 / 4,0)
+
+  étiquette plancher_légal_r1234_2
+  définition montant_du_plancher
+    sous condition années_ancienneté > 10,0
+    conséquence égal à
+      montant_du_salaire_de_référence * 10,0 * (1,0 / 4,0)
+      + montant_du_salaire_de_référence * (années_ancienneté - 10,0)
+        * (1,0 / 3,0)
+\end{Verbatim}
+\begin{Verbatim}[frame=single, label={Convention Syntec (IDCC 1486), article 4.5}]
+champ d'application MontantIndemnitéDeLicenciement_CCN_1486
+  sous condition
+    article_4_5_applicable_VersionApplicableRuptureDuContrat_CCN_1486:
+  étiquette barème
+  définition montant_du_barème
+    sous condition
+      faits_rupture.catégorie = Etam
+      et années_de_présence <= 10,0
+    conséquence égal à
+      mois_de_rémunération * années_de_présence * (1,0 / 4,0)
+
+  étiquette barème
+  définition montant_du_barème
+    sous condition
+      faits_rupture.catégorie = IngénieurOuCadre
+      et années_de_présence >= 2,0
+    conséquence égal à
+      mois_de_rémunération * années_de_présence * (1,0 / 3,0)
+\end{Verbatim}
+\caption{Deux extraits du corpus Catala~\cite{corpuslumo} : le barème légal et
+  le barème conventionnel de l'indemnité de licenciement. Commentaires omis et
+  mise en page adaptée ; les deux autres cas du barème Syntec (ETAM au-delà de
+  dix ans, cadres de moins de deux ans) sont omis.}
+\label{fig:catala}
+\end{figure}
+
+Chaque champ d'application calcule la réponse de sa source, et rien d'autre.
+Deux informations manquent au code pour conclure : la source qui doit
+l'emporter, et le régime qui en décide. Le corpus les laisse hors du code, à
+dessein : sous les articles R.~1234-1 et R.~1234-2, un commentaire indique que
+la formule « ne peut être inférieure » fait du barème légal un minimum d'ordre
+public social, qualification que le code n'encode pas, et que la comparaison
+avec une source plus favorable relève d'un module distinct. Les étiquettes et exceptions
+internes à un texte, comme le barème par catégorie ou l'exclusion de la faute
+grave, restent au contraire dans le code Catala.
+
+\paragraph{Ce que l'assistant doit établir.}
+Avant tout calcul, trois questions se posent : quelle convention collective
+s'applique, quelle version de cette convention régit la date de la
+notification, et dans quelle catégorie ranger la salariée. Les sections
+suivantes reprennent ce dossier à chaque étape : matières et candidats
+(section~\ref{sec:notations}), arbre normatif (section~\ref{sec:forest} et
+figure~\ref{fig:arbre}), élagage, faits requis, sélection finale et point de
+choix sur la catégorie (section~\ref{sec:op}).
 
 \section{Travaux connexes et positionnement}\label{sec:related}
 
@@ -131,9 +257,12 @@ Catala résout les définitions concurrentes d'une variable par une logique des
 défauts à priorités~\cite{merigoux2021} : la sélection dépend de conditions
 d'applicabilité et d'un ordre statique entre exceptions, jamais des valeurs que
 produiraient les définitions. Le principe de faveur dépend au contraire du
-résultat ; l'encoder en Catala impose de conditionner une exception à
-une comparaison de valeurs placée dans le texte inférieur, pour chaque paire de
-sources. Les arbres normatifs attachent la politique au candidat supérieur,
+résultat ; l'encoder par le mécanisme des exceptions impose de conditionner
+une exception à une comparaison de valeurs placée dans le texte inférieur, pour
+chaque paire de sources. Le corpus de la section~\ref{sec:exemple} l'évite en
+écrivant la comparaison dans un module de concours distinct
+(figure~\ref{fig:concours}), ce qui revient, comme ici, à sortir le principe de
+faveur des textes eux-mêmes. Les arbres normatifs attachent la politique au candidat supérieur,
 fixent une fois pour toutes l'ordre de favorabilité de chaque matière, et
 procèdent par un \emph{fold} uniforme le long du chemin des sources. Les deux
 approches sont complémentaires : Catala structure les exceptions au sein d'un
@@ -168,7 +297,8 @@ s'y rattache tout en étant délibérément plus étroit : il automatise
 partiellement les parties de ce processus gouvernées par des calculs
 formalisés, des conditions d'applicabilité et des politiques d'arbitrage. Les
 jugements interprétatifs et stratégiques de l'expert juridique sont représentés
-abstraitement par \(\Input\), tandis que leurs conséquences pour l'élagage, la
+abstraitement par \(\Input\) et par les points de choix
+(section~\ref{sec:choix}), tandis que leurs conséquences pour l'élagage, la
 sélection et l'exécution restent explicites et contrôlables.
 
 \section{Notations et terminologie}\label{sec:notations}
@@ -209,6 +339,20 @@ Seules ces matières admettent des candidats de politique \(\Social\), ce
 qu'impose la cohérence (section~\ref{sec:consistency}) ; la comparaison porte
 sur les valeurs que les candidats concurrents produisent pour le dossier
 considéré, et non sur les textes eux-mêmes.
+
+\paragraph{Exemple.} Le dossier fil rouge met en jeu les matières
+\[
+\begin{array}{c}
+\Indem,\ \Senior,\ \Salary,\ \Presence,\ \MoisRem,\\
+\IDCC,\ \DateT\ \text{et}\ \Categorie,
+\quad\text{avec}\quad\Raw(\Categorie)=\{\Etam,\Cadre\},
+\end{array}
+\]
+et l'indemnité est munie de l'ordre \(\fav{\Indem}=\mathord{\leq}\) sur les
+montants. L'ancienneté et le salaire au sens de la convention, \(\Presence\) et
+\(\MoisRem\) dans le code de la figure~\ref{fig:catala}, sont des matières
+distinctes de leurs homologues légales : le corpus les calcule séparément, et
+elles valent ici dix ans et 3\,000 euros elles aussi.
 
 \begin{defi}[Dossier]\label{def:dossier}
 Un dossier \(D\) est donné par un couple
@@ -303,12 +447,13 @@ Pour tout \(t \in \normdown(s)\), soit
   \right\}
 \]
 l'ensemble des régimes hérités par \(t\). La politique \(p\) est
-\emph{cohérente (pour le sous-typage)} si
+\emph{cohérente pour le sous-typage} si
 \(
   \left|\Herit_{p}(t)\right| \leq 1
 \)
 pour tout \(t \in \normdown(s)\).
-L'\emph{extension par sous-typage} d'une politique \(p\) cohérente est la fonction totale
+L'\emph{extension par sous-typage} d'une politique \(p\) cohérente pour le
+sous-typage est la fonction totale
 \(
   \widehat{p} :
   \normdown(s)
@@ -363,6 +508,31 @@ alternative fournit un calcul au moins aussi favorable, au sens de la
 définition~\ref{def:favorable}. La sélection entre candidats au moyen des
 politiques d'arbitrage fait l'objet de la définition~\ref{def:apply-policy}.
 
+\paragraph{Exemple : du code Catala aux candidats.}
+Chaque champ d'application du corpus qui répond à la question fournit un
+candidat. Son code compilé est le calcul \(\phi_f\) ; les valeurs qu'il lit
+d'autres champs, que le corpus déclare comme variables externes, forment
+l'interface \(\sigma_f\) ; la condition de version qui garde le champ Syntec
+(figure~\ref{fig:catala}) et le champ d'application de la convention deviennent
+le prédicat de l'arête qui mène au candidat ; la politique, que le corpus
+n'encode pas, est portée par le candidat. Le droit à l'indemnité étant supposé
+ouvert, on obtient
+\[
+c_{\mathsf{Code}}=(\CodeTravail,\ f_{\mathsf{Code}},\ [\ConvBranche\mapsto\Social]),
+\qquad
+c_{4.5}=(\Syntec,\ f_{4.5},\ \emptyset),
+\]
+avec
+\[
+\begin{array}{l}
+\sigma_{c_{\mathsf{Code}}}=(\Senior,\Salary)\to\Indem,\\
+\sigma_{c_{4.5}}=(\Presence,\MoisRem,\Categorie)\to\Indem,
+\end{array}
+\]
+et de même \(c_{19}\) pour l'article~19 de la convention. Le candidat du Code
+porte la politique \(\Social\) envers les conventions de branche : c'est la
+qualification que le corpus laisse hors du code.
+
 \begin{remark}[Contraintes juridiques sur l'attribution des politiques]
 La définition~\ref{def:candidate} permet délibérément de doter tout candidat de
 n'importe quelle politique. Il s'agit d'une sur-approximation : une instance
@@ -377,29 +547,32 @@ juridique d'une instance du modèle.
 
 \subsection{Tests d'applicabilité}
 
-On fixe un ensemble \(\Tests\) de \emph{tests}, écrits chacun à
-partir de constantes, de noms de matières, des opérateurs de comparaisons classiques entre valeurs et clos par disjonction. Pour un test \(t\),
+On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
+partir de constantes et de noms de matières. Pour un test \(t\),
 \(\dep(t)\subseteq\Matter\) est l'ensemble fini des noms de matières qui
-apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est un ensemble fini $P\subseteq\Tests$ de tests, avec
-\(\dep(P):=\bigcup_{t\in P}\dep(t)\). 
+apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est une conjonction
+finie \(t_1\land\cdots\land t_k\) de tests atomiques, avec
+\(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\).
 
 On utilise la logique trivaluée \(\Bthree:=\{\true,\false,\unknown\}\), dont les
 valeurs signifient respectivement établi, exclu et actuellement inconnu, avec
 les connecteurs forts de Kleene~\cite{kleene1952introduction} : pour la
 conjonction, \(\false\) l'emporte sur \(\unknown\), qui l'emporte
-sur~\(\true\), et l'ordre inverse pour la disjonction.
+sur~\(\true\).
 
 \begin{defi}[Sémantique des tests]\label{def:applicability-predicate}
-Étant donné un dossier \(D=(\mc M_D,\nu_D)\), l'evaluation d'un test $t$ est donnée par
+Étant donné un dossier \(D=(\mc M_D,\nu_D)\), la valuation partielle
 \[
-\begin{array}{rll}
-\sem{t}_D &=& \sem{t\{\nu_D(m_i)/m_i\}}_D, m_i\in\dep(t)\cap\Res \\\\
-\sem{t}_D &=& \sem{t\{\unknown/m_i\}}_D, m_i\in\dep(t)\cap(\Unres \cup\Undef)\\\\
-\sem{t\mathrel{\mathit{op}} t'}_D &=& \sem{t}_D\mathrel{\mathit{op}}\sem{t'}_D \\\\
-\sem{\mathit{const}}_D &=& \mathit{const}
-\end{array}
+ \widehat \nu_D(m):=
+ \begin{cases}
+  \nu_D(m),&m\in\Res,\\
+  \bot,&m\in\Unres\cup\Undef,
+ \end{cases}
 \]
-Un test \(t\) est \emph{total} lorsque
+s'étend en une évaluation \(\sem{\cdot}_D:\Tests\to\Bthree\) qui renvoie
+\(\unknown\) dès que l'un de ses arguments vaut \(\bot\), et sinon la valeur
+booléenne ordinaire du test (par exemple \(\sem{\IDCC=1486}_D=\unknown\) lorsque
+\(\IDCC\notin\Res\)). Un test \(t\) est \emph{total} lorsque
 \(\dep(t)\subseteq\Res\) implique \(\sem{t}_D\in\{\true,\false\}\).
 \end{defi}
 
@@ -412,16 +585,17 @@ enraciné, de racine \(r\in V\), dont les arêtes sont orientées du père vers
 le fils, et
 \[
  \lambda:V\setminus\{r\}\to\Cand_m,\qquad
- \pi:E\to \mc P(\Tests).
+ \pi:E\to\{\text{prédicats d'applicabilité}\}.
 \]
- Pour \(e\in E\), on note \(\pi(e)(D):=\bigwedge_{t\in\pi(e)} \sem{t}_D\) et \(\dep(e):=\bigcup_{t\in\pi(e)}\dep(t)\) ; pour \(u\in V\setminus\{r\}\) tel que
-\(\sigma_{\lambda(u)}=(m_0,\ldots,m_n)\to m\), on note
+On note \(\pi(e)(D):=\sem{\pi(e)}_D\). Pour \(e\in E\), soit
+\(\dep(e):=\dep(\pi(e))\) ; pour \(u\in V\setminus\{r\}\) tel que
+\(\sigma_{\lambda(u)}=(m_0,\ldots,m_n)\to m\), soit
 \(\dep(u):=\{m_0,\ldots,m_n\}\) ; et
 \[
  \dep(\theta):=\bigcup_{e\in E}\dep(e)\;\cup
                       \bigcup_{u\in V\setminus\{r\}}\dep(u).
 \]
-Pour \(u\in V\), on utilise  \(\child(u)\), \(\sib_u(v)\) et
+Pour \(u\in V\), on utilise comme d'habitude \(\child(u)\), \(\sib_u(v)\) et
 \(\desc(v)\) (avec \(v\in\desc(v)\)) pour désigner respectivement les fils, les
 frères et les descendants d'un nœud.
 \end{defi}
@@ -430,27 +604,73 @@ Comme tout nœud autre que la racine possède exactement une arête entrante,
 cette arête porte toutes les conditions d'applicabilité de son candidat, y
 compris les conditions temporelles.
 
-\paragraph{Exemple.} Considérons deux sources juridiques : \(\CodeTravail\) (le
-Code du travail) et \(\Syntec\subtype\ConvBranche\) (la convention collective
-applicable aux bureaux d'études techniques et aux sociétés de conseil). Un
-candidat du Code pour une matière \(m\) se situe au-dessus d'un candidat
-Syntec, puisque \(\CodeTravail\normgt\AccordCollectif\) et par clôture par
-sous-typage de l'ordre normatif. Soit \(e\in E\) l'arête qui relie le nœud du
-Code au nœud Syntec antérieur à 2021. La matière \(\IDCC\in\mathcal M_D\) du
-dossier enregistre l'identifiant de la convention collective applicable. On
-peut écrire un prédicat composé de deux tests :
+\paragraph{Exemple.} La figure~\ref{fig:arbre} représente l'arbre
+\(\theta_{\Indem}\) du dossier fil rouge. Sous la racine, deux versions du Code
+du travail s'excluent par leur date ; sous la version issue du décret de 2017
+se trouvent les conventions de branche, chacune atteinte par un test sur
+\(\IDCC\), et, pour Syntec, deux versions successives de la convention que la
+date départage. Le candidat du Code est au-dessus des candidats conventionnels,
+puisque \(\CodeTravail\normgt\AccordCollectif\) et par clôture par sous-typage
+de l'ordre normatif. L'arête \(e\) qui mène à l'article 4.5 porte un prédicat
+composé de deux tests :
 \[
 \begin{array}{l}
- \pi(e):=\{\IDCC=1486, \DateT\in [\text{déc.~}1987,\ \text{juil.~}2021[\,\}\\
+ \pi(e):=[\IDCC=1486]\land[\DateT\geq\text{1\textsuperscript{er} mai 2023}],\\
  \widehat \nu_D(\IDCC)= 1486,\quad
- \widehat \nu_D(\DateT)=\text{nov.~}2019.
+ \widehat \nu_D(\DateT)=\text{mars 2025}.
 \end{array}
 \]
-Les deux tests sont établis, donc \(\pi(e)(D)=\true\) et la branche Syntec
-antérieure à 2021 est atteignable~\cite{frcode,syntec}. Si
-\(\widehat \nu_D(\IDCC)\) était indéfinie, le même prédicat vaudrait
-\(\unknown\), et non \(\false\). \emph{Cet exemple est développé à la
-section~\ref{sec:resolution}.}
+Les deux tests sont établis, donc \(\pi(e)(D)=\true\), tandis que l'arête qui
+mène à l'article~19, dont l'intervalle de dates se clôt le
+1\textsuperscript{er}~mai 2023, vaut \(\false\)~\cite{frcode,syntec}. Si
+\(\IDCC\) était indéfinie, \(\pi(e)(D)\) vaudrait \(\unknown\), et non
+\(\false\) ; le prédicat de l'article~19 vaudrait encore \(\false\), son test
+de date suffisant à l'exclure.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[
+  x=1cm, y=1cm,
+  cand/.style={draw, rounded corners=2pt, align=center, font=\small,
+    inner sep=3pt, minimum width=2.4cm},
+  off/.style={cand, draw=elague, text=elague},
+  sel/.style={cand, very thick},
+  arr/.style={-{Latex[length=2mm]}, very thick},
+  offarr/.style={-{Latex[length=2mm]}, draw=elague, densely dashed},
+  pred/.style={font=\scriptsize, align=center, fill=white, inner sep=1pt},
+  offpred/.style={pred, text=elague}
+]
+\node[cand] (r) at (0,0) {\(r\) : \(\Indem\)};
+\node[off] (old) at (-3.4,-2.1) {Code du travail\\ rédaction antérieure};
+\node[sel] (code) at (3.4,-2.1) {Code du travail, R.~1234-2\\
+  {\scriptsize \(\ConvBranche\mapsto\Social\)}};
+\draw[offarr] (r.south) -- ++(0,-0.45) -| (old.north);
+\draw[arr] (r.south) -- ++(0,-0.45) -| (code.north);
+\node[offpred] at (-3.4,-1.15) {\(\DateT<\text{27/09/2017}\)};
+\node[pred] at (3.4,-1.15) {\(\DateT\geq\text{27/09/2017}\)};
+\node[off] (s19) at (-5.1,-5.1) {Syntec, art.~19};
+\node[sel] (s45) at (-1.7,-5.1) {Syntec, art.~4.5};
+\node[off] (hcr) at (1.7,-5.1) {HCR};
+\node[off] (met) at (5.1,-5.1) {Métallurgie};
+\draw[offarr] (code.south) -- (3.4,-3.3) -| (s19.north);
+\draw[offarr] (code.south) -- (3.4,-3.3) -| (hcr.north);
+\draw[offarr] (code.south) -- (3.4,-3.3) -| (met.north);
+\draw[arr] (code.south) -- (3.4,-3.3) -| (s45.north);
+\node[offpred] at (-5.1,-4.15) {\(\IDCC=1486\)\\
+  \(\DateT\in[\text{25/01/1996},\text{01/05/2023}[\)};
+\node[pred] at (-1.7,-4.15) {\(\IDCC=1486\)\\ \(\DateT\geq\text{01/05/2023}\)};
+\node[offpred] at (1.7,-4.15) {\(\IDCC=1979\)};
+\node[offpred] at (5.1,-4.15) {\(\IDCC=3248\)};
+\end{tikzpicture}
+\caption{Arbre normatif \(\theta_{\Indem}\) de l'exemple fil rouge (le
+  sous-arbre de la rédaction antérieure du Code et les rédactions de la
+  convention Syntec antérieures à 1996 sont omis). Chaque arête porte son
+  prédicat d'applicabilité. Pour le dossier de la section~\ref{sec:exemple},
+  les branches grisées sont retirées par \((\Cut)\) et le chemin en gras est
+  la forme normale de l'arbre. Le candidat du Code porte la politique
+  \(\Social\) envers les conventions de branche.}
+\label{fig:arbre}
+\end{figure}
 
 \subsection{Forêts normatives cohérentes}\label{sec:consistency}
 
@@ -621,6 +841,15 @@ exécutables et l'étape déterministe ci-dessous s'applique ; sinon, l'assistan
 soumet \(\NeedFacts_D(m)\) à l'expert (pour les matières indéfinies) ou les
 résout d'abord (pour les matières non résolues).
 
+\paragraph{Exemple.} Tant que \(\IDCC\) est indéfinie, les arêtes qui mènent à
+l'article 4.5, à HCR et à la métallurgie valent \(\unknown\), tandis que celle
+de l'article~19 vaut déjà \(\false\), la date étant connue : \((\Cut)\) ne
+retire que ce nœud, et \(\IDCC\in\NeedFacts_D(\Indem)\). Une fois \(\IDCC\)
+saisie, l'élagage donne le chemin \(r\to c_{\mathsf{Code}}\to c_{4.5}\) de la
+figure~\ref{fig:arbre}. Il reste alors \(\NeedFacts_D(\Indem)=\{\Categorie\}\),
+puisque \(\Categorie\in\dep(c_{4.5})\) : c'est la question que l'assistant
+pose ensuite, sous la forme d'un point de choix (section~\ref{sec:choix}).
+
 \subsection{Résolution}\label{sec:resolution}
 
 Soit \(\theta'=\nf{\nu_D(m)}\) un chemin \(r\to v_1\to\cdots\to v_k\) dont tous
@@ -656,26 +885,63 @@ Pour \(c^*:=\ApplyPolicy_D(L_D(m))\),
 \end{defi}
 
 \paragraph{Suite de l'exemple.}
-Supposons que le chemin subsistant de notre exemple Syntec soit
-\(\CodeTravail \to \Syntec\), le candidat \(c_{\mathsf{Code}}\) du Code étant
-tel que
+Plaçons-nous dans le scénario où la salariée relève des ingénieurs et cadres :
+\(\nu_D(\Categorie)=\Cadre\). Le chemin subsistant est
+\(r\to c_{\mathsf{Code}}\to c_{4.5}\), soit
+\(L_D(\Indem)=[c_{4.5},c_{\mathsf{Code}}]\), et
 \[
-p(c_{\mathsf{Code}})(\ConvBranche)=\Social,
-\quad\text{et donc}\quad
-\widehat p(c_{\mathsf{Code}})(\Syntec)=\Social.
+\widehat p(c_{\mathsf{Code}})(\Syntec)=\Social
+\quad\text{puisque}\quad \Syntec\subtype\ConvBranche.
 \]
 Le dossier donne
 \[
-\nu_D(\Salary)=3\,000\ \text{euros},\qquad
-\nu_D(\Senior)=10\ \text{ans},
+\begin{array}{l}
+\nu_D(\Salary)=\nu_D(\MoisRem)=3\,000\ \text{euros},\\
+\nu_D(\Senior)=\nu_D(\Presence)=10\ \text{ans},
+\end{array}
 \]
-de sorte que \(D(c_{\mathsf{Code}})=7\,500\) euros et
-\(D(c_{\Syntec})=10\,000\) euros. Puisque
-\(D(c_{\mathsf{Code}})\fav{m}D(c_{\Syntec})\), le candidat Syntec l'emporte
-(définition~\ref{def:apply-policy}) ; si le candidat du Code avait été
-\(\Absolute\), il aurait prévalu quels que soient les montants. Si \(\Salary\)
-avait été indéfinie, on aurait eu \(\NeedFacts_D(m)=\{\Salary\}\), et
-l'assistant l'aurait demandée avant toute comparaison.
+et les deux candidats s'évaluent par leur code Catala
+(figure~\ref{fig:catala}) : \(D(c_{\mathsf{Code}})=3\,000\times10\times\frac14
+=7\,500\) euros par le premier cas de R.~1234-2, et
+\(D(c_{4.5})=3\,000\times10\times\frac13=10\,000\) euros par le barème des
+ingénieurs et cadres. Puisque \(D(c_{\mathsf{Code}})\fav{\Indem}D(c_{4.5})\),
+le candidat conventionnel l'emporte (définition~\ref{def:apply-policy}) ; si la
+politique du candidat du Code avait été \(\Absolute\), il aurait prévalu quels
+que soient les montants. Si \(\Salary\) avait été indéfinie, on aurait eu
+\(\NeedFacts_D(\Indem)=\{\Salary\}\), et l'assistant l'aurait demandée avant
+toute comparaison.
+
+Le corpus réalise cette comparaison dans un module distinct, qui met en œuvre
+l'article L.~2251-1 (figure~\ref{fig:concours}) : un pli (\emph{fold}),
+\texttt{combine},
+part de la norme supérieure et ne la remplace par une source inférieure que si
+le critère de faveur tient celle-ci pour plus favorable. Le corpus limite ce
+concours à une seule source inférieure ; il calcule alors
+\(\ApplyPolicy_D\) sous le régime \(\Social\), au traitement de l'égalité
+près : à montants égaux, le corpus conserve la norme supérieure, là où la
+définition~\ref{def:apply-policy} retient la source inférieure. La valeur
+retenue est la même.
+
+\begin{figure}
+\begin{Verbatim}[frame=single, label={Code du travail, article L. 2251-1}]
+champ d'application ConcoursIndemnitéDeLicenciement_Loi:
+  définition la_plus_favorable égal à
+    combine tout c parmi sources_inférieures dans meilleure
+      initialement norme_supérieure avec
+      (si (résultat de Critere.PlusFavorableAuSalarié_Loi avec {
+            -- position_du_salarié: position_du_salarié
+            -- grandeur_examinée:
+              grandeur_de_l_indemnité_de_licenciement de c.réponse
+            -- grandeur_de_référence:
+              grandeur_de_l_indemnité_de_licenciement de meilleure.réponse
+          }).l_examinée_est_plus_favorable
+       alors c sinon meilleure)
+\end{Verbatim}
+\caption{Le concours de normes sous l'ordre public social dans le
+  corpus~\cite{corpuslumo} : un pli qui part de la norme supérieure
+  (commentaires omis, mise en page adaptée).}
+\label{fig:concours}
+\end{figure}
 
 \begin{theo}[Résolution]\label{thm:resolution}
 Soit \(D\) un dossier dont la forêt \(\mc F_D\) est cohérente et dont toutes
@@ -734,6 +1000,133 @@ premières inchangées et fait décroître la troisième. La boucle termine donc
 et elle ne peut s'arrêter qu'avec \(\Unres=\emptyset\).
 \end{proof}
 
+Dans l'exemple, les matières d'ancienneté et de salaire ont été saisies comme
+valeurs brutes. Dans le corpus, ce sont des matières dotées de leurs propres
+arbres, inférieures à \(\Indem\) pour \(<_{\dep}\), donc résolues avant elle.
+Le prototype d'\ALex{} suit cet ordre : le corpus déclare, pour chaque champ,
+les valeurs qu'il lit et le champ qui les produit, et \ALex{} exécute les
+producteurs avant les consommateurs, c'est-à-dire dans l'ordre de
+\(<_{\dep}\).
+
+\subsection{Points de choix et scénarios subsidiaires}\label{sec:choix}
+
+Dans la boucle du corollaire~\ref{cor:loop}, l'expert répond à chaque demande
+par une valeur unique. Un fait peut pourtant être incertain, et une
+qualification discutée ; l'avocat construit alors une demande principale et
+des demandes subsidiaires, chacune fondée sur une autre réponse. Le point de
+choix permet à l'assistant de poser la question sans trancher à la place de
+l'utilisateur.
+
+\begin{defi}[Point de choix]\label{def:choix}
+Soient \(D\) un dossier, \(m\in\Undef\) et
+\(A\subseteq\Raw(m)\uplus\mc T(m)\) un ensemble non vide de réponses
+admissibles. Le \emph{point de choix} sur \(m\) fait appel à l'utilisateur,
+qui répond par une suite finie non vide \(\omega=(a_1,\ldots,a_k)\) d'éléments
+deux à deux distincts de \(A\). On pose
+\[
+\Choix_\omega(D,m,A):=[\Input(D,m,a_1),\ \ldots,\ \Input(D,m,a_k)].
+\]
+La réponse \(a_1\) est \emph{retenue} (\(+\)), les réponses
+\(a_2,\ldots,a_k\) sont des \emph{réserves} (\(-\)), conservées pour des
+demandes subsidiaires, et les éléments de \(A\setminus\{a_1,\ldots,a_k\}\) sont
+\emph{écartés} (\(!\)). Le choix est \emph{exclusif} si \(k=1\), et
+\emph{inclusif} sinon.
+\end{defi}
+
+Un point de choix exclusif revient à une saisie :
+\(\Choix_{(a_1)}(D,m,A)=[\Input(D,m,a_1)]\). L'ensemble \(A\) peut être infini,
+par exemple un domaine de montants. Lorsque \(m\) n'intervient dans l'arbre
+élagué que par des tests d'égalité, et non comme entrée d'un candidat, \(A\) se
+lit sur cet arbre : ce sont les constantes testées sur~\(m\), complétées d'un
+représentant des autres valeurs.
+
+La boucle interactive s'étend aux listes de dossiers. À l'étape~(iii),
+l'assistant demande une à une, dans un ordre fixé, les matières requises :
+d'abord celles des arêtes qui valent \(\unknown\), puis les entrées des
+candidats subsistants, en élaguant l'arbre de nouveau après chaque réponse.
+Chaque demande est posée comme un point de choix ; la boucle poursuit le
+premier dossier de la liste et place les réserves à sa suite. La mesure
+utilisée dans la preuve du corollaire~\ref{cor:loop} décroît encore à chaque
+itération. Un dossier dont toutes les matières sont résolues est un
+\emph{scénario}. L'exécution décrit un
+\emph{arbre de décision} dont chaque nœud est un point de choix, dont les fils
+sont ordonnés comme les réponses de l'utilisateur, et dont les feuilles sont
+les scénarios.
+
+\begin{prop}[Scénarios]\label{prop:scenarios}
+Sous les hypothèses du corollaire~\ref{cor:loop}, supposons que l'utilisateur
+réponde à chaque point de choix et que les arbres proposés appartiennent à
+\(\mc F\) : \(A\cap\mc T(m)\subseteq\mc F\). La boucle étendue termine alors.
+Elle produit une liste finie \([C_1,\ldots,C_n]\), \(n\geq1\), de dossiers tels
+que \(\UnresOf{C_i}=\emptyset\), ordonnée selon l'ordre lexicographique des
+rangs des réponses le long des chemins de l'arbre de décision : \(C_1\) est le
+scénario principal, \(C_2,\ldots,C_n\) sont les scénarios subsidiaires.
+\end{prop}
+\begin{proof}
+Chaque chemin de l'arbre de décision est une exécution de la boucle du
+corollaire~\ref{cor:loop}, dans laquelle chaque saisie est la réponse choisie
+par ce chemin au nœud correspondant ; il est donc fini, et se termine sur un
+dossier sans matière non résolue. Chaque nœud a un nombre fini de fils, les
+réponses \(a_1,\ldots,a_k\). Un arbre à branchement fini dont tous les chemins
+sont finis est fini (lemme de König) : il a un nombre fini de feuilles, que le
+parcours en profondeur, réserves après réponse retenue, énumère dans l'ordre
+lexicographique.
+\end{proof}
+
+C'est l'exploration que réalise le gestionnaire de scénarios du prototype
+d'\ALex{} : après
+une sélection finale complète, il remonte à la réserve non épuisée la plus
+profonde, conserve le préfixe des décisions qui la précèdent, puis recalcule la
+suite.
+
+\paragraph{Exemple.}
+Dans le dossier fil rouge, l'assistant pose deux points de choix
+(figure~\ref{fig:decision}). Le premier porte sur \(\IDCC\), avec
+\(A_1=\{1486,1979,3248,\ldots\}\) lu sur l'arbre ; l'entreprise relève sans
+discussion de la convention Syntec, et la réponse \((1486)\) est exclusive. Le
+second est posé dans le dossier \(D'\) obtenu après cette saisie et l'élagage
+qui la suit ; il porte sur la catégorie, avec \(A_2=\Raw(\Categorie)\), et la
+salariée
+revendique la qualité de cadre et invoque, à titre subsidiaire, sa
+classification d'ETAM : la réponse \((\Cadre,\Etam)\) est inclusive. La boucle
+produit deux scénarios. Dans \(C_1\), la résolution de la
+section~\ref{sec:resolution} donne 10\,000 euros au titre de l'article 4.5.
+Dans \(C_2\), le barème des ETAM jusqu'à dix ans d'ancienneté donne
+\(3\,000\times10\times\frac14=7\,500\) euros, montant égal au plancher légal.
+Le montant est donc de 7\,500 euros quel que soit le candidat sélectionné : la
+définition~\ref{def:apply-policy} sélectionne \(c_{4.5}\), le corpus
+conserverait le Code. La
+demande principale porte donc sur 10\,000 euros, la demande subsidiaire sur
+7\,500 euros.
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  q/.style={draw, rounded corners=2pt, align=center, inner sep=3pt},
+  leaf/.style={draw, rounded corners=2pt, align=center, inner sep=3pt, very thick},
+  arr/.style={-{Latex[length=2mm]}},
+  offarr/.style={-{Latex[length=2mm]}, draw=elague, densely dashed},
+  lab/.style={font=\scriptsize, fill=white, inner sep=1pt}
+]
+\node[q] (q1) at (0,0) {\(\Choix_{\omega_1}(D,\IDCC,A_1)\)\\ exclusif};
+\node[text=elague] (x1) at (-4.2,-1.8) {\(!\)\ 1979, 3248, \ldots};
+\node[q] (q2) at (0,-1.8) {\(\Choix_{\omega_2}(D',\Categorie,A_2)\)\\ inclusif};
+\node[leaf] (c1) at (-2.6,-3.8) {\(C_1\) : \(\Cadre\)\\ 10\,000 euros};
+\node[leaf] (c2) at (2.6,-3.8) {\(C_2\) : \(\Etam\)\\ 7\,500 euros};
+\draw[arr] (q1) -- node[lab, right]{\(+\)\ 1486} (q2);
+\draw[offarr] (q1) -- (x1);
+\draw[arr] (q2) -- node[lab, left]{\(+\)} (c1);
+\draw[arr, densely dashed] (q2) -- node[lab, right]{\(-\)} (c2);
+\end{tikzpicture}
+\caption{Arbre de décision du dossier fil rouge : un point de choix exclusif
+  sur \(\IDCC\), puis un point de choix inclusif sur la catégorie. La réponse
+  retenue (\(+\)) donne le scénario principal \(C_1\), la réserve (\(-\)) le
+  scénario subsidiaire \(C_2\) ; les réponses écartées (\(!\)) ne sont pas
+  explorées.}
+\label{fig:decision}
+\end{figure}
+
 \section{Conclusion}\label{sec:conclusion}
 
 Le modèle développé dans cet article isole une étape du calcul juridique
@@ -745,9 +1138,17 @@ distinguer les branches exclues de celles auxquelles il manque seulement de
 l'information. Il fournit ainsi la base d'un assistant interactif capable de
 demander les éléments manquants d'un dossier, d'élaguer l'arbre en
 conséquence, puis d'appliquer les politiques d'arbitrage pertinentes pour
-sélectionner un calcul exécutable. Le théorème de résolution montre que, sous
-des hypothèses de cohérence et d'acyclicité des dépendances, ce processus finit
-par résoudre toutes les matières du dossier.
+sélectionner un calcul exécutable. Les points de choix lui permettent de faire
+appel à l'utilisateur lorsqu'un fait ou une qualification est discuté, et d'en
+tirer un scénario principal et des scénarios subsidiaires. Le théorème de
+résolution montre que, sous des hypothèses de cohérence et d'acyclicité des
+dépendances, ce processus finit par résoudre toutes les matières du dossier, et
+la proposition~\ref{prop:scenarios} étend ce résultat aux scénarios. L'exemple
+fil rouge illustre enfin l'application du modèle à du code Catala existant :
+chaque champ qui calcule la matière devient un candidat, et le régime
+d'articulation que le corpus laisse hors du code devient la politique du
+candidat. C'est
+l'architecture d'\ALex{}.
 
 Plusieurs extensions rapprocheraient ce modèle de la structure du raisonnement
 juridique tel qu'il se pratique. D'abord, le référentiel devrait aussi contenir
@@ -757,6 +1158,11 @@ définiraient des politiques plutôt que des valeurs. En effet, la politique qui
 gouverne l'articulation de deux calculs n'est pas nécessairement énoncée dans
 l'un ou l'autre des textes qui les définissent : elle peut être fixée par une
 troisième disposition, de rang supérieur~\cite{moizard2025fragmentation}.
+L'article 4.5 de la convention Syntec offre le cas inverse : c'est la source
+inférieure qui y énonce la règle de sélection, puisque « l'employeur verse
+l'indemnité dont le montant est le plus élevé » entre l'indemnité
+conventionnelle et l'indemnité légale, clause que le corpus n'encode pas
+encore.
 Représenter explicitement ces dispositions permettrait de distinguer la
 provenance d'un calcul de celle de la règle qui gouverne son articulation avec
 d'autres calculs.
@@ -769,14 +1175,11 @@ utilisées, et quelles comparaisons de politiques ont déterminé le résultat. 
 telle trace fournirait la matière nécessaire au contrôle de la résolution et à
 sa transformation en une explication juridiquement signifiante.
 
-Enfin, le langage d'interaction pourrait comporter un opérateur de choix, en
-alternative à \(\Input\). Au lieu d'engager le dossier sur une valeur unique,
-cet opérateur le scinderait selon plusieurs hypothèses admissibles et
-résoudrait indépendamment chacun des dossiers obtenus. L'assistant pourrait
-ainsi explorer des interprétations concurrentes d'un fait incertain ou d'une
-qualification juridique, comparer leurs conséquences et soutenir la
-construction de demandes principales et subsidiaires, par exemple lorsqu'une
-clause contractuelle est écartée par un candidat légal de politique absolue.
+Enfin, l'ordre des scénarios est aujourd'hui celui des réponses de
+l'utilisateur. Le confronter aux valeurs obtenues permettrait de signaler une
+réserve qui ne change pas le montant retenu : au-delà de dix ans d'ancienneté,
+la convention Syntec applique le même taux aux ETAM et aux cadres, et la
+demande subsidiaire de notre exemple deviendrait sans objet.
 
 \paragraph{Remerciements.}
 Des outils d'IA générative ont été utilisés comme suit. OpenAI GPT-5 a
@@ -790,6 +1193,6 @@ textes et références produits par IA ont été vérifiés, corrigés et valid�
 les auteurs. Le modèle, les définitions et les résultats sont ceux des auteurs.
 
 \bibliographystyle{alpha-fr}
-\bibliography{references-fr}
+\bibliography{references-fr-bis}
 
 \end{document}
