@@ -319,10 +319,15 @@ sélection et l'exécution restent explicites et contrôlables.
 \section{Notations et terminologie}\label{sec:notations}
 
 \begin{defi}[Matières et domaines de valeurs]\label{def:types}
-Une \emph{matière} \(m\in\Matter\) est une grandeur juridique nommée, par
+Une \emph{matière} \(m\in\Matter\) est une question juridique nommée. Elle
+est \emph{concrète} lorsqu'elle désigne une grandeur juridique déterminée, par
 exemple \(\Salary\), \(\Senior\), \(\Indem\), \(\IndemLeg\), \(\IDCC\) ou
-\(\DateT\). Chaque matière possède un \emph{domaine de valeurs} \(\Raw(m)\),
-l'ensemble de ses valeurs brutes possibles :
+\(\DateT\), et \emph{abstraite} lorsqu'elle regroupe des matières qui la
+précisent, comme l'indemnité de rupture \(\IndemRupture\), que le mode de
+rupture précise en indemnité de licenciement ou en indemnité compensatrice de
+préavis. On note \(\Matter_c\) l'ensemble des matières concrètes. Chaque
+matière concrète possède un \emph{domaine de valeurs} \(\Raw(m)\), l'ensemble
+de ses valeurs brutes possibles :
 \[
 \begin{array}{c}
  \Raw(\Salary)=\Raw(\Indem)=\Raw(\IndemLeg)=\Money,\\
@@ -339,8 +344,14 @@ sont typées par les matières, non par les domaines. La matière \(\IDCC\) est 
 identifiant, qui détermine la convention collective applicable.
 \end{defi}
 
+Seules les matières concrètes reçoivent des valeurs ; une matière abstraite
+pose une question que le dossier précise, selon une hiérarchie définie à la
+section~\ref{sec:hierarchie} une fois introduits les prédicats
+d'applicabilité.
+
 \begin{defi}[Ordre de favorabilité]\label{def:favorable}
-Une matière \(m\) peut être munie d'un ordre total \(\fav{m}\) sur \(\Raw(m)\) ;
+Une matière concrète \(m\) peut être munie d'un ordre total \(\fav{m}\) sur
+\(\Raw(m)\) ;
 on lit \(x\fav{m}y\) : « \(y\) est au moins aussi favorable au salarié
 que~\(x\) », et \(x\strictfav{m}y\) désigne sa partie stricte. Le sens de
 l'ordre dépend de la matière :
@@ -349,18 +360,19 @@ l'ordre dépend de la matière :
 \(\false\strictfav{\mathsf{Indemnisable}}\true\).
 \end{defi}
 
-On note \(\MatterOrd\subseteq\Matter\) les matières munies d'un tel ordre.
+On note \(\MatterOrd\subseteq\Matter_c\) les matières munies d'un tel ordre.
 Seules ces matières admettent des candidats de politique \(\Social\), ce
 qu'impose la cohérence (section~\ref{sec:consistency}) ; la comparaison porte
 sur les valeurs que les candidats concurrents produisent pour le dossier
 considéré, et non sur les textes eux-mêmes.
 
-\paragraph{Exemple.} Le dossier fil rouge met en jeu les matières
+\paragraph{Exemple.} La demande de la salariée porte sur la matière abstraite
+\(\IndemRupture\). Le dossier fil rouge met en jeu les matières concrètes
 \[
 \begin{array}{c}
 \Indem,\ \Senior,\ \Salary,\ \Presence,\ \MoisRem,\\
 \IDCC,\ \DateT,\ \ModeRupture,\ \PreavisNE\ \text{et}\ \Categorie,\\
-\text{avec}\quad\Raw(\Categorie)=\{\Etam,\Cadre\},
+\text{avec}\quad\{\Etam,\Cadre\}\subseteq\Raw(\Categorie),
 \end{array}
 \]
 et l'indemnité est munie de l'ordre \(\fav{\Indem}=\mathord{\leq}\) sur les
@@ -371,8 +383,8 @@ elles valent ici dix ans et 3\,000 euros elles aussi.
 
 \begin{defi}[Dossier]\label{def:dossier}
 Un dossier \(D\) est donné par un couple
-\(D:=(\mathcal M_D,\nu_D)\in\Dossier\), où \(\mathcal M_D\subseteq\Matter\) est
-l'ensemble des matières juridiques soulevées par le dossier et \(\nu_D\) sa
+\(D:=(\mathcal M_D,\nu_D)\in\Dossier\), où \(\mathcal M_D\subseteq\Matter_c\)
+est l'ensemble des matières concrètes soulevées par le dossier et \(\nu_D\) sa
 valuation courante :
 \[
 \nu_D:\prod_{m\in\mc M_D}\left(\Raw(m)\uplus\mc T(m)\right).
@@ -382,13 +394,13 @@ valuation courante :
 La valuation attribue à chaque matière exactement l'un des deux états suivants. Une
 matière est \emph{résolue} lorsque \(\nu_D\) lui associe une valeur brute, et
 \emph{non résolue} lorsque \(\nu_D\) lui associe l'arbre normatif qu'il reste à
-résoudre. Une matière \(m\in\Matter\setminus\mc M_D\) est \emph{indéfinie}
+résoudre. Une matière \(m\in\Matter_c\setminus\mc M_D\) est \emph{indéfinie}
 dans~\(D\). Ainsi
 \[
 \begin{aligned}
 \Res&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\Raw(m)\},\\
 \Unres&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\mc T(m)\},\\
-\Undef&:= \{m\in\Matter \mid m\not\in \mc M_D\}.
+\Undef&:= \{m\in\Matter_c \mid m\not\in \mc M_D\}.
 \end{aligned}
 \]
 
@@ -422,7 +434,7 @@ s_0\normlt s_1&\implies& {s_0 \not\subtype s_1} \wedge {s_1\not\subtype s_0}\\
 \begin{defi}[Fonction juridique]\label{def:rule-package}
 Une fonction juridique encode la partie calculatoire d'un texte juridique. On
 la note \(f\in\Fun\) ; c'est un couple \(f=(\sigma_f,\phi_f)\) où, pour
-\(n\in\mathbb N\) et \(m_0,\ldots,m_n,m\in\Matter\),
+\(n\in\mathbb N\) et \(m_0,\ldots,m_n,m\in\Matter_c\),
 \[
  \sigma_f=(m_0,\ldots,m_n)\longrightarrow m,
  \qquad
@@ -564,7 +576,7 @@ juridique d'une instance du modèle.
 
 On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
 partir de constantes et de noms de matières. Pour un test \(t\),
-\(\dep(t)\subseteq\Matter\) est l'ensemble fini des noms de matières qui
+\(\dep(t)\subseteq\Matter_c\) est l'ensemble fini des noms de matières qui
 apparaissent dans \(t\). Un \emph{prédicat d'applicabilité} est une conjonction
 finie \(t_1\land\cdots\land t_k\) de tests atomiques, avec
 \(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\).
@@ -593,11 +605,10 @@ booléenne ordinaire du test (par exemple \(\sem{\IDCC=1486}_D=\unknown\) lorsqu
 
 \subsection{Hiérarchie des matières}\label{sec:hierarchie}
 
-Les matières d'un dossier ne sont pas toutes de même niveau. Une salariée qui
-demande ce qui lui est dû au titre de la rupture pose une question abstraite,
-que le mode de rupture précise : indemnité de licenciement, indemnité
-compensatrice de préavis, et d'autres. Une matière n'en précise d'ailleurs une
-autre que sous condition : la prime de vacances de la convention Syntec n'est
+Une matière abstraite se précise en matières concrètes selon le dossier : la
+salariée qui demande ce qui lui est dû au titre de la rupture pose une
+question abstraite, que le mode de rupture précise. Une matière n'en précise
+d'ailleurs une autre que sous condition : la prime de vacances de la convention Syntec n'est
 une sous-matière de la prime que pour un salarié qui relève de cette
 convention. Plutôt qu'un sous-typage statique des matières, analogue à celui
 des sources (définition~\ref{def:source-order}), nous organisons donc les
@@ -610,19 +621,14 @@ Une \emph{hiérarchie des matières} est un couple \((\refine,\eta)\) où
 \(\MatJ\), et où \(\eta\) associe à chaque arête \(m\refine m'\) un prédicat
 d'applicabilité \(\eta(m,m')\). L'arête \(m\refine m'\) signifie que \(m'\)
 précise \(m\), ou en est un sous-cas, lorsque le dossier satisfait
-\(\eta(m,m')\). Une matière sans successeur est \emph{concrète}, les autres
-sont \emph{abstraites} ; on note \(\Matter_c\) l'ensemble des matières
+\(\eta(m,m')\). Les matières sans successeur sont exactement les matières
 concrètes. Comme pour les arbres, on pose
 \(\eta(m,m')(D):=\sem{\eta(m,m')}_D\).
 \end{defi}
 
-Nous restreignons désormais aux matières concrètes les définitions de la
-section~\ref{sec:notations} : seules celles-ci ont un domaine de valeurs,
-figurent dans un dossier (\(\mc M_D\subseteq\Matter_c\)), dans les interfaces
-des fonctions juridiques et dans les tests, et reçoivent un arbre normatif ; on
-pose \(\Undef:=\Matter_c\setminus\mc M_D\). Les matières factuelles, comme
-\(\IDCC\) ou \(\DateT\), sont des matières concrètes sans arbre : elles sont
-saisies.
+Seules les matières concrètes reçoivent un arbre normatif. Les matières
+factuelles, comme \(\IDCC\) ou \(\DateT\), sont des matières concrètes sans
+arbre : elles sont saisies.
 
 \begin{defi}[Matières ouvertes]\label{def:ouvertes}
 Pour un dossier \(D\) et une matière \(m\), on note \(\Ouv_D(m)\) l'ensemble
