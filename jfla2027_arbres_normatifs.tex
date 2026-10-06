@@ -14,7 +14,7 @@
 \usetikzlibrary{arrows.meta,babel}
 \colorlet{elague}{black!40}
 
-% Notations ajoutées dans la version bis
+
 \newcommand{\ALex}{A-Lex}
 \newcommand{\Brancher}{\ensuremath{\mathsf{Brancher}}}
 \newcommand{\conflit}{\mathbin{\#}}
@@ -30,6 +30,7 @@
 \newcommand{\ModeRupture}{\ensuremath{\mathsf{ModeRupture}}}
 \newcommand{\PreavisNE}{\ensuremath{\mathsf{PreavisNonExecute}}}
 \newcommand{\IndemRupture}{\ensuremath{\mathsf{IndemniteDeRupture}}}
+\renewcommand{\Indem}{\ensuremath{\mathsf{IndemniteDeLicenciement}}}
 
 
 \jfla{38}{2027}
@@ -321,16 +322,16 @@ sélection et l'exécution restent explicites et contrôlables.
 \begin{defi}[Matières et domaines de valeurs]\label{def:types}
 Une \emph{matière} \(m\in\Matter\) est une question juridique nommée. Elle
 est \emph{concrète} lorsqu'elle désigne une grandeur juridique déterminée, par
-exemple \(\Salary\), \(\Senior\), \(\Indem\), \(\IndemLeg\), \(\IDCC\) ou
+exemple \(\Salary\), \(\Senior\), \(\Indem\), \(\IDCC\) ou
 \(\DateT\), et \emph{abstraite} lorsqu'elle regroupe des matières qui la
-précisent, comme l'indemnité de rupture \(\IndemRupture\), que le mode de
-rupture précise en indemnité de licenciement ou en indemnité compensatrice de
+précisent, comme l'indemnité de rupture \(\IndemRupture\), que le dossier
+précise en indemnité de licenciement ou en indemnité compensatrice de
 préavis. On note \(\Matter_c\) l'ensemble des matières concrètes. Chaque
 matière concrète possède un \emph{domaine de valeurs} \(\Raw(m)\), l'ensemble
 de ses valeurs brutes possibles :
 \[
 \begin{array}{c}
- \Raw(\Salary)=\Raw(\Indem)=\Raw(\IndemLeg)=\Money,\\
+ \Raw(\Salary)=\Raw(\Indem)=\Money,\\
  \Raw(\Senior)=\Duration,\quad
  \Raw(\DateT)=\mathsf{Date},\quad
  \Raw(\IDCC)=\mathbb N
@@ -370,12 +371,14 @@ considéré, et non sur les textes eux-mêmes.
 \(\IndemRupture\). Le dossier fil rouge met en jeu les matières concrètes
 \[
 \begin{array}{c}
-\Indem,\ \Senior,\ \Salary,\ \Presence,\ \MoisRem,\\
-\IDCC,\ \DateT,\ \ModeRupture,\ \PreavisNE\ \text{et}\ \Categorie,\\
+\Indem,\ \Senior,\ \Salary,\\
+\Presence,\ \MoisRem,\ \IDCC,\ \DateT,\\
+\ModeRupture,\ \PreavisNE\ \text{et}\ \Categorie,\\
 \text{avec}\quad\{\Etam,\Cadre\}\subseteq\Raw(\Categorie),
 \end{array}
 \]
-et l'indemnité est munie de l'ordre \(\fav{\Indem}=\mathord{\leq}\) sur les
+et l'indemnité de licenciement est munie de l'ordre
+\(\fav{\Indem}=\mathord{\leq}\) sur les
 montants. L'ancienneté et le salaire au sens de la convention, \(\Presence\) et
 \(\MoisRem\) dans le code de la figure~\ref{fig:catala}, sont des matières
 distinctes de leurs homologues légales : le corpus les calcule séparément, et
@@ -721,8 +724,11 @@ matière abstraite, l'indemnité de rupture \(\IndemRupture\)
 (figure~\ref{fig:hierarchie}). Le dossier indique que la rupture est un
 licenciement, \(\ModeRupture=\mathsf{Licenciement}\), et que le préavis a été
 exécuté, \(\PreavisNE=\false\) ; ainsi, dans l'extrait de la figure,
-\(\Ouv_D(\IndemRupture)=\{\Indem\}\), et cette matière est établie. C'est
-l'arbre de cette seule matière qui est saisi dans le dossier.
+\[
+ \Ouv_D(\IndemRupture)=\{\Indem\},
+\]
+et cette matière est établie. C'est l'arbre de cette seule matière qui est
+saisi dans le dossier.
 
 \subsection{Arbres à arêtes prédicatives}
 
