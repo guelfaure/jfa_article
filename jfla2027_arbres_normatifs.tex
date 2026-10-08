@@ -13,10 +13,16 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,babel,decorations.pathreplacing}
 \colorlet{elague}{black!40}
+\colorlet{chemin}{green!50!black}
+\colorlet{bande}{black!5}
 
 
 \newcommand{\ALex}{A-Lex}
 \newcommand{\Brancher}{\ensuremath{\mathsf{Brancher}}}
+\newcommand{\Fusionner}{\ensuremath{\mathsf{Fusionner}}}
+\newcommand{\Echanger}{\ensuremath{\mathsf{Echanger}}}
+\newcommand{\Liste}{\ensuremath{\mathbf L}}
+\newcommand{\ICP}{\ensuremath{\mathsf{IndemniteCompensatrice}}}
 \newcommand{\conflit}{\mathbin{\#}}
 \newcommand{\Conf}{\ensuremath{\mathsf{Conf}_D}}
 \newcommand{\Categorie}{\ensuremath{\mathsf{Categorie}}}
@@ -107,8 +113,18 @@ en les citant qu'il justifie sa conclusion.
 %
 Plusieurs notions de droit, employées dans cet article, doivent être introduites.
 
-\paragraph{Hiérarchie des normes.}
-
+\paragraph{Hiérarchie des normes.} Les sources du droit sont ordonnées par
+  rang : la Constitution, puis les traités internationaux, la loi et les
+  règlements, que le Code du travail réunit dans ses articles L et R, enfin,
+  propres au droit du travail, les accords collectifs, interprofessionnels, de
+  branche ou d'entreprise, et le contrat de travail. Une norme de rang
+  inférieur doit en principe respecter les normes de rang supérieur ; c'est cet
+  ordre que formalise l'ordre normatif des sources
+  (définition~\ref{def:source-order}). En droit du travail, il ne suffit
+  pourtant pas à régler un concours : une norme inférieure peut l'emporter sur
+  une norme supérieure lorsqu'elle est plus favorable au salarié, ou lorsque la
+  loi le lui permet.
+ %%
 \paragraph{Concours de normes.} Il y a concours lorsque plusieurs textes, tous
   applicables à la salariée à la date considérée, lui accordent un avantage
   ayant, selon la formule de la jurisprudence, « le même objet ou la même
@@ -120,7 +136,7 @@ Plusieurs notions de droit, employées dans cet article, doivent être introduit
  %%
 \paragraph{Ordre public et régime d'articulation.} Un concours ne se règle pas
   toujours de la même façon, car les sources du droit du travail ne
-  s'articulent pas selon une hiérarchie monotone unique. La solution dépend du
+  s'articulent pas selon la seule hiérarchie des normes. La solution dépend du
   caractère d'\emph{ordre public} de la disposition de rang supérieur,
   c'est-à-dire de la latitude que celle-ci laisse aux sources de rang inférieur
   pour s'en écarter. Nous appelons \emph{régime d'articulation} la règle qui en
@@ -172,9 +188,9 @@ loi~\cite{viepublique2017}.
 \paragraph{Principe de faveur.} Lorsque deux normes sont en concours sous
   l'ordre public social, c'est la plus favorable au salarié qui s'applique ;
   on rattache ce principe à l'article L.~2251-1 du Code du travail. Le choix
-  dépend donc du résultat, ce qui n'a pas d'équivalent usuel en
-  programmation : il faut calculer les réponses concurrentes, puis les
-  comparer selon un ordre propre à l'avantage en cause, un montant plus élevé
+  dépend donc du résultat. C'est encore un mécanisme d'exception, mais dont la
+  condition porte sur les valeurs calculées : il faut calculer les réponses
+  concurrentes, puis les comparer selon un ordre propre à l'avantage en cause, un montant plus élevé
   pour une indemnité, plus faible pour une retenue sur salaire.
 %%  
 \paragraph{Demandes principale et subsidiaires.} Une partie peut soumettre au
@@ -193,7 +209,8 @@ explicites et contrôlables les choix qui en résultent, afin d'aider un expert
 juridique, éventuellement un grand modèle de langage (LLM), à construire une
 plaidoirie sur une base maîtrisée et transparente ?} 
 
-Nous décrivons, dans cet article, une modélisation des étapes du raisonnement juridique (\autoref{sec:juriste}) qui se trouve à la base de l'assistant \ALex~que nous développons. Nous nous concentrons ici sur la définition de ces structures ainsi que sur la formalisation des étapes de raisonnement que ces structures supportent. L'implémentation concrète d'\ALex~n'est pas abordée. Les objets et structures de raisonnement juridiques formalisés dans ce papier sont listés ci-dessous. Les ontologies juridiques décrites dans la \autoref{sec:vocabulaire} sont indiqués en caractères gras.
+Nous décrivons, dans cet article, une modélisation des étapes du raisonnement juridique (\autoref{sec:juriste}) qui se trouve à la base de l'assistant \ALex~que nous développons
+(figure~\ref{fig:archi}). Nous nous concentrons ici sur la définition de ces structures ainsi que sur la formalisation des étapes de raisonnement que ces structures supportent. L'implémentation concrète d'\ALex~n'est pas abordée. Les objets et structures de raisonnement juridiques formalisés dans ce papier sont listés ci-dessous. Les ontologies juridiques décrites dans la \autoref{sec:vocabulaire} sont indiqués en caractères gras.
 %%
 \paragraph{Matières juridiques.}
 Nous formalisons la notion de matière juridique comme un ensemble de types \emph{matières} équipés d'une relation de sous-typage. Une \emph{matière} $m$ étant un sous-type de $m'$ lorsque $m$ précise $m'$ (par exemple, \textsf{Prime} est un sous-type de \textsf{Montant}). Nous organisons les \emph{matières} dans un \emph{arbre de raffinement} qui permet à \ALex~de traduire une question juridique (une \emph{matière} abstraite) vers l'ensemble de ses concrétisations réalisables, étant donné un dossier client. Une \emph{matière} est concrète lorsqu'elle est une feuille de l'\emph{arbre de raffinement}.
@@ -202,14 +219,108 @@ Nous formalisons la notion de matière juridique comme un ensemble de types \emp
 Comme pour les \emph{matières}, nous formalisation la notion de sources juridiques par un ensemble de types \emph{sources} équipés d'une relation de sous-typage. Une \emph{source} $s$ est un sous-type d'une source $s'$ lorsque $s$ précise $s'$ (par exemple, \textsf{ConventionBranche} est un sous-type d'\textsf{AccordCollectif}). Les \emph{sources} sont par ailleurs partiellement ordonnées selon la \textbf{hiérarchie des normes} en vigueur dans le droit du travail. Une \emph{source} est concrète lorsqu'elle est son unique sous-type.
 %%
 \paragraph{Dossier client.}%%
-Un dossier client est ici un \emph{dossier} formel, composé d'un ensemble de \emph{matières} et d'une fonction d'évaluation partielle qui associe certaines \emph{matières concrètes} du \emph{dossier} à une valeur ou un \emph{arbre normatif}. Un \emph{dossier} est \emph{clos} lorsque toute les \emph{matières} du \emph{dossier} sont concrètes et associées à une valeur. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) est ajoutée. Les \emph{dossiers} sont manipulés par un ensemble de constructeurs de listes de dossiers qui permettent au juriste, via des interactions avec \ALex, de produire une liste de \emph{dossiers} clos dont la tête est le \emph{dossier} support de la \textbf{demande principale} du juriste, suivi des \emph{dossiers} supports des \textbf{demandes subsidiaires}.
+Un dossier client est ici un \emph{dossier} formel, composé d'un ensemble de \emph{matières} et d'une fonction d'évaluation partielle qui associe certaines \emph{matières concrètes} du \emph{dossier} à une valeur ou un \emph{arbre normatif}. Un \emph{dossier} est \emph{clos} lorsque toutes les \emph{matières} du \emph{dossier} sont associées à une valeur. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) est ajoutée. Les \emph{dossiers} sont manipulés par un ensemble d'opérateurs sur des listes de dossiers qui permettent au juriste, via des interactions avec \ALex, de produire une liste de \emph{dossiers} clos dont la tête est le \emph{dossier} support de la \textbf{demande principale} du juriste, suivi des \emph{dossiers} supports des \textbf{demandes subsidiaires}.
 %%
 \paragraph{Arbres normatifs.} %%
 Les \emph{arbres normatifs} reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} des ces fonctions n'est abordée qu'au titre d'exemple dans ce papier, les \emph{candidats} ne retenant que de la signature de ces fonctions et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une politique d'arbitrage qui formalise son
 \textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipé d'un prédicat dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même arbre normatif sont toujours en \textbf{concours}, deux candidats issus d'une même matière abstraite typés par des matières concrètes différentes peuvent parfois se cumuler. 
 
 \paragraph{Étapes du raisonnement juridique assisté.}
-Le raisonnement juridique, est formalisé par une série d'opérateurs sur des listes de \emph{dossiers}. Ces opérateurs permettent d'ajouter des \emph{matières} à certains dossiers, de les préciser en créant des dossiers alternatifs si besoin, et de fusionner des dossiers lorsque le juriste estime que deux \emph{matières} distinctes sont cumulables. Un opérateur de résolution permet de réduire un arbre normatif à une valeur issue d'un calcul fourni par un candidat sélectionné. 
+Le raisonnement juridique, est formalisé par une série d'opérateurs sur des listes de \emph{dossiers}. Ces opérateurs permettent d'ajouter des \emph{matières} à certains dossiers, de les préciser en créant des dossiers alternatifs si besoin, et de fusionner des dossiers lorsque le juriste estime que deux \emph{matières} distinctes sont cumulables, ou d'en changer l'ordre. Un opérateur de résolution permet de réduire un arbre normatif à une valeur issue d'un calcul fourni par un candidat sélectionné.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  x=1cm, y=1cm, font=\scriptsize,
+  couche/.style={rotate=90, align=center, font=\scriptsize\bfseries},
+  abs/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
+    densely dashed, fill=white},
+  conc/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
+    thick, fill=white},
+  cand/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
+    fill=white},
+  gris/.style={draw=elague, text=elague},
+  vert/.style={draw=chemin, very thick},
+  module/.style={draw, align=center, inner sep=3pt, fill=white,
+    font=\scriptsize\ttfamily},
+  texte/.style={align=center, font=\tiny\itshape},
+  arr/.style={-{Latex[length=1.6mm]}},
+  arrv/.style={-{Latex[length=1.8mm]}, draw=chemin, very thick},
+  arrg/.style={-{Latex[length=1.6mm]}, draw=elague, densely dashed},
+  lien/.style={-{Latex[length=1.6mm]}, densely dotted},
+  lienv/.style={-{Latex[length=1.8mm]}, draw=chemin, thick, densely dotted},
+  pred/.style={font=\tiny, fill=bande, inner sep=1pt}
+]
+% Bandes
+\fill[bande, rounded corners=3pt] (0,0.15) rectangle (13.6,-3.0);
+\fill[bande, rounded corners=3pt] (0,-3.1) rectangle (13.6,-6.2);
+\fill[bande, rounded corners=3pt] (0,-6.3) rectangle (13.6,-8.75);
+\node[couche] at (0.35,-1.42) {2. Arbre de\\ raffinement};
+\node[couche] at (0.35,-4.65) {1. Forêt\\ normative};
+\node[couche] at (0.35,-7.52) {0. Corpus};
+
+% Couche 2 : arbre de raffinement
+\node[abs] (top) at (4.3,-0.4) {\(\Matter\)};
+\node[abs] (pre) at (2.65,-1.4) {préavis};
+\node[abs, vert, densely dashed] (rup) at (6.0,-1.4) {indemnité de rupture};
+\node[conc] (dur) at (1.7,-2.45) {durée du\\ préavis};
+\node[conc, gris] (icp) at (3.6,-2.45) {indemnité\\ compensatrice};
+\node[conc, vert] (lic) at (6.0,-2.45) {indemnité de\\ licenciement};
+\node[draw=chemin, very thick, rounded corners=2pt, align=left, inner sep=3pt,
+  fill=white] (q) at (10.2,-1.4)
+  {\textit{question :} ce qui est dû\\ au titre de la rupture};
+\draw[arr] (top) -- (pre);
+\draw[arr] (top) -- (rup);
+\draw[arr] (pre) -- (dur);
+\draw[arrg] (pre) -- (icp);
+\draw[arrv] (q) -- (rup);
+\draw[arrv] (rup) -- node[pred, right=2pt]{\(\ModeRupture=\mathsf{Licenciement}\)} (lic);
+
+% Couche 1 : forêt normative
+\draw[fill=white] (1.7,-3.45) -- (1.2,-4.3) -- (2.2,-4.3) -- cycle;
+\draw[gris, fill=white] (3.6,-3.45) -- (3.1,-4.3) -- (4.1,-4.3) -- cycle;
+\draw[lien] (dur) -- (1.7,-3.45);
+\draw[lien, draw=elague] (icp) -- (3.6,-3.45);
+\node[cand, vert] (r) at (6.0,-3.75) {\(r\) : indemnité\\ de licenciement};
+\node[cand, gris] (old) at (8.7,-3.6) {Code, rédaction\\ antérieure};
+\node[cand, vert] (code) at (8.7,-4.75) {Code, R.~1234-2\\
+  {\tiny\(\ConvBranche\mapsto\Social\)}};
+\node[cand, gris] (s19) at (11.6,-3.6) {Syntec, art.~19};
+\node[cand, gris] (hcr) at (11.6,-4.5) {HCR};
+\node[cand, vert] (s45) at (11.6,-5.55) {Syntec, art.~4.5};
+\draw[arrv, densely dashed] (lic) -- (r);
+\draw[arrg] (r) -- (old);
+\draw[arrv] (r) -- (code);
+\draw[arrg] (code) -- (s19);
+\draw[arrg] (code) -- (hcr);
+\draw[arrv] (code) -- (s45);
+
+% Couche 0 : corpus
+\node[module] (mpre) at (2.4,-7.2) {Loi\_preavis};
+\node[module] (mhcr) at (5.5,-7.2) {Ccn\_1979\_\\ rupture\_du\_contrat};
+\node[module, draw=chemin, thick] (mlic) at (8.7,-7.2) {Loi\_indemnite\_\\ licenciement};
+\node[module, draw=chemin, thick] (msyn) at (11.6,-7.2) {Ccn\_1486\_\\ rupture\_du\_contrat};
+\node[texte] (tpre) at (2.4,-8.3) {\S\ C. trav., L.~1234-1\\ et L.~1234-5};
+\node[texte] (thcr) at (5.5,-8.3) {\S\ convention HCR\\ (IDCC 1979)};
+\node[texte] (tlic) at (8.7,-8.3) {\S\ C. trav., L.~1234-9\\ et R.~1234-2};
+\node[texte] (tsyn) at (11.6,-8.3) {\S\ convention Syntec,\\ art.~19 et 4.5};
+\foreach \m/\t in {mpre/tpre, mhcr/thcr, mlic/tlic, msyn/tsyn}
+  \draw[lien] (\m) -- (\t);
+\draw[lienv] (code) -- (mlic);
+\draw[lienv] (s45) -- (msyn);
+\end{tikzpicture}
+\caption{Architecture d'\ALex{}. La couche~0, le corpus, réunit des modules
+  Catala indépendants : chacun calcule la réponse d'un texte sans connaître les
+  autres, et renvoie aux articles qu'il traduit (\S). La couche~1, la forêt
+  normative, organise ces calculs en candidats, avec leurs conditions
+  d'application et leurs politiques d'arbitrage, que le corpus laisse hors du
+  code. La couche~2, l'arbre de raffinement, relie les questions abstraites aux
+  matières concrètes. Le chemin vert part de la question de la salariée, la
+  concrétise en indemnité de licenciement, puis suit, dans l'arbre normatif de
+  cette matière, les candidats qui y répondent pour le dossier fil rouge,
+  jusqu'aux modules qui les calculent. En gris, ce que le dossier écarte.}
+\label{fig:archi}
+\end{figure} 
 
 \section{Exemple fil rouge}\label{sec:exemple}
 Nous introduisons ici notre exemple fil rouge, tiré du corpus~\cite{corpuslumo}, qui illustrera certaines étapes clefs de notre formalisation.
@@ -993,11 +1104,15 @@ c'est l'hypothèse que la section~\ref{sec:op} impose aux saisies d'arbres.
 
 \section{Traitement des dossiers}\label{sec:op}
 
-\subsection{Constructeurs}
-Les dossiers sont construits et manipulés au moyen de quatre constructeurs,
-que nous définissons à présent.
-\begin{defi}[Constructeurs de dossiers]
-Les constructeurs de dossiers sont
+\subsection{Opérateurs}
+L'assistant manipule une liste ordonnée de dossiers
+\(\Liste=[D_1,\ldots,D_n]\), dont la tête porte la demande principale et les
+suivants les demandes subsidiaires. Trois opérateurs élémentaires, que nous
+définissons à présent, transforment un dossier ; les opérateurs de branchement,
+de fusion et d'échange (sections~\ref{sec:choix} et~\ref{sec:fusion})
+transforment la liste elle-même.
+\begin{defi}[Opérateurs élémentaires]\label{def:operateurs}
+Un dossier s'obtient à partir du dossier vide par les opérateurs élémentaires
 \[
 \begin{array}{lll}
 D &::=& \EmptyD \quad \text{le dossier vide}\\
@@ -1006,6 +1121,9 @@ D &::=& \EmptyD \quad \text{le dossier vide}\\
 && \mid \Resolve(D,m)\quad m\in\Unres.
 \end{array}
 \]
+Sur une liste, un opérateur élémentaire \(\mathit{op}\) s'applique à une
+position \(i\) :
+\(\mathit{op}_i(\Liste,\ldots):=[D_1,\ldots,\mathit{op}(D_i,\ldots),\ldots,D_n]\).
 \end{defi}
 Les applications de \(\Input\) à un arbre forment la forêt
 \(\mc F_D:=\bigl(\nu_D(m)\bigr)_{m\in\Unres}\). Plus précisément,
@@ -1028,9 +1146,9 @@ vide. Pour \(D=(\mc M_D,\nu_D)\), on note \(\nu_D-m\) la valuation restreinte
 Cette opération ajoute un nouvel élément au dossier. Nous supposons dans
 toute la suite qu'un arbre \(\theta_m\) n'est saisi que si \(m\) est établie
 (définition~\ref{def:ouvertes}) ; cette hypothèse vaut en particulier pour le
-corollaire~\ref{cor:loop} et la proposition~\ref{prop:scenarios}. La
-section~\ref{sec:choix} ajoute aux constructeurs un opérateur de branchement, qui produit une
-liste de dossiers.
+corollaire~\ref{cor:loop} et la proposition~\ref{prop:scenarios}. Les
+sections~\ref{sec:choix} et~\ref{sec:fusion} définissent les opérateurs propres
+aux listes.
 
 \subsection{Élagage}
 
@@ -1341,7 +1459,9 @@ Pour \(m\in\Conf\) de valuation \(a_1\conflit\cdots\conflit a_k\), on pose
 \[
 \Brancher(D,m):=[\,D[m:=a_1],\ \ldots,\ D[m:=a_k]\,],
 \]
-où \(D[m:=a]:=(\mc M_D,(\nu_D-m)+[m\mapsto a])\).
+où \(D[m:=a]:=(\mc M_D,(\nu_D-m)+[m\mapsto a])\). Sur une liste,
+\(\Brancher_i(\Liste,m)\) remplace \(D_i\) par la liste \(\Brancher(D_i,m)\),
+à sa place.
 \end{defi}
 
 La boucle interactive s'étend aux listes de dossiers. À l'étape~(iii),
@@ -1440,9 +1560,70 @@ porte donc sur 10\,000 euros, la demande subsidiaire sur 7\,500 euros.
   \(\IDCC\), puis un branchement sur la catégorie, en conflit. La valeur
   retenue (\(+\)) donne le scénario principal \(C_1\), la réserve (\(-\)) le
   scénario subsidiaire \(C_2\) ; les valeurs écartées (\(!\)) ne sont pas
-  explorées.}
+    explorées.}
 \label{fig:decision}
 \end{figure}
+
+\subsection{Fusion et échange}\label{sec:fusion}
+
+Deux matières concrètes distinctes ne sont pas en concours : leurs avantages
+peuvent se cumuler, lorsque le juriste estime qu'ils sont dus ensemble. Leurs
+valeurs forment alors, ensemble, la réponse à une question abstraite que l'une
+et l'autre précisent. La fusion réalise ce cumul. Comme elle combine deux
+dossiers de la liste, nous la restreignons à deux dossiers consécutifs ;
+l'échange permet d'amener côte à côte les dossiers à fusionner.
+
+\begin{defi}[Fusion et échange]\label{def:fusion}
+Soit \(\Liste=[D_1,\ldots,D_n]\) une liste de dossiers et \(i<n\). Soient
+\(m_i\) une matière résolue de \(D_i\), \(m_{i+1}\) une matière résolue de
+\(D_{i+1}\), et \(m\) une matière indéfinie dans ces deux dossiers, telle que
+\(m_i\subtype m\) et \(m_{i+1}\subtype m\), et dont le domaine est muni d'une
+loi de cumul \(+\), comme l'addition des montants. Si \(D_i\) et \(D_{i+1}\)
+attribuent les mêmes valeurs à leurs matières communes, on pose
+\[
+\Fusionner_i(\Liste,m_i,m_{i+1},m):=[D_1,\ldots,D_{i-1},D,D_{i+2},\ldots,D_n],
+\]
+où le dossier \(D\) réunit \(D_i\) et \(D_{i+1}\) et y ajoute la matière
+\(m\) :
+\[
+\begin{array}{l}
+\mc M_D:=\mc M_{D_i}\cup\mc M_{D_{i+1}}\cup\{m\},\\
+\nu_D:=(\nu_{D_i}\cup\nu_{D_{i+1}})+[m\mapsto\nu_{D_i}(m_i)+\nu_{D_{i+1}}(m_{i+1})].
+\end{array}
+\]
+Pour \(1\leq i,j\leq n\), \(\Echanger_{i,j}(\Liste)\) est la liste \(\Liste\)
+dans laquelle \(D_i\) et \(D_j\) ont échangé leurs positions.
+\end{defi}
+
+La somme est bien typée, puisque le sous-typage est compatible avec les
+domaines : \(\Raw(m_i)\subseteq\Raw(m)\) et \(\Raw(m_{i+1})\subseteq\Raw(m)\).
+C'est ici que les matières abstraites reçoivent une valeur. L'accord sur les
+matières communes interdit de cumuler des réponses obtenues sous des hypothèses
+incompatibles : deux scénarios issus d'un même branchement diffèrent sur la
+matière branchée, et ne fusionnent pas. La fusion de deux scénarios est un
+scénario, puisque toutes ses matières sont résolues et qu'aucune n'est en
+conflit. L'échange ne modifie aucun dossier, mais l'ordre des demandes : il
+permet au juriste de placer en tête la demande qu'il entend soutenir à titre
+principal.
+
+\paragraph{Exemple.}
+Supposons que la salariée ait été dispensée d'exécuter son préavis :
+l'indemnité compensatrice de préavis lui serait alors due, en plus de
+l'indemnité de licenciement. Les deux matières précisent l'indemnité de rupture
+(section~\ref{sec:hierarchie}). Soit \(\Liste=[D_1,D_2]\), où \(D_1\) résout
+l'indemnité de licenciement et \(D_2\) l'indemnité compensatrice, les deux
+dossiers s'accordant sur les faits. La fusion
+\[
+\Fusionner_1(\Liste,\Indem,\ICP,\IndemRupture)
+\]
+donne la liste \([D]\), où le dossier \(D\) répond à la question de la
+salariée :
+\[
+\begin{aligned}
+\nu_D(\IndemRupture)={}&\nu_{D_1}(\Indem)\\
+&+\nu_{D_2}(\ICP).
+\end{aligned}
+\]
 
 \section{Conclusion}\label{sec:conclusion}
 
