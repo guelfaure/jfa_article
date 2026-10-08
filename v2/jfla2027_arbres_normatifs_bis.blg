@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99e (TeX Live 2026)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: jfla2027_arbres_normatifs_bis.aux
+The style file: alpha-fr.bst
+Database file #1: references-fr.bib
+You've used 22 entries,
+            2685 wiz_defined-function locations,
+            720 strings with 8298 characters,
+and the built_in function-call counts, 9849 in all, are:
+= -- 1053
+> -- 378
+< -- 20
++ -- 133
+- -- 126
+* -- 602
+:= -- 1772
+add.period$ -- 53
+call.type$ -- 22
+change.case$ -- 128
+chr.to.int$ -- 20
+cite$ -- 22
+duplicate$ -- 376
+empty$ -- 721
+format.name$ -- 158
+if$ -- 2112
+int.to.chr$ -- 3
+int.to.str$ -- 0
+missing$ -- 15
+newline$ -- 117
+num.names$ -- 75
+pop$ -- 162
+preamble$ -- 1
+purify$ -- 152
+quote$ -- 0
+skip$ -- 321
+stack$ -- 0
+substring$ -- 611
+swap$ -- 84
+text.length$ -- 20
+text.prefix$ -- 12
+top$ -- 0
+type$ -- 168
+warning$ -- 0
+while$ -- 89
+width$ -- 25
+write$ -- 298
