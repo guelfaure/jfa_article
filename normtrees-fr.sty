@@ -20,6 +20,23 @@
 \RequirePackage{amsmath,amssymb}
 \RequirePackage{stmaryrd}   % \llbracket, \rrbracket (symboles seulement)
 
+%%
+%% Autorefname
+%%
+\newcommand{\reneworprovidecommand}[2]{%
+  \providecommand{#1}{}%
+  \renewcommand{#1}{#2}%
+}
+
+\reneworprovidecommand{\definitionautorefname}{Définition}
+\reneworprovidecommand{\propositionautorefname}{Proposition}
+\reneworprovidecommand{\theoremautorefname}{Théorème}
+\reneworprovidecommand{\lemmaautorefname}{Lemme}
+\reneworprovidecommand{\corollaryautorefname}{Corollaire}
+\reneworprovidecommand{\remarkautorefname}{Remarque}
+\reneworprovidecommand{\subsectionautorefname}{sous-section}
+\reneworprovidecommand{\sectionautorefname}{section}
+
 %% --------------------------------------------------------------------
 %% Outils génériques
 %% --------------------------------------------------------------------

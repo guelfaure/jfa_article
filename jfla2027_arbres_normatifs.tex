@@ -83,7 +83,8 @@ texte dans le temps et les faits qui permettent d'entrer dans sa branche, tout
 en conservant, pour contrôle, les alternatives écartées et le fondement de la
 sélection.
 
-\paragraph{Le raisonnement du juriste.}
+\subsection{Le raisonnement du juriste} \label{sec:juriste}
+
 Un avocat saisi de cette demande ne calcule qu'en dernier lieu. Il commence par
 \emph{qualifier} les faits et la demande : la rupture est-elle un licenciement,
 pour quel motif, et quel avantage la salariée réclame-t-elle exactement ? Nous
@@ -102,10 +103,13 @@ principale et des demandes subsidiaires, une par hypothèse. À chaque étape, i
 raisonne sur des textes dont il connaît la source, le rang et la date, et c'est
 en les citant qu'il justifie sa conclusion.
 
-\paragraph{Vocabulaire juridique.}
-Quatre notions de droit, employées dans tout l'article, doivent être définies.
-\begin{itemize}
-\item \emph{Concours de normes.} Il y a concours lorsque plusieurs textes, tous
+\subsection{Vocabulaire juridique}\label{sec:vocabulaire}
+%
+Plusieurs notions de droit, employées dans cet article, doivent être introduites.
+
+\paragraph{Hiérarchie des normes.}
+
+\paragraph{Concours de normes.} Il y a concours lorsque plusieurs textes, tous
   applicables à la salariée à la date considérée, lui accordent un avantage
   ayant, selon la formule de la jurisprudence, « le même objet ou la même
   cause »~\cite{cassap1988} : ainsi l'indemnité de licenciement du Code du
@@ -113,7 +117,8 @@ Quatre notions de droit, employées dans tout l'article, doivent être définies
   se cumulent pas : un seul est dû, et régler le concours, c'est dire lequel.
   En termes de programmation, une même fonction reçoit plusieurs définitions,
   de rangs différents, dont une seule doit être retenue pour un appel donné.
-\item \emph{Ordre public et régime d'articulation.} Un concours ne se règle pas
+ %%
+\paragraph{Ordre public et régime d'articulation.} Un concours ne se règle pas
   toujours de la même façon, car les sources du droit du travail ne
   s'articulent pas selon une hiérarchie monotone unique. La solution dépend du
   caractère d'\emph{ordre public} de la disposition de rang supérieur,
@@ -131,21 +136,7 @@ Quatre notions de droit, employées dans tout l'article, doivent être définies
   évoquent respectivement une méthode que l'on ne peut redéfinir, une
   redéfinition dont le résultat n'est retenu que s'il est meilleur, et une
   implémentation par défaut.
-\item \emph{Principe de faveur.} Lorsque deux normes sont en concours sous
-  l'ordre public social, c'est la plus favorable au salarié qui s'applique ;
-  on rattache ce principe à l'article L.~2251-1 du Code du travail. Le choix
-  dépend donc du résultat, ce qui n'a pas d'équivalent usuel en
-  programmation : il faut calculer les réponses concurrentes, puis les
-  comparer selon un ordre propre à l'avantage en cause, un montant plus élevé
-  pour une indemnité, plus faible pour une retenue sur salaire.
-\item \emph{Demandes principale et subsidiaires.} Une partie peut soumettre au
-  juge plusieurs prétentions ordonnées : la demande \emph{principale}, qu'elle
-  soutient d'abord, puis des demandes \emph{subsidiaires}, formées chacune pour
-  le cas où la précédente serait rejetée. Une salariée dont la classification
-  est discutée demandera ainsi, à titre principal, l'indemnité qui lui revient
-  comme cadre et, à titre subsidiaire, celle qui lui revient comme non-cadre.
-\end{itemize}
-
+  
 Le régime dépend de la matière, et il vaut aussi entre accords collectifs de
 niveaux différents : le calcul en cause doit donc être identifié avant que la
 hiérarchie des sources puisse sélectionner une règle. Ainsi, l'article L2253-1
@@ -177,84 +168,53 @@ de branche ; à défaut, ce dernier demeure la règle de repli~\cite{frarticulat
 Ce schéma de priorité est issu de la réforme de 2017, qui a renforcé la
 négociation d'entreprise dans les champs fixés par la
 loi~\cite{viepublique2017}.
-
-\paragraph{Question de recherche et contributions.}
+  %%
+\paragraph{Principe de faveur.} Lorsque deux normes sont en concours sous
+  l'ordre public social, c'est la plus favorable au salarié qui s'applique ;
+  on rattache ce principe à l'article L.~2251-1 du Code du travail. Le choix
+  dépend donc du résultat, ce qui n'a pas d'équivalent usuel en
+  programmation : il faut calculer les réponses concurrentes, puis les
+  comparer selon un ordre propre à l'avantage en cause, un montant plus élevé
+  pour une indemnité, plus faible pour une retenue sur salaire.
+%%  
+\paragraph{Demandes principale et subsidiaires.} Une partie peut soumettre au
+  juge plusieurs prétentions ordonnées : la demande \emph{principale}, qu'elle
+  soutient d'abord, puis des demandes \emph{subsidiaires}, formées chacune pour
+  le cas où la précédente serait rejetée. Une salariée dont la classification
+  est discutée demandera ainsi, à titre principal, l'indemnité qui lui revient
+  comme cadre et, à titre subsidiaire, celle qui lui revient comme non-cadre.
+%%
+\subsection{Question de recherche et contributions}\label{sec:question}
+%%
 Notre question de recherche est la suivante : \emph{comment un assistant
 juridique peut-il organiser et résoudre des calculs concurrents de droit du
 travail, identifier les informations nécessaires à leur sélection, et conserver
 explicites et contrôlables les choix qui en résultent, afin d'aider un expert
 juridique, éventuellement un grand modèle de langage (LLM), à construire une
-plaidoirie sur une base maîtrisée et transparente ?} Nous apportons plusieurs
-contributions en ce sens, qui suivent le raisonnement du juriste étape par
-étape. Premièrement, nous définissons des \emph{candidats} typés par matière et
-indexés par leur source, représentants formels des textes juridiques qui
-définissent un calcul, et nous précisons comment ce calcul se comporte
-vis-à-vis des textes relatifs à la même matière mais situés à un niveau
-inférieur : c'est la \emph{politique d'arbitrage} du candidat, qui formalise le
-régime d'articulation. Deuxièmement, nous organisons ces objets formels en
-\emph{forêts normatives} ordonnées par les sources et à arêtes prédicatives,
-qui représentent à la fois les dépendances hiérarchiques entre candidats et les
-conflits qui les opposent. Les prédicats des arêtes portent les versions et les
-conditions d'application des textes, et l'\emph{élagage} écarte, comme le fait
-le juriste, ceux que le dossier rend inapplicables. Nous organisons de même les
-matières en un \emph{arbre de raffinement}, hiérarchie de raffinements
-conditionnels qui formalise la qualification de la demande ; seules ses
-feuilles, les matières concrètes, reçoivent un arbre normatif, de sorte que les
-candidats d'un même arbre portent sur une même matière. Troisièmement, nous montrons comment une
-boucle interactive assiste l'expert juridique dans la sélection et le calcul du
-droit applicable : elle lui demande les faits qui manquent, puis règle le
-concours. Nous l'étendons aux valeurs en conflit : lorsqu'un fait ou une
-qualification est discuté, l'utilisateur en donne plusieurs valeurs ordonnées,
-et un opérateur de \emph{branchement} crée un scénario par valeur, pour
-ordonner des demandes principales et subsidiaires. Un exemple fil rouge, tiré
-du corpus décrit ci-dessous, accompagne chaque étape
-(section~\ref{sec:exemple}).
+plaidoirie sur une base maîtrisée et transparente ?} 
 
-\paragraph{Le corpus.}
-Ce raisonnement ne se mécanise que si chaque calcul reste attaché au texte dont
-il procède. Le modèle opère donc sur un \emph{corpus}, l'ensemble des
-candidats : des fonctions écrites en Catala, encapsulées dans une architecture
-d'arbre. Catala~\cite{merigoux2021} est un langage conçu pour traduire un texte
-normatif article par article : dans notre
-corpus~\cite{corpuslumo}, chaque bloc de code est placé sous l'article qu'il
-traduit, de sorte que toute fonction est annotée par sa source. Un candidat réunit
-une telle fonction, sa source et sa politique d'arbitrage ; les arbres
-normatifs organisent les candidats d'une même matière, chaque arête portant les
-conditions d'application du candidat qu'elle atteint. Le corpus s'accompagne d'un \emph{lexique d'interprétation}, qui relie les
-matières \emph{abstraites}, dans les termes desquelles une demande est
-formulée, comme l'indemnité de rupture, aux matières \emph{concrètes} que les
-fonctions calculent, comme l'indemnité de licenciement : c'est l'arbre de
-raffinement de la section~\ref{sec:hierarchie}.
+Nous décrivons, dans cet article, une modélisation des étapes du raisonnement juridique (\autoref{sec:juriste}) qui se trouve à la base de l'assistant \ALex~que nous développons. Nous nous concentrons ici sur la définition de ces structures ainsi que sur la formalisation des étapes de raisonnement que ces structures supportent. L'implémentation concrète d'\ALex~n'est pas abordée. Les objets et structures de raisonnement juridiques formalisés dans ce papier sont listés ci-dessous. Les ontologies juridiques décrites dans la \autoref{sec:vocabulaire} sont indiqués en caractères gras.
+%%
+\paragraph{Matières juridiques.}
+Nous formalisons la notion de matière juridique comme un ensemble de types \emph{matières} équipés d'une relation de sous-typage. Une \emph{matière} $m$ étant un sous-type de $m'$ lorsque $m$ précise $m'$ (par exemple, \textsf{Prime} est un sous-type de \textsf{Montant}). Nous organisons les \emph{matières} dans un \emph{arbre de raffinement} qui permet à \ALex~de traduire une question juridique (une \emph{matière} abstraite) vers l'ensemble de ses concrétisations réalisables, étant donné un dossier client. Une \emph{matière} est concrète lorsqu'elle est une feuille de l'\emph{arbre de raffinement}.
+%%
+\paragraph{Sources juridiques.}
+Comme pour les \emph{matières}, nous formalisation la notion de sources juridiques par un ensemble de types \emph{sources} équipés d'une relation de sous-typage. Une \emph{source} $s$ est un sous-type d'une source $s'$ lorsque $s$ précise $s'$ (par exemple, \textsf{ConventionBranche} est un sous-type d'\textsf{AccordCollectif}). Les \emph{sources} sont par ailleurs partiellement ordonnées selon la \textbf{hiérarchie des normes} en vigueur dans le droit du travail. Une \emph{source} est concrète lorsqu'elle est son unique sous-type.
+%%
+\paragraph{Dossier client.}%%
+Un dossier client est ici un \emph{dossier} formel, composé d'un ensemble de \emph{matières} et d'une fonction d'évaluation partielle qui associe certaines \emph{matières concrètes} du \emph{dossier} à une valeur ou un \emph{arbre normatif}. Un \emph{dossier} est \emph{clos} lorsque toute les \emph{matières} du \emph{dossier} sont concrètes et associées à une valeur. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) est ajoutée. Les \emph{dossiers} sont manipulés par un ensemble de constructeurs de listes de dossiers qui permettent au juriste, via des interactions avec \ALex, de produire une liste de \emph{dossiers} clos dont la tête est le \emph{dossier} support de la \textbf{demande principale} du juriste, suivi des \emph{dossiers} supports des \textbf{demandes subsidiaires}.
+%%
+\paragraph{Arbres normatifs.} %%
+Les \emph{arbres normatifs} reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} des ces fonctions n'est abordée qu'au titre d'exemple dans ce papier, les \emph{candidats} ne retenant que de la signature de ces fonctions et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une politique d'arbitrage qui formalise son
+\textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipé d'un prédicat dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même arbre normatif sont toujours en \textbf{concours}, deux candidats issus d'une même matière abstraite typés par des matières concrètes différentes peuvent parfois se cumuler. 
 
-\paragraph{Architecture d'\ALex{}.}
-Ce modèle fournit l'architecture d'\ALex{}, l'assistant juridique que nous
-développons. Dans le corpus qu'exécute \ALex{}, chaque source, le Code du
-travail ou une convention collective, est un module indépendant : il calcule,
-pour une même question, la réponse de son texte, sans rien savoir des autres
-sources. Aucun de ces modules ne dit donc laquelle des réponses est due. Un
-module distinct règle le concours : sous l'ordre public social, il compare les
-montants et retient le plus favorable à la salariée. Encore faut-il lui
-indiquer le régime d'articulation, c'est-à-dire s'il doit comparer les
-réponses, écarter la convention ou écarter la loi. Cette qualification
-juridique n'est pas un calcul, et le code des sources ne l'encode pas : le
-corpus la note, à dessein, en commentaire sous l'article. Elle est portée ici
-par les politiques d'arbitrage des candidats, que la forêt normative organise.
-Les notions introduites ici organisent les composants du prototype
-d'\ALex{}. Un indexeur lit les modules
-Catala et en extrait les candidats ; un moteur d'élagage construit la forêt exhaustive,
-la réduit au dossier et formule les questions à poser ; la sélection finale
-applique les politiques d'arbitrage aux valeurs que calcule le code Catala
-compilé ; un gestionnaire de scénarios enregistre les valeurs en conflit et en
-tire les demandes subsidiaires.
-
-Notre contribution est délibérément circonscrite : elle ne prétend pas saisir
-toutes les caractéristiques du droit du travail, et elle ne traite pas le
-problème de la traduction de textes juridiques rédigés en langue naturelle en
-fonctions calculables qui les implémentent fidèlement.
+\paragraph{Étapes du raisonnement juridique assisté.}
+Le raisonnement juridique, est formalisé par une série d'opérateurs sur des listes de \emph{dossiers}. Ces opérateurs permettent d'ajouter des \emph{matières} à certains dossiers, de les préciser en créant des dossiers alternatifs si besoin, et de fusionner des dossiers lorsque le juriste estime que deux \emph{matières} distinctes sont cumulables. Un opérateur de résolution permet de réduire un arbre normatif à une valeur issue d'un calcul fourni par un candidat sélectionné. 
 
 \section{Exemple fil rouge}\label{sec:exemple}
+Nous introduisons ici notre exemple fil rouge, tiré du corpus~\cite{corpuslumo}, qui illustrera certaines étapes clefs de notre formalisation.
 
-\paragraph{Le dossier.}
+\paragraph{Le dossier juridique.}
 Une salariée d'une société de conseil relevant de la convention collective
 Syntec (IDCC~1486) reçoit, en mars 2025, la notification de son licenciement,
 qui n'est pas prononcé pour faute grave. Elle compte dix ans d'ancienneté et
