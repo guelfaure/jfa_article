@@ -476,7 +476,7 @@ sélection et l'exécution restent explicites et contrôlables.
 \section{Notations et terminologie}\label{sec:notations}
 
 \begin{defi}[Matières, sous-typage et domaines de valeurs]\label{def:types}
-Une \emph{matière} \(m\in\Matter\) est une question juridique nommée, par
+Une \emph{matière} \(m\in\mc M\) est une question juridique nommée, par
 exemple \(\Salary\), \(\Senior\), \(\IDCC\) ou \(\DateT\). Les matières sont
 munies d'un ordre partiel de \emph{sous-typage} \(\subtype\), où
 \(m\subtype m'\) se lit « \(m\) précise \(m'\) » : ainsi l'indemnité de
@@ -484,7 +484,7 @@ licenciement précise l'indemnité de rupture,
 \[
  \Indem\subtype\IndemRupture.
 \]
-L'ensemble \(\Matter\) est interprété comme le plus
+La matière \(\Matter\) est le plus
 grand élément de cet ordre, la question la plus générale :
 \(m\subtype\Matter\) pour toute matière \(m\). Chaque matière possède un
 \emph{domaine de valeurs} \(\Raw(m)\), l'ensemble de ses valeurs brutes
@@ -495,7 +495,7 @@ possibles, et le sous-typage est compatible avec les domaines :
 Une matière est \emph{concrète} lorsqu'aucune autre ne la précise, et
 \emph{abstraite} sinon ; l'ensemble des matières concrètes est
 \[
- \Matter_c:=\{m\in\Matter\mid\forall m'\in\Matter,\ m'\subtype m\implies m'=m\}.
+ \CMatter:=\{m\subtype\Matter\mid\forall m'\subtype\Matter,\ m'\subtype m\implies m'=m\}.
 \]
 Par exemple,
 \[
@@ -536,7 +536,7 @@ l'ordre dépend de la matière :
 \(\false\strictfav{\mathsf{Indemnisable}}\true\).
 \end{defi}
 
-On note \(\MatterOrd\subseteq\Matter\) les matières munies d'un tel ordre.
+On note \(\mc M^{\fav{}}\subseteq\mc M\) les matières munies d'un tel ordre.
 Seules ces matières admettent des candidats de politique \(\Social\), ce
 qu'impose la cohérence (section~\ref{sec:consistency}) ; la comparaison porte
 sur les valeurs que les candidats concurrents produisent pour le dossier
@@ -562,45 +562,40 @@ elles valent ici dix ans et 3\,000 euros elles aussi.
 
 \begin{defi}[Dossier]\label{def:dossier}
 Un dossier \(D\) est donné par un couple
-\(D:=(\mathcal M_D,\nu_D)\in\Dossier\), où \(\mathcal M_D\subseteq\Matter\)
-est l'ensemble des matières soulevées par le dossier, concrètes ou abstraites,
-et \(\nu_D\) sa valuation courante :
+\(D:=(\mc M_D,\nu_D)\in\Dossier\), où \(\mc M_D\subseteq\mc M\)
+est l'ensemble des matières soulevées par le dossier et \(\nu_D\), une fonction dépendante partielle qui est la valuation du dossier :
 \[
-\nu_D:\prod_{m\in\mc M_D}\left(\Raw(m)\uplus\mc T(m)\right),
+\nu_D:\prod_{m\in\mc M_D}\left(\Raw(m)\uplus\mc T(m)\right)_\bot,
 \]
 où \(\mc T(m)\) est l'ensemble des arbres normatifs de \(m\)
-(définition~\ref{def:normative-tree}), vide lorsque \(m\) est abstraite.
+(voir définition~\ref{def:normative-tree}) et $\nu_D(m)=\bot$ indique un matière sans valuation.
 \end{defi}
 
-La valuation attribue à chaque matière exactement l'un des deux états suivants.
-Une matière est \emph{résolue} lorsque \(\nu_D\) lui associe une valeur brute,
-et \emph{non résolue} lorsque \(\nu_D\) lui associe l'arbre normatif qu'il
-reste à résoudre ; seule une matière concrète peut donc être non résolue. Une
-matière de \(\Matter\setminus\mc M_D\), concrète ou abstraite, est
-\emph{indéfinie} dans~\(D\) : une matière abstraite peut être lue par un
-prédicat (section~\ref{sec:forest}), et l'assistant doit alors pouvoir la
-demander. Ainsi
+%La valuation attribue à chaque matière d'un dossier l'un des deux états suivants.
+%Une matière est \emph{résolue} lorsque \(\nu_D\) lui associe une valeur brute,
+%et \emph{non résolue} lorsqu'elle n'a pas de valuation ou lorsqu'elle est associée à un arbre normatif (qu'il
+%reste à résoudre). Une
+%matière de \(\mc M\setminus\mc M_D\) est \emph{indéfinie} dans~\(D\). 
+On note
 \[
 \begin{aligned}
 \Res&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\Raw(m)\},\\
-\Unres&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\mc T(m)\},\\
-\Undef&:= \{m\in\Matter \mid m\not\in \mc M_D\}.
+\Unres&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\mc T(m)\cup\{\bot\}\},\\
+\Undef&:= \mc M\setminus\mc M_D
 \end{aligned}
 \]
 
 \begin{defi}[Sources juridiques et ordre normatif]\label{def:source-order}
 Les sources juridiques forment un ensemble partiellement ordonné
-\((\Source,\normge)\), où \(\normge\) modélise l'\emph{ordre normatif}. La
+\((\mc S,\normge)\), où \(\normge\) modélise l'\emph{ordre normatif}. La
 relation stricte \(s\normgt s'\) signifie que la source \(s\) est au-dessus de
 la source \(s'\) dans la hiérarchie des sources. On note
-\(\normdown(s):=\{s'\in\Source\mid s'\normlt s\}\).
+\(\normdown(s):=\{s'\in\mc S\mid s'\normlt s\}\).
 \end{defi}
 
-Comme \(\Matter\) pour les matières, l'ensemble \(\Source\) est interprété
-comme le type sommet d'une relation de sous-typage
-\({\subtype}\subseteq\Source\times\Source\), qui classe les sources
-selon la taxonomie en usage en droit du travail français. On emploie parfois
-\(s\in\Source\) comme synonyme de \(s\subtype\Source\). Par exemple
+La source \(\Source\) est le type sommet d'une relation de sous-typage
+\({\subtype}\subseteq\mc S\times\mc S\), qui classe les sources
+selon la taxonomie en usage en droit du travail français. Par exemple
 \[
 \CodeTravail\subtype\Source,\quad
 \AccordCollectif\subtype\Source,\quad
@@ -608,7 +603,7 @@ selon la taxonomie en usage en droit du travail français. On emploie parfois
 \]
 et, pour tout type \(s\) parmi \(\AccordInterpro\), \(\ConvBranche\) et
 \(\AccordEntreprise\), on a \(s\subtype\AccordCollectif\). La relation de sous-typage ne doit pas être
-confondue avec l'ordre normatif. Pour tous \(s_i\in\Source\), on exige
+confondue avec l'ordre normatif. Pour tous \(s_i\in\mc S\), on exige
 \[
 \begin{array}{rll}
 s_0\normlt s_1&\implies& {s_0 \not\subtype s_1} \wedge {s_1\not\subtype s_0}\\
@@ -619,7 +614,7 @@ s_0\normlt s_1&\implies& {s_0 \not\subtype s_1} \wedge {s_1\not\subtype s_0}\\
 \begin{defi}[Fonction juridique]\label{def:rule-package}
 Une fonction juridique encode la partie calculatoire d'un texte juridique. On
 la note \(f\in\Fun\) ; c'est un couple \(f=(\sigma_f,\phi_f)\) où, pour
-\(n\in\mathbb N\), \(m_0,\ldots,m_n\in\Matter\) et \(m\in\Matter_c\),
+\(n\in\mathbb N\), \(m_0,\ldots,m_n\in\mc M\) et \(m\in\CMatter\),
 \[
  \sigma_f=(m_0,\ldots,m_n)\longrightarrow m,
  \qquad
@@ -640,7 +635,7 @@ Un \emph{régime d'articulation} (simplifié) est un élément de
 \(
 \Policy:= \{\Absolute, \Social, \Suppletive\}.
 \)
-Soit \(s \in \Source\) un type de source. Une \emph{politique d'arbitrage} pour
+Soit \(s \in\mc S\) un type de source. Une \emph{politique d'arbitrage} pour
 \(s\) est une fonction partielle finie
 \[
   p :
@@ -692,11 +687,11 @@ régimes dérogatoire et supplétif, qui obéissent au même schéma de sélecti
 sont ici réunis sous \(\Suppletive\).
 
 \begin{defi}[Candidats et corpus]\label{def:candidate}
-Un texte juridique qui constitue une interprétation candidate pour une matière
+Un texte juridique qui constitue une interprétation candidate pour une matière concrète
 non résolue est modélisé par un \emph{candidat}, triplet \(c=(s,f,p)\). Le
 \emph{corpus} est l'ensemble des candidats :
 \[
- \Cand \subseteq \{(s,f,p) \mid s\in\Source,\ f\in\Fun,\ p: \normdown(s)\rightharpoonup \Policy \}.
+ \Cand \subseteq \{(s,f,p) \mid s\in\mc S,\ f\in\Fun,\ p: \normdown(s)\rightharpoonup \Policy \}.
 \]
 Les projections d'un candidat sont \(s(c)=s\), \(f(c)=f\) et \(p(c)=p\). On dit que le
 candidat \(c\) est de matière \(m\) lorsque \(f(c)\in\Fun_m\)
@@ -763,9 +758,8 @@ juridique d'une instance du modèle.
 \subsection{Tests d'applicabilité}
 
 On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
-partir de constantes et de noms de matières. Pour un test \(t\),
-\(\dep(t)\subseteq\Matter\) est l'ensemble fini des noms de matières,
-concrètes ou abstraites, qui apparaissent dans \(t\). Un \emph{prédicat
+partir de constantes et de matières. Pour un test \(t\),
+\(\dep(t)\subseteq\mc M\) est l'ensemble fini de matières qui apparaissent dans \(t\). Un \emph{prédicat
 d'applicabilité} est une conjonction finie \(t_1\land\cdots\land t_k\) de tests
 atomiques, avec \(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\) ; la
 conjonction vide est le prédicat \(\true\), et \(\Pred\) désigne l'ensemble de
@@ -806,52 +800,38 @@ d'information que le sous-typage : un \emph{arbre de raffinement} attache à
 chaque précision un prédicat d'applicabilité.
 
 \begin{defi}[Arbre de raffinement]\label{def:hierarchie}
-Un \emph{arbre de raffinement} est un couple \(\rho=(M_\rho,\refine)\), où
-\(M_\rho\subseteq\Matter\) est un ensemble fini de matières et
+Un \emph{arbre de raffinement} est un couple \(\rho=(\mc M_\rho,\refine)\), où
+\(\mc M_\rho\subseteq\mc M\) est un ensemble fini de matières et
 \[
- {\refine}\subseteq M_\rho\times\Pred\times M_\rho
+ {\refine}\subseteq \mc M_\rho\times\Pred\times \mc M_\rho
 \]
 une relation étiquetée par des prédicats d'applicabilité. On écrit
-\(m\refby{\pi}m'\) pour \((m,\pi,m')\in{\refine}\) : \(m\) est le
-\emph{parent}, \(m'\) l'\emph{enfant}, et \(m\) se \emph{raffine} en \(m'\)
+\(m\refby{\pi}m'\) pour \((m,\pi,m')\in{\refine}\). On dit que \(m\) est le
+\emph{parent}, \(m'\) l'\emph{enfant}, et que \(m\) se \emph{raffine} en \(m'\)
 lorsque le dossier satisfait \(\pi\). On pose \(\pi(D):=\sem{\pi}_D\), et
-\(\dep(\rho)\) désigne l'union des \(\dep(\pi)\) pour toutes les arêtes
-\(m\refby{\pi}m'\).
+\(\dep(\rho):=\bigcup_{(m,\pi,m')\in\refine}\dep(\pi)\).
 \end{defi}
-
+%%
+Nous appelons \emph{factuelles} les matières concrètes qui n'ont que $\Matter$ comme antécédent, comme \(\IDCC\) ou \(\DateT\).
+%%
 \begin{defi}[Cohérence de raffinement]\label{def:coh-raff}
-Un arbre de raffinement \(\rho=(M_\rho,\refine)\) est \emph{cohérent} lorsque :
+Un arbre de raffinement \(\rho=(\mc M_\rho,\refine)\) est \emph{cohérent} lorsque :
 \begin{enumerate}
-\item \emph{C'est un arbre, de racine \(\Matter\).} La matière \(\Matter\)
-  appartient à \(M_\rho\) et n'a pas d'arête entrante ; toute autre matière de
-  \(M_\rho\) en a exactement une ; et \(\refine\) est sans cycle.
+\item \emph{Il est enraciné.} Pour tout $m\in\mc M_\rho$, $\not\refine m$ implique $m=\Matter$.
+\item \emph{Il est profond.} Pour tout $m\in\mc M_\rho$, $m$ n'est pas factuelle.
 \item \emph{Il est compatible avec le sous-typage.} Si \(m\refby{\pi}m'\),
   alors \(m'\subtype m\).
-\item \emph{Ses feuilles sont concrètes.} Toute matière de \(M_\rho\) sans
-  enfant appartient à \(\Matter_c\).
+\item \emph{Ses feuilles sont concrètes.} Pour tout \( m \in \mc M_\rho\), $m\not\refine$ implique $m\in\CMatter$.
+\item \emph{Ses prédicats sont factuels.} Pour tout $m\refby\pi m'$, si $m''\in\dep(\pi)$ alors $m''$ est factuelle.
 \end{enumerate}
 \end{defi}
 
-La racine de l'arbre est ainsi le sommet du sous-typage, et tout chemin descend
-dans l'ordre \(\subtype\). D'après les conditions~1 et~2, un enfant est
-distinct de son parent et le précise : une matière concrète n'a donc pas
-d'enfant et, avec la condition~3, les matières concrètes de \(M_\rho\) sont
-exactement ses feuilles. Le sous-typage peut donner plusieurs sur-types à une
-matière : l'indemnité compensatrice de préavis précise à la fois l'indemnité de
-rupture et le préavis. L'arbre ne lui donne qu'un parent, ici le préavis, de sorte que le chemin qui y mène,
-et donc les conditions sous lesquelles elle se pose, sont uniques. Les enfants
-d'une matière, en revanche, ne s'excluent pas : une matière abstraite peut
-s'ouvrir sur plusieurs matières concrètes à la fois. Nous appelons
-\emph{factuelles} les matières concrètes dont la valeur est toujours saisie
-directement, comme \(\IDCC\) ou \(\DateT\) ; elles n'ont pas à figurer dans
-\(M_\rho\). Nous fixons
-dans la suite un arbre de raffinement cohérent \(\rho\).
 
 \begin{defi}[Matières ouvertes]\label{def:ouvertes}
-Pour un dossier \(D\), une matière concrète de \(M_\rho\) est \emph{ouverte}
+Pour un dossier \(D\), une matière concrète de \(\mc M_\rho\) est \emph{ouverte}
 si aucun prédicat du chemin qui la relie à la racine, unique, ne vaut
 \(\false\) ; elle est alors \emph{établie} si tous ces prédicats valent
-\(\true\), et \emph{en suspens} sinon. Pour \(m\in M_\rho\), on note
+\(\true\), et \emph{en suspens} sinon. Pour \(m\in \mc M_\rho\), on note
 \(\Ouv_D(m)\) l'ensemble des matières ouvertes situées sous \(m\),
 c'est-à-dire atteintes depuis \(m\) par un chemin
 \[
@@ -936,7 +916,7 @@ On note \(\pi(e)(D):=\sem{\pi(e)}_D\). Pour \(e\in E\), soit
 Pour \(u\in V\), on utilise comme d'habitude \(\child(u)\), \(\sib_u(v)\) et
 \(\desc(v)\) (avec \(v\in\desc(v)\)) pour désigner respectivement les fils, les
 frères et les descendants d'un nœud. Une matière abstraite n'a pas d'arbre
-normatif : \(\mc T(m)=\emptyset\) lorsque \(m\notin\Matter_c\).
+normatif : \(\mc T(m)=\emptyset\) lorsque \(m\notin\CMatter\).
 \end{defi}
 
 Comme tout nœud autre que la racine possède exactement une arête entrante,
@@ -1017,19 +997,19 @@ Nous supposons que les arbres normatifs encodent fidèlement le contenu
 calculatoire des textes qu'ils représentent ; le présent travail ne traite pas
 de cette traduction. Nous imposons en revanche les conditions suivantes,
 supposées dans toute la suite. Une \emph{forêt normative} est un ensemble fini
-\(\mc F\subseteq\bigcup_{m\in\Matter}\mc T(m)\) contenant au plus un arbre par
+\(\mc F\subseteq\bigcup_{m\in\mc M}\mc T(m)\) contenant au plus un arbre par
 matière ; on note \(\theta_m\) l'arbre de \(m\) lorsqu'il existe, et
 \(\mathrm{dom}(\mc F)\) l'ensemble des matières qui ont un arbre dans
 \(\mc F\).
 
-\begin{defi}[Cohérence]\label{def:consistency}
+\begin{defi}[$(\rho,D)$-Cohérence]\label{def:consistency}
 \(\mc F\) est \emph{cohérente}, relativement à l'arbre de raffinement
-\(\rho\), lorsque :
+\(\rho\) et au dossier $D$, lorsque :
 \begin{enumerate}
 \item \emph{Les dépendances sont bien fondées.} Posons \(m'<_{\dep}m\) si et
   seulement si \(\theta_m\in\mc F\) et \(m'\in\dep(\theta_m)\). La relation
   \(<_{\dep}\) est acyclique.
-\item Pour tout \(\theta_m=(V,E,r,\lambda,\pi)\in\mc F\) et tout dossier \(D\) :
+\item Pour tout \(\theta_m=(V,E,r,\lambda,\pi)\in\mc F\) :
 \begin{enumerate}
 \item \emph{Les arbres reflètent \(\normgt\).} Pour tous \(v,w\in V\setminus\{r\}\),
   \((v,w)\in E\Rightarrow s(\lambda(v))\normgt s(\lambda(w))\).
@@ -1039,7 +1019,7 @@ matière ; on note \(\theta_m\) l'arbre de \(m\) lorsqu'il existe, et
 \item \emph{La racine est exhaustive.} Il existe \(v\in\child(r)\) tel que
   \(\pi((r,v))(D)\neq\false\).
 \item \emph{Les candidats sociaux sont comparables.} S'il existe
-  \(u\in V\setminus\{r\}\) et \(s\in\Source\) tels que
+  \(u\in V\setminus\{r\}\) et \(s\in\mc S\) tels que
   \(\widehat p(\lambda(u))(s)=\Social\), alors \(m\in\MatterOrd\).
 \item \emph{Les politiques d'arbitrage sont totales sur le sous-arbre.} Pour
   tous \(u,v \in V\setminus\{r\}\),
@@ -1048,9 +1028,8 @@ matière ; on note \(\theta_m\) l'arbre de \(m\) lorsqu'il existe, et
     \bigl(s(\lambda(v))\bigr)
   \neq \bot\).
 \end{enumerate}
-\item \emph{Le raffinement couvre les arbres sans les lire.}
-  \(\mathrm{dom}(\mc F)\subseteq M_\rho\) et
-  \(\dep(\rho)\cap\mathrm{dom}(\mc F)=\emptyset\).
+\item \emph{Le raffinement couvre les arbres, i.e.,}
+  \(\mathrm{dom}(\mc F)\subseteq \mc M_\rho\) .
 \end{enumerate}
 \end{defi}
 
@@ -1061,10 +1040,7 @@ collectives différentes ou des versions temporelles différentes d'un même
 texte. Un candidat n'est jamais en conflit avec ses ancêtres, qui sont des
 sources supérieures situées sur le même chemin. La condition~(c) garantit
 qu'un arbre normatif contient toujours au moins un candidat applicable. Les conditions~(d) et~(e) assurent que les politiques
-d'arbitrage sont toujours bien définies. La condition~3 permet de concrétiser
-une question avant de saisir le moindre arbre normatif : toute matière dotée
-d'un arbre est une feuille de \(\rho\), et les prédicats de raffinement ne
-lisent que des matières saisies.
+d'arbitrage sont toujours bien définies. La condition~3 permet de s'assurer qu'on trouve l'arbre normatif de $m$ par raffinements successifs d'une question abstraite.
 
 \paragraph{Raffinement et arbres normatifs.}
 Les deux niveaux de prédicats ne se confondent pas : ceux de l'arbre de

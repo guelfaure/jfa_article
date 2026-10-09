@@ -54,6 +54,7 @@
 %% Matières et domaines de valeurs (déf. 1)
 %% --------------------------------------------------------------------
 \newcommand{\Matter}{\ensuremath{\mathsf{Matiere}}}
+\newcommand{\CMatter}{\ensuremath{\mathcal{C}_\Matter}}
 \newcommand{\Raw}{\ensuremath{\mathcal{V}}}                 % domaine : \Raw(m)
 \newcommand{\Money}{\ensuremath{\mathsf{Montant}}}
 \newcommand{\Duration}{\ensuremath{\mathsf{Duree}}}
@@ -70,7 +71,7 @@
 %% --------------------------------------------------------------------
 \newcommand{\fav}[1]{\mathrel{\sqsubseteq_{#1}}}      % x \fav{m} y : y au moins aussi favorable
 \newcommand{\strictfav}[1]{\mathrel{\sqsubset_{#1}}}  % partie stricte
-\newcommand{\MatterOrd}{\ensuremath{\Matter^{\sqsubseteq}}}
+\newcommand{\MatterOrd}{\ensuremath{\mc M^{\fav{}}}}
 
 %% --------------------------------------------------------------------
 %% Dossiers (déf. 3) et constructeurs
