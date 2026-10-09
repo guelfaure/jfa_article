@@ -21,8 +21,11 @@
 \newcommand{\Brancher}{\ensuremath{\mathsf{Brancher}}}
 \newcommand{\Fusionner}{\ensuremath{\mathsf{Fusionner}}}
 \newcommand{\Echanger}{\ensuremath{\mathsf{Echanger}}}
+\newcommand{\Raffiner}{\ensuremath{\mathsf{Raffiner}}}
+\newcommand{\Cumuler}{\ensuremath{\mathsf{Cumuler}}}
 \newcommand{\Liste}{\ensuremath{\mathbf L}}
-\newcommand{\ICP}{\ensuremath{\mathsf{IndemniteCompensatrice}}}
+\newcommand{\ICP}{\ensuremath{\mathsf{IndemnitePreavis}}}
+\newcommand{\Indemnite}{\ensuremath{\mathsf{Indemnite}}}
 \newcommand{\conflit}{\mathbin{\#}}
 \newcommand{\Conf}{\ensuremath{\mathsf{Conf}_D}}
 \newcommand{\Categorie}{\ensuremath{\mathsf{Categorie}}}
@@ -219,14 +222,14 @@ Nous formalisons la notion de matière juridique comme un ensemble de types \emp
 Comme pour les \emph{matières}, nous formalisation la notion de sources juridiques par un ensemble de types \emph{sources} équipés d'une relation de sous-typage. Une \emph{source} $s$ est un sous-type d'une source $s'$ lorsque $s$ précise $s'$ (par exemple, \textsf{ConventionBranche} est un sous-type d'\textsf{AccordCollectif}). Les \emph{sources} sont par ailleurs partiellement ordonnées selon la \textbf{hiérarchie des normes} en vigueur dans le droit du travail. Une \emph{source} est concrète lorsqu'elle est son unique sous-type.
 %%
 \paragraph{Dossier client.}%%
-Un dossier client est ici un \emph{dossier} formel, composé d'un ensemble de \emph{matières} et d'une fonction d'évaluation partielle qui associe certaines \emph{matières concrètes} du \emph{dossier} à une valeur ou un \emph{arbre normatif}. Un \emph{dossier} est \emph{clos} lorsque toutes les \emph{matières} du \emph{dossier} sont associées à une valeur. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) est ajoutée. Les \emph{dossiers} sont manipulés par un ensemble d'opérateurs sur des listes de dossiers qui permettent au juriste, via des interactions avec \ALex, de produire une liste de \emph{dossiers} clos dont la tête est le \emph{dossier} support de la \textbf{demande principale} du juriste, suivi des \emph{dossiers} supports des \textbf{demandes subsidiaires}.
+Un dossier client est ici un \emph{dossier} formel, composé d'un ensemble de \emph{matières} et d'une fonction d'évaluation partielle qui associe certaines \emph{matières} du \emph{dossier} à une valeur ou un \emph{arbre normatif}. Un \emph{dossier} est \emph{clos} lorsque toutes les \emph{matières} du \emph{dossier} sont associées à une valeur. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) est ajoutée. Les \emph{dossiers} sont manipulés par un ensemble d'opérateurs sur des listes de dossiers qui permettent au juriste, via des interactions avec \ALex, de produire une liste de \emph{dossiers} clos dont la tête est le \emph{dossier} support de la \textbf{demande principale} du juriste, suivi des \emph{dossiers} supports des \textbf{demandes subsidiaires}.
 %%
 \paragraph{Arbres normatifs.} %%
 Les \emph{arbres normatifs} reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} des ces fonctions n'est abordée qu'au titre d'exemple dans ce papier, les \emph{candidats} ne retenant que de la signature de ces fonctions et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une politique d'arbitrage qui formalise son
 \textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipé d'un prédicat dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même arbre normatif sont toujours en \textbf{concours}, deux candidats issus d'une même matière abstraite typés par des matières concrètes différentes peuvent parfois se cumuler. 
 
 \paragraph{Étapes du raisonnement juridique assisté.}
-Le raisonnement juridique, est formalisé par une série d'opérateurs sur des listes de \emph{dossiers}. Ces opérateurs permettent d'ajouter des \emph{matières} à certains dossiers, de les préciser en créant des dossiers alternatifs si besoin, et de fusionner des dossiers lorsque le juriste estime que deux \emph{matières} distinctes sont cumulables, ou d'en changer l'ordre. Un opérateur de résolution permet de réduire un arbre normatif à une valeur issue d'un calcul fourni par un candidat sélectionné.
+Le raisonnement juridique est formalisé par une série d'opérateurs sur des listes de \emph{dossiers}. Ces opérateurs permettent d'ajouter des \emph{matières} à certains dossiers, de raffiner une \emph{matière} abstraite en remplaçant le dossier qui la porte par autant de dossiers qu'elle a de précisions, de créer des dossiers alternatifs lorsqu'un fait est discuté, de cumuler, sous une \emph{matière} abstraite commune, les valeurs de deux \emph{matières} que le juriste estime cumulables, de fusionner les dossiers qui s'accordent, et d'en changer l'ordre. Un opérateur de résolution permet de réduire un arbre normatif à une valeur issue d'un calcul fourni par un candidat sélectionné.
 
 \begin{figure}[t]
 \centering
@@ -241,6 +244,7 @@ Le raisonnement juridique, est formalisé par une série d'opérateurs sur des l
     fill=white},
   gris/.style={draw=elague, text=elague},
   vert/.style={draw=chemin, very thick},
+  racine/.style={circle, fill=chemin, inner sep=1.8pt},
   module/.style={draw, align=center, inner sep=3pt, fill=white,
     font=\scriptsize\ttfamily},
   texte/.style={align=center, font=\tiny\itshape},
@@ -249,65 +253,73 @@ Le raisonnement juridique, est formalisé par une série d'opérateurs sur des l
   arrg/.style={-{Latex[length=1.6mm]}, draw=elague, densely dashed},
   lien/.style={-{Latex[length=1.6mm]}, densely dotted},
   lienv/.style={-{Latex[length=1.8mm]}, draw=chemin, thick, densely dotted},
-  pred/.style={font=\tiny, fill=bande, inner sep=1pt}
+  pred/.style={font=\tiny, fill=bande, inner sep=1pt, align=center}
 ]
 % Bandes
-\fill[bande, rounded corners=3pt] (0,0.15) rectangle (13.6,-3.0);
-\fill[bande, rounded corners=3pt] (0,-3.1) rectangle (13.6,-6.2);
-\fill[bande, rounded corners=3pt] (0,-6.3) rectangle (13.6,-8.75);
-\node[couche] at (0.35,-1.42) {2. Arbre de\\ raffinement};
-\node[couche] at (0.35,-4.65) {1. Forêt\\ normative};
-\node[couche] at (0.35,-7.52) {0. Corpus};
+\fill[bande, rounded corners=3pt] (0,0.15) rectangle (13.6,-3.95);
+\fill[bande, rounded corners=3pt] (0,-4.05) rectangle (13.6,-7.25);
+\fill[bande, rounded corners=3pt] (0,-7.35) rectangle (13.6,-9.8);
+\node[couche] at (0.35,-1.9) {2. Arbre de\\ raffinement};
+\node[couche] at (0.35,-5.65) {1. Forêt\\ normative};
+\node[couche] at (0.35,-8.57) {0. Corpus};
 
 % Couche 2 : arbre de raffinement
-\node[abs] (top) at (4.3,-0.4) {\(\Matter\)};
-\node[abs] (pre) at (2.65,-1.4) {préavis};
-\node[abs, vert, densely dashed] (rup) at (6.0,-1.4) {indemnité de rupture};
-\node[conc] (dur) at (1.7,-2.45) {durée du\\ préavis};
-\node[conc, gris] (icp) at (3.6,-2.45) {indemnité\\ compensatrice};
-\node[conc, vert] (lic) at (6.0,-2.45) {indemnité de\\ licenciement};
+\node[abs] (top) at (4.2,-0.35) {\(\Matter\)};
+\node[abs] (dty) at (1.7,-1.1) {\(\Duration\)};
+\node[abs] (mon) at (5.4,-1.1) {\(\Money\)};
+\node[abs, vert, densely dashed] (ind) at (5.4,-1.85) {indemnité};
+\node[abs, vert, densely dashed] (rup) at (6.9,-2.6) {indemnité de rupture};
+\node[conc] (dur) at (1.7,-3.45) {durée du\\ préavis};
+\node[conc, vert] (icp) at (3.9,-3.45) {indemnité\\ compensatrice};
+\node[conc, vert] (lic) at (6.9,-3.45) {indemnité de\\ licenciement};
 \node[draw=chemin, very thick, rounded corners=2pt, align=left, inner sep=3pt,
-  fill=white] (q) at (10.2,-1.4)
-  {\textit{question :} ce qui est dû\\ au titre de la rupture};
-\draw[arr] (top) -- (pre);
-\draw[arr] (top) -- (rup);
-\draw[arr] (pre) -- (dur);
-\draw[arrg] (pre) -- (icp);
-\draw[arrv] (q) -- (rup);
+  fill=white] (q) at (11.2,-1.6)
+  {\textit{question :} les indemnités\\ dues à la salariée};
+\draw[arr] (top) -- (dty);
+\draw[arr] (top) -- (mon);
+\draw[arr] (dty) -- (dur);
+\draw[arr] (mon) -- (ind);
+\draw[arrv] (ind) -- node[pred, pos=0.5, left=1pt]{\(\PreavisNE\)} (icp);
+\draw[arrv] (ind) -- (rup);
+\draw[arrv] (q) -- (ind);
 \draw[arrv] (rup) -- node[pred, right=2pt]{\(\ModeRupture=\mathsf{Licenciement}\)} (lic);
 
-% Couche 1 : forêt normative
-\draw[fill=white] (1.7,-3.45) -- (1.2,-4.3) -- (2.2,-4.3) -- cycle;
-\draw[gris, fill=white] (3.6,-3.45) -- (3.1,-4.3) -- (4.1,-4.3) -- cycle;
-\draw[lien] (dur) -- (1.7,-3.45);
-\draw[lien, draw=elague] (icp) -- (3.6,-3.45);
-\node[cand, vert] (r) at (6.0,-3.75) {\(r\) : indemnité\\ de licenciement};
-\node[cand, gris] (old) at (8.7,-3.6) {Code, rédaction\\ antérieure};
-\node[cand, vert] (code) at (8.7,-4.75) {Code, R.~1234-2\\
+% Couche 1 : foret normative
+\draw[fill=white] (1.7,-4.35) -- (1.2,-5.2) -- (2.2,-5.2) -- cycle;
+\draw[draw=chemin, very thick, fill=white] (3.9,-4.35) -- (3.4,-5.2) -- (4.4,-5.2) -- cycle;
+\draw[lien] (dur) -- (1.7,-4.35);
+\draw[arrv, densely dashed] (icp) -- (3.9,-4.35);
+\node[racine] (r) at (6.9,-4.45) {};
+\node[cand, gris] (old) at (5.6,-5.45) {Code, rédaction\\ antérieure};
+\node[cand, vert] (code) at (8.6,-5.45) {Code, R.~1234-2\\
   {\tiny\(\ConvBranche\mapsto\Social\)}};
-\node[cand, gris] (s19) at (11.6,-3.6) {Syntec, art.~19};
-\node[cand, gris] (hcr) at (11.6,-4.5) {HCR};
-\node[cand, vert] (s45) at (11.6,-5.55) {Syntec, art.~4.5};
+\node[cand, gris] (s19) at (11.6,-4.5) {Syntec, art.~19};
+\node[cand, gris] (hcr) at (11.6,-5.3) {HCR};
+\node[cand, vert] (s45) at (11.6,-6.6) {Syntec, art.~4.5};
 \draw[arrv, densely dashed] (lic) -- (r);
 \draw[arrg] (r) -- (old);
-\draw[arrv] (r) -- (code);
+\draw[arrv] (r) -- node[pred, pos=0.45, right=3pt]{\(\DateT\geq\text{27/09/2017}\)} (code);
 \draw[arrg] (code) -- (s19);
 \draw[arrg] (code) -- (hcr);
 \draw[arrv] (code) -- (s45);
+\node[pred, anchor=west] at (10.55,-5.95)
+  {\(\IDCC=1486\)\\ \(\DateT\geq\text{01/05/2023}\)};
 
 % Couche 0 : corpus
-\node[module] (mpre) at (2.4,-7.2) {Loi\_preavis};
-\node[module] (mhcr) at (5.5,-7.2) {Ccn\_1979\_\\ rupture\_du\_contrat};
-\node[module, draw=chemin, thick] (mlic) at (8.7,-7.2) {Loi\_indemnite\_\\ licenciement};
-\node[module, draw=chemin, thick] (msyn) at (11.6,-7.2) {Ccn\_1486\_\\ rupture\_du\_contrat};
-\node[texte] (tpre) at (2.4,-8.3) {\S\ C. trav., L.~1234-1\\ et L.~1234-5};
-\node[texte] (thcr) at (5.5,-8.3) {\S\ convention HCR\\ (IDCC 1979)};
-\node[texte] (tlic) at (8.7,-8.3) {\S\ C. trav., L.~1234-9\\ et R.~1234-2};
-\node[texte] (tsyn) at (11.6,-8.3) {\S\ convention Syntec,\\ art.~19 et 4.5};
+\node[module, draw=chemin, thick] (mpre) at (2.4,-8.15) {Loi\_preavis};
+\node[module] (mhcr) at (5.6,-8.15) {Ccn\_1979\_\\ rupture\_du\_contrat};
+\node[module, draw=chemin, thick] (mlic) at (8.6,-8.15) {Loi\_indemnite\_\\ licenciement};
+\node[module, draw=chemin, thick] (msyn) at (11.6,-8.15) {Ccn\_1486\_\\ rupture\_du\_contrat};
+\node[texte] (tpre) at (2.4,-9.25) {\S\ C. trav., L.~1234-1\\ et L.~1234-5};
+\node[texte] (thcr) at (5.6,-9.25) {\S\ convention HCR\\ (IDCC 1979)};
+\node[texte] (tlic) at (8.6,-9.25) {\S\ C. trav., L.~1234-9\\ et R.~1234-2};
+\node[texte] (tsyn) at (11.6,-9.25) {\S\ convention Syntec,\\ art.~19 et 4.5};
 \foreach \m/\t in {mpre/tpre, mhcr/thcr, mlic/tlic, msyn/tsyn}
   \draw[lien] (\m) -- (\t);
 \draw[lienv] (code) -- (mlic);
 \draw[lienv] (s45) -- (msyn);
+\draw[lienv] (3.75,-5.2) -- (mpre);
+\draw[lien] (1.7,-5.2) -- (mpre);
 \end{tikzpicture}
 \caption{Architecture d'\ALex{}. La couche~0, le corpus, réunit des modules
   Catala indépendants : chacun calcule la réponse d'un texte sans connaître les
@@ -315,10 +327,15 @@ Le raisonnement juridique, est formalisé par une série d'opérateurs sur des l
   normative, organise ces calculs en candidats, avec leurs conditions
   d'application et leurs politiques d'arbitrage, que le corpus laisse hors du
   code. La couche~2, l'arbre de raffinement, relie les questions abstraites aux
-  matières concrètes. Le chemin vert part de la question de la salariée, la
-  concrétise en indemnité de licenciement, puis suit, dans l'arbre normatif de
-  cette matière, les candidats qui y répondent pour le dossier fil rouge,
-  jusqu'aux modules qui les calculent. En gris, ce que le dossier écarte.}
+  matières concrètes, rangées sous leur type de valeurs
+  (figure~\ref{fig:hierarchie}). Le chemin vert part de la question de la
+  salariée et se divise sous l'indemnité : l'indemnité de licenciement et
+  l'indemnité compensatrice de préavis, qui se cumulent, ont chacune leur arbre
+  normatif. Il suit, dans le premier (racine en point), les candidats qui y
+  répondent pour le dossier fil rouge, avec les prédicats de leurs arêtes,
+  jusqu'aux modules qui les calculent ; le second, esquissé, puise dans
+  \texttt{Loi\_preavis} et dans le module Syntec. En gris, ce que le dossier
+  écarte.}
 \label{fig:archi}
 \end{figure} 
 
@@ -328,12 +345,13 @@ Nous introduisons ici notre exemple fil rouge, tiré du corpus~\cite{corpuslumo}
 \paragraph{Le dossier juridique.}
 Une salariée d'une société de conseil relevant de la convention collective
 Syntec (IDCC~1486) reçoit, en mars 2025, la notification de son licenciement,
-qui n'est pas prononcé pour faute grave. Elle compte dix ans d'ancienneté et
+qui n'est pas prononcé pour faute grave ; son employeur la dispense d'exécuter
+son préavis. Elle compte dix ans d'ancienneté et
 son salaire de référence est de 3\,000 euros. Sa classification est discutée :
 son employeur la range parmi les ETAM (employés, techniciens et agents de
-maîtrise) ; elle soutient relever des ingénieurs et cadres. Elle demande ce
-qui lui est dû au titre de la rupture. Le dossier initial contient la date de
-la notification, le mode de rupture, l'exécution du préavis, l'ancienneté et le
+maîtrise) ; elle soutient relever des ingénieurs et cadres. Elle demande les
+indemnités qui lui sont dues. Le dossier initial contient la date de
+la notification, le mode de rupture, la dispense de préavis, l'ancienneté et le
 salaire de référence, au sens de la loi comme au sens de la convention ; la
 convention applicable et la catégorie restent à établir.
 
@@ -345,7 +363,13 @@ montant plancher : un quart de mois de salaire par année d'ancienneté jusqu'à
 dix ans, un tiers au-delà~\cite{frcode}. L'article 4.5 de la convention Syntec,
 en vigueur depuis le 1\textsuperscript{er}~mai 2023, fixe un barème propre, qui
 distingue les ETAM des ingénieurs et cadres~\cite{syntec} ; avant cette date,
-l'article~19 de la convention s'appliquait.
+l'article~19 de la convention s'appliquait. Le préavis dispensé ouvre droit à
+une indemnité compensatrice, égale à la rémunération que la salariée aurait
+perçue pendant le préavis (article L.~1234-5 ; article 4.4 de la convention).
+Le préavis est de deux mois au-delà de deux ans d'ancienneté selon l'article
+L.~1234-1, et, selon l'article 4.2 de la convention, de trois mois pour les
+ingénieurs et cadres et de deux mois pour les ETAM de plus de deux ans
+d'ancienneté.
 
 \begin{figure}
 \begin{Verbatim}[frame=single, label={Code du travail, article R. 1234-2}]
@@ -401,14 +425,16 @@ internes à un texte, comme le barème par catégorie ou l'exclusion de la faute
 grave, restent au contraire dans le code Catala.
 
 \paragraph{Ce que l'assistant doit établir.}
-L'assistant doit d'abord préciser la question : ici, le licenciement fait de
-l'indemnité de licenciement la matière en cause. Trois questions se posent
+L'assistant doit d'abord préciser la question : ici, le licenciement et la
+dispense de préavis ouvrent deux matières, l'indemnité de licenciement et
+l'indemnité compensatrice de préavis, qui se cumulent. Trois questions se posent
 ensuite : quelle convention collective s'applique, quelle version de cette
 convention régit la date de la notification, et dans quelle catégorie ranger
 la salariée. Les sections suivantes reprennent ce dossier à chaque étape :
 matières et candidats (section~\ref{sec:notations}), arbre de raffinement et arbre normatif (section~\ref{sec:forest}, figures~\ref{fig:hierarchie}
-et~\ref{fig:arbre}), élagage, faits requis, sélection finale et branchement
-sur la catégorie (section~\ref{sec:op}).
+et~\ref{fig:arbre}), élagage, faits requis, sélection finale, raffinement de
+la question, branchement sur la catégorie et cumul des deux indemnités
+(section~\ref{sec:op}).
 
 \section{Travaux connexes et positionnement}\label{sec:related}
 
@@ -487,8 +513,8 @@ licenciement précise l'indemnité de rupture,
 La matière \(\Matter\) est le plus
 grand élément de cet ordre, la question la plus générale :
 \(m\subtype\Matter\) pour toute matière \(m\). Chaque matière possède un
-\emph{domaine de valeurs} \(\Raw(m)\), l'ensemble de ses valeurs brutes
-possibles, et le sous-typage est compatible avec les domaines :
+\emph{domaine de valeurs} \(\Raw(m)\), l'ensemble, non vide, de ses
+valeurs brutes possibles, et le sous-typage est compatible avec les domaines :
 \[
  m\subtype m'\implies\Raw(m)\subseteq\Raw(m').
 \]
@@ -511,7 +537,9 @@ où \(\Money\) et \(\Duration\) désignent les montants et les durées. Des
 matières distinctes peuvent partager un même domaine : \(\Indem\) et \(\Salary\)
 sont toutes deux des montants, mais ce sont des grandeurs juridiques
 différentes, et les fonctions juridiques (définition~\ref{def:rule-package})
-sont typées par les matières, non par les domaines. La matière \(\IDCC\) est un
+sont typées par les matières, non par les domaines. Les types de valeurs
+sont eux-mêmes des matières, dont le domaine est l'ensemble qu'ils désignent :
+ainsi \(\Indemnite\subtype\Money\). La matière \(\IDCC\) est un
 identifiant, qui détermine la convention collective applicable.
 \end{defi}
 
@@ -543,13 +571,13 @@ sur les valeurs que les candidats concurrents produisent pour le dossier
 considéré, et non sur les textes eux-mêmes.
 
 \paragraph{Exemple.} La demande de la salariée porte sur la matière abstraite
-\(\IndemRupture\), que précise \(\Indem\). Le dossier fil rouge met en jeu
-les matières concrètes
+\(\Indemnite\), que précisent \(\Indem\) et \(\ICP\). Le dossier fil rouge met
+en jeu les matières concrètes
 \[
 \begin{array}{c}
-\Indem,\ \Senior,\ \Salary,\\
-\Presence,\ \MoisRem,\ \IDCC,\ \DateT,\\
-\ModeRupture,\ \PreavisNE\ \text{et}\ \Categorie,\\
+\Indem,\ \ICP,\ \Senior,\\
+\Salary,\ \Presence,\ \MoisRem,\\
+\IDCC,\ \DateT,\ \ModeRupture,\ \PreavisNE\ \text{et}\ \Categorie,\\
 \text{avec}\quad\{\Etam,\Cadre\}\subseteq\Raw(\Categorie),
 \end{array}
 \]
@@ -568,7 +596,7 @@ est l'ensemble des matières soulevées par le dossier et \(\nu_D\), une fonctio
 \nu_D:\prod_{m\in\mc M_D}\left(\Raw(m)\uplus\mc T(m)\right)_\bot,
 \]
 où \(\mc T(m)\) est l'ensemble des arbres normatifs de \(m\)
-(voir définition~\ref{def:normative-tree}) et $\nu_D(m)=\bot$ indique un matière sans valuation.
+(voir définition~\ref{def:normative-tree}) et $\nu_D(m)=\bot$ indique une matière sans valuation.
 \end{defi}
 
 %La valuation attribue à chaque matière d'un dossier l'un des deux états suivants.
@@ -791,9 +819,10 @@ L'évaluation s'étend aux prédicats de \(\Pred\) par la conjonction de Kleene.
 \subsection{Arbres de raffinement}\label{sec:hierarchie}
 
 Le sous-typage dit quelles matières en précisent une autre, non pour quels
-dossiers cette précision vaut. Or la salariée qui demande ce qui lui est dû au titre de la rupture
-pose une question abstraite, que seul son dossier permet de préciser : c'est le
-mode de rupture qui en fait une indemnité de licenciement. De même, la prime de
+dossiers cette précision vaut. Or la salariée qui demande les indemnités qui lui sont dues pose une
+question abstraite, que seul son dossier permet de préciser : le mode de rupture
+y ouvre l'indemnité de licenciement, la dispense de préavis l'indemnité
+compensatrice. De même, la prime de
 vacances de la convention Syntec ne se pose, parmi les primes, que pour un
 salarié qui relève de cette convention. Concrétiser une matière demande donc plus
 d'information que le sous-typage : un \emph{arbre de raffinement} attache à
@@ -823,8 +852,18 @@ Un arbre de raffinement \(\rho=(\mc M_\rho,\refine)\) est \emph{cohérent} lorsq
   alors \(m'\subtype m\).
 \item \emph{Ses feuilles sont concrètes.} Pour tout \( m \in \mc M_\rho\), $m\not\refine$ implique $m\in\CMatter$.
 \item \emph{Ses prédicats sont factuels.} Pour tout $m\refby\pi m'$, si $m''\in\dep(\pi)$ alors $m''$ est factuelle.
+\item \emph{Ses premiers niveaux sont les types de valeurs.} Les enfants de la
+  racine sont des types de valeurs, comme \(\Money\) ou \(\Duration\), aux
+  domaines deux à deux disjoints.
 \end{enumerate}
 \end{defi}
+
+Avec la condition~3, la condition~6 interdit les matières hétérogènes : deux
+matières de types différents n'ont que \(\Matter\) pour ancêtre commun. Une
+matière « préavis » qui réunirait la durée du préavis et l'indemnité
+compensatrice de préavis, une durée et un montant, est ainsi exclue ; la durée
+se range sous \(\Duration\), l'indemnité sous \(\Money\)
+(figure~\ref{fig:hierarchie}).
 
 
 \begin{defi}[Matières ouvertes]\label{def:ouvertes}
@@ -854,45 +893,60 @@ c'est-à-dire atteintes depuis \(m\) par un chemin
   pred/.style={font=\scriptsize, align=center, fill=white, inner sep=1pt},
   offpred/.style={pred, text=elague}
 ]
-\node[abs] (top) at (0,0) {\(\Matter\)};
-\node[abs] (rup) at (-3.5,-1.5) {indemnité de rupture};
-\node[abs] (pre) at (0.9,-1.5) {préavis};
-\node[abs] (pri) at (4.6,-1.5) {prime};
-\node[conc] (lic) at (-5.0,-4.0) {indemnité de\\ licenciement};
-\node[off] (icp) at (-1.3,-4.0) {indemnité\\ compensatrice\\ de préavis};
-\node[conc] (dur) at (2.0,-4.0) {durée\\ du préavis};
-\node[conc] (pvs) at (5.0,-4.0) {prime de vacances\\ Syntec};
-\draw[arr] (top) -- (rup);
-\draw[arr] (top) -- (pre);
-\draw[arr] (top) -- (pri);
-\draw[offarr] (pre) -- node[offpred, pos=0.5]{\(\PreavisNE\)} (icp);
-\draw[arr] (rup) -- node[pred, pos=0.55]{\(\ModeRupture=\mathsf{Licenciement}\)} (lic);
-\draw[arr] (pre) -- (dur);
-\draw[arr] (pri) -- node[pred]{\(\IDCC=1486\)} (pvs);
+\node[abs] (top) at (2.65,0) {\(\Matter\)};
+\node[abs] (mon) at (-0.4,-1.15) {\(\Money\)};
+\node[abs] (dty) at (5.7,-1.15) {\(\Duration\)};
+\node[abs] (ind) at (-3.3,-2.3) {indemnité};
+\node[abs] (pri) at (2.5,-2.3) {prime};
+\node[abs] (rup) at (-1.9,-3.45) {indemnité de rupture};
+\node[conc] (icp) at (-4.9,-4.6) {indemnité\\ compensatrice\\ de préavis};
+\node[conc] (lic) at (-1.9,-4.6) {indemnité de\\ licenciement};
+\node[conc] (pvs) at (2.5,-4.6) {prime de vacances\\ Syntec};
+\node[conc] (dur) at (5.7,-4.6) {durée du\\ préavis};
+\draw[arr] (top) -- (mon);
+\draw[arr] (top) -- (dty);
+\draw[arr] (mon) -- (ind);
+\draw[arr] (mon) -- (pri);
+\draw[arr] (ind) -- (rup);
+\draw[arr] (ind) -- node[pred, pos=0.5, left=1pt]{\(\PreavisNE\)} (icp);
+\draw[arr] (rup) -- node[pred, right=2pt]{\(\ModeRupture=\mathsf{Licenciement}\)} (lic);
+\draw[arr] (pri) -- node[pred, right=2pt]{\(\IDCC=1486\)} (pvs);
+\draw[arr] (dty) -- (dur);
 \draw[decorate, decoration={brace, mirror, amplitude=4pt}]
-  (-6.1,-4.85) -- (6.4,-4.85)
+  (-6.2,-5.3) -- (6.6,-5.3)
   node[midway, below=5pt, font=\footnotesize]{matières concrètes : les feuilles};
 \end{tikzpicture}
-\caption{Extrait d'un arbre de raffinement, de racine \(\Matter\). Les matières
+\caption{Extrait d'un arbre de raffinement, de racine \(\Matter\), dont les
+  enfants sont les types de valeurs \(\Money\) et \(\Duration\). Les matières
   abstraites sont en pointillés ; les matières concrètes sont les feuilles, en
   trait gras. Les arêtes sans étiquette portent le prédicat \(\true\). Pour le
-  dossier fil rouge, l'indemnité de licenciement est établie et l'indemnité
-  compensatrice de préavis écartée (en gris), le préavis ayant été exécuté.}
+  dossier fil rouge, l'indemnité de licenciement et l'indemnité compensatrice
+  de préavis sont établies, la salariée ayant été dispensée de préavis.
+  Sœurs sous l'indemnité, l'indemnité de rupture et l'indemnité compensatrice
+  ne sont pas en concours : leurs montants s'ajoutent (section~\ref{sec:fusion}).}
 \label{fig:hierarchie}
 \end{figure}
 
 \paragraph{Exemple.} Dans le dossier fil rouge, la question porte sur une
-matière abstraite, l'indemnité de rupture (figure~\ref{fig:hierarchie}), avec
-\(\Indem\subtype\IndemRupture\subtype\Matter\). Le dossier indique que la
-rupture est un licenciement, \(\ModeRupture=\mathsf{Licenciement}\) ; ainsi,
-dans l'extrait de la figure,
+matière abstraite, l'indemnité (figure~\ref{fig:hierarchie}), avec
 \[
- \Ouv_D(\IndemRupture)=\{\Indem\},
+\begin{array}{l}
+ \Indem\subtype\IndemRupture\subtype\Indemnite\subtype\Money\subtype\Matter,\\
+ \ICP\subtype\Indemnite.
+\end{array}
 \]
-et cette matière est établie. Sous le préavis, l'indemnité compensatrice
-n'est pas ouverte, le préavis ayant été exécuté : \(\PreavisNE=\false\). La
-question est concrétisée ; il reste à
-déterminer quelle règle y répond.
+Le dossier indique que la rupture est un licenciement,
+\(\ModeRupture=\mathsf{Licenciement}\), et que la salariée a été dispensée de
+préavis, \(\PreavisNE=\true\) ; ainsi, dans l'extrait de la figure,
+\[
+ \Ouv_D(\Indemnite)=\{\Indem,\ICP\},
+\]
+et ces deux matières sont établies. Elles ne sont pas en concours : sœurs sous
+l'indemnité, leurs montants s'ajoutent (section~\ref{sec:fusion}). Le raffinement
+(section~\ref{sec:raffinement}) concrétise ainsi la question ; il reste à
+déterminer quelle règle répond à chacune. La suite
+détaille l'indemnité de licenciement ; l'indemnité compensatrice se traite de
+même, avec son propre arbre normatif.
 
 \subsection{Arbres normatifs}
 
@@ -1084,15 +1138,15 @@ c'est l'hypothèse que la section~\ref{sec:op} impose aux saisies d'arbres.
 L'assistant manipule une liste ordonnée de dossiers
 \(\Liste=[D_1,\ldots,D_n]\), dont la tête porte la demande principale et les
 suivants les demandes subsidiaires. Trois opérateurs élémentaires, que nous
-définissons à présent, transforment un dossier ; les opérateurs de branchement,
-de fusion et d'échange (sections~\ref{sec:choix} et~\ref{sec:fusion})
-transforment la liste elle-même.
+définissons à présent, transforment un dossier ; les opérateurs de raffinement,
+de branchement, de cumul, de fusion et d'échange (sections~\ref{sec:raffinement}
+à~\ref{sec:fusion}) transforment la liste elle-même.
 \begin{defi}[Opérateurs élémentaires]\label{def:operateurs}
 Un dossier s'obtient à partir du dossier vide par les opérateurs élémentaires
 \[
 \begin{array}{lll}
 D &::=& \EmptyD \quad \text{le dossier vide}\\
-&& \mid \Input(D,m,v)\quad m\in\Undef,\ v\in\Raw(m)\uplus\mc T(m)\\
+&& \mid \Input(D,m,v)\quad m\in\Undef\ \text{ou}\ \nu_D(m)=\bot,\ v\in(\Raw(m)\uplus\mc T(m))_\bot\\
 && \mid \Prune(D,m)\quad m\in\Unres \\
 && \mid \Resolve(D,m)\quad m\in\Unres.
 \end{array}
@@ -1113,18 +1167,21 @@ Le dossier vide est \(\EmptyD=(\emptyset,[])\), où \([]\) désigne la valuation
 vide. Pour \(D=(\mc M_D,\nu_D)\), on note \(\nu_D-m\) la valuation restreinte
 \(\nu_D\mathrel\upharpoonright(\mc M_D\setminus\{m\})\), et
 \(\nu_D+[m\mapsto v]\) l'extension de \(\nu_D\) par une nouvelle entrée
-\(m\notin\mc M_D\) de valeur \(v\in\Raw(m)\uplus\mc T(m)\). Alors
+\(m\notin\mc M_D\) de valeur \(v\in(\Raw(m)\uplus\mc T(m))_\bot\). Alors
 \begin{equation}
 \Input((\mc M_D,\nu_D),m,v)
- :=(\mc M_D\cup\{m\},\nu_D+[m\mapsto v]).
+ :=(\mc M_D\cup\{m\},(\nu_D-m)+[m\mapsto v]).
 \label{eq:input}
 \end{equation}
-Cette opération ajoute un nouvel élément au dossier. Nous supposons dans
+Cette opération ajoute la matière \(m\) au dossier, ou complète sa valuation
+lorsque \(\nu_D(m)=\bot\). En particulier, \(\Input(D,m,\bot)\) pose la
+question \(m\) sans y répondre : c'est ainsi qu'un dossier reçoit la matière,
+souvent abstraite, sur laquelle porte la demande. Nous supposons dans
 toute la suite qu'un arbre \(\theta_m\) n'est saisi que si \(m\) est établie
 (définition~\ref{def:ouvertes}) ; cette hypothèse vaut en particulier pour le
 corollaire~\ref{cor:loop} et la proposition~\ref{prop:scenarios}. Les
-sections~\ref{sec:choix} et~\ref{sec:fusion} définissent les opérateurs propres
-aux listes.
+sections~\ref{sec:raffinement} à~\ref{sec:fusion} définissent les opérateurs
+propres aux listes.
 
 \subsection{Élagage}
 
@@ -1380,18 +1437,63 @@ les valeurs qu'il lit et le champ qui les produit, et \ALex{} exécute les
 producteurs avant les consommateurs, c'est-à-dire dans l'ordre de
 \(<_{\dep}\).
 
-\paragraph{Ouverture des matières.} Lorsque la question porte sur une matière
-abstraite \(m\), l'assistant commence par la concrétiser. Tant qu'une matière
-de \(\Ouv_D(m)\) est en suspens, il demande les matières des prédicats de
-raffinement qui valent \(\unknown\), auxquelles l'expert répond par une valeur
-brute ; puis il saisit, par \(\Input\), l'arbre de chaque matière établie qui
-en possède un. Chaque demande définit une nouvelle matière de l'ensemble fini
-\(\dep(\rho)\) : cette phase termine, et la boucle du
-corollaire~\ref{cor:loop} prend le relais. Les demandes de cette phase
-peuvent, elles aussi, être posées comme des points de choix, par exemple
-lorsque le mode de rupture est discuté : la matière en conflit est alors
-branchée (section~\ref{sec:choix}) avant de poursuivre, et chaque dossier
-obtenu ouvre ses propres matières.
+\subsection{Raffinement}\label{sec:raffinement}
+
+Lorsque la question porte sur une matière abstraite, l'assistant commence par
+la concrétiser : le raffinement remplace le dossier par autant de dossiers que
+la question a de précisions établies, chacun portant sur l'une d'elles. Pour
+un dossier \(D\), une matière \(m\in\mc M_D\) sans valuation et une matière
+\(m'\) indéfinie dans \(D\), on note
+\[
+D\{m'/m\}:=\bigl((\mc M_D\setminus\{m\})\cup\{m'\},\ (\nu_D-m)+[m'\mapsto\bot]\bigr)
+\]
+le dossier où la question \(m\) est remplacée par sa précision \(m'\).
+
+\begin{defi}[Raffinement]\label{def:raffiner}
+Soient \(\Liste=[D_1,\ldots,D_n]\) une liste de dossiers et \(m\in\mc M_\rho\)
+une matière abstraite de \(D_i\) sans valuation. Supposons qu'aucune matière de
+\(\Ouv_{D_i}(m)\) ne soit en suspens, et soient \(m_1,\ldots,m_k\) ses
+matières établies, rangées dans un ordre fixé et supposées indéfinies dans
+\(D_i\). On pose
+\[
+\Raffiner_i(\Liste,m):=[D_1,\ldots,D_{i-1},D_i\{m_1/m\},\ldots,D_i\{m_k/m\},D_{i+1},\ldots,D_n].
+\]
+\end{defi}
+
+Si \(m\) a quatre précisions établies, \(D_i\) est remplacé par quatre
+dossiers ; si elle n'en a aucune, \(D_i\) disparaît de la liste : la question
+est sans objet pour ce dossier. Les matières \(m_j\) sont concrètes
+(définition~\ref{def:ouvertes}), et une réponse à chacune répond à la question,
+puisque \(\Raw(m_j)\subseteq\Raw(m)\). Le raffinement multiplie les dossiers,
+mais chacun de ceux qu'il produit compte une matière abstraite sans valuation
+de moins que \(D_i\) : c'est l'argument de terminaison de la
+proposition~\ref{prop:scenarios}.
+
+Tant qu'une matière de \(\Ouv_{D_i}(m)\) est en suspens, l'assistant demande
+les matières des prédicats de raffinement qui valent \(\unknown\), factuelles
+d'après la condition~5 de la définition~\ref{def:coh-raff}. L'expert y répond
+par une valeur, éventuellement en conflit, et une matière en conflit est
+branchée (section~\ref{sec:choix}) avant le raffinement. Chaque demande définit
+une nouvelle matière de l'ensemble fini \(\dep(\rho)\). Le raffinement fait,
+l'assistant saisit dans chaque dossier \(D_i\{m_j/m\}\) l'arbre
+\(\theta_{m_j}\) de sa matière, qui est établie, s'il existe, et en demande
+sinon la valeur à l'expert ; la boucle du corollaire~\ref{cor:loop} prend
+alors le relais.
+
+\paragraph{Exemple.} La salariée demande les indemnités qui lui sont dues : le
+dossier initial \(D\) pose la question \(\Indemnite\), avec
+\(\nu_D(\Indemnite)=\bot\), et contient les faits du dossier, dont le mode de
+rupture, un licenciement, et la dispense de préavis. Aucune matière
+de \(\Ouv_D(\Indemnite)\) n'est en suspens (section~\ref{sec:hierarchie}), et
+\[
+\begin{aligned}
+\Raffiner_1([D],\Indemnite)=[\,&D\{\Indem/\Indemnite\},\\
+&D\{\ICP/\Indemnite\}\,].
+\end{aligned}
+\]
+Notons \(D_L\) et \(D_P\) ces deux dossiers, une fois saisi dans chacun
+l'arbre normatif de sa matière. Chacun compte une matière abstraite
+sans valuation de moins que \(D\) : la question est concrétisée.
 
 \subsection{Valeurs en conflit et branchement}\label{sec:choix}
 
@@ -1410,8 +1512,8 @@ Pour une matière \(m\), on note \(a_1\conflit\cdots\conflit a_k\),
 \[
 \nu_D:\prod_{m\in\mc M_D}\bigl(\Raw(m)^{\conflit}\uplus\mc T(m)\bigr),
 \]
-et \(\Input(D,m,v)\) accepte désormais \(v\in\Raw(m)^{\conflit}\uplus\mc
-T(m)\). Une matière est résolue lorsque sa valuation est une valeur seule
+et \(\Input(D,m,v)\) accepte désormais
+\(v\in(\Raw(m)^{\conflit}\uplus\mc T(m))_\bot\). Une matière est résolue lorsque sa valuation est une valeur seule
 (\(k=1\)), et \emph{en conflit} lorsque \(k\geq2\) ; on note \(\Conf\)
 l'ensemble des matières en conflit.
 \end{defi}
@@ -1450,29 +1552,40 @@ les autres à sa suite. Le branchement est donc paresseux : un conflit sur une
 matière qu'aucun prédicat ni aucun candidat subsistant ne lit ne crée aucun
 scénario. Un dossier sans conflit dont toutes les matières sont résolues est un
 \emph{scénario}. L'exécution décrit un \emph{arbre de décision} dont chaque
-nœud est un branchement, dont les fils sont ordonnés comme les valeurs en
-conflit, et dont les feuilles sont les scénarios.
+nœud interne est un raffinement ou un branchement, dont les fils sont ordonnés
+comme les précisions ou comme les valeurs en conflit, et dont les feuilles sont
+les scénarios.
 
 \begin{prop}[Scénarios]\label{prop:scenarios}
-Sous les hypothèses du corollaire~\ref{cor:loop}, supposons que l'utilisateur
-réponde à chaque demande par une valeur, éventuellement en conflit, ou par un
-arbre de \(\mc F\). La boucle étendue termine alors. Elle produit une liste
-finie \([C_1,\ldots,C_n]\), \(n\geq1\), de scénarios, ordonnée selon l'ordre
-lexicographique des rangs des valeurs le long des chemins de l'arbre de
-décision : \(C_1\) est le scénario principal, \(C_2,\ldots,C_n\) sont les
-scénarios subsidiaires.
+Sous les hypothèses du corollaire~\ref{cor:loop}, partons d'une liste \([D]\),
+où le dossier \(D\) pose une question abstraite \(m\in\mc M_\rho\), et
+supposons que l'utilisateur réponde à chaque demande par une valeur,
+éventuellement en conflit, ou par un arbre de \(\mc F\). La boucle étendue,
+qui raffine la question puis poursuit la boucle du corollaire en branchant les
+conflits, termine alors. Elle produit une liste finie \([C_1,\ldots,C_n]\) de
+scénarios, ordonnée selon le parcours en profondeur de l'arbre de décision :
+sous un raffinement, les précisions dans leur ordre ; sous un branchement, la
+valeur retenue avant les réserves. Pour chaque matière concrète, le premier de
+ses scénarios est le scénario principal, les suivants sont les scénarios
+subsidiaires.
 \end{prop}
 \begin{proof}
-Le long d'un chemin de l'arbre de décision, le quadruplet formé des trois
-composantes de la mesure du corollaire~\ref{cor:loop}, la dernière précédée de
-\(|\Conf|\), décroît lexicographiquement : une saisie fait décroître l'une des
-deux premières composantes, un branchement laisse celles-ci inchangées et fait
-décroître \(|\Conf|\), et un pas \(\Resolve\) ne fait décroître que
-\(|\Unres|\). Chaque chemin est donc fini, et se termine sur un scénario.
-Chaque nœud a un nombre fini de fils. Un arbre à branchement fini dont tous les
-chemins sont finis est fini (lemme de König) ; le parcours en profondeur,
-réserves après valeur retenue, énumère ses feuilles dans l'ordre
-lexicographique.
+Prolongeons la mesure du corollaire~\ref{cor:loop}, où \(\dep(\mc F)\) est
+remplacé par \(\dep(\mc F)\cup\dep(\rho)\) : faisons-la précéder du nombre de
+matières abstraites sans valuation, puis du nombre de matières concrètes sans
+valuation, et insérons \(|\Conf|\) avant sa dernière composante. Le long d'un
+chemin de l'arbre de décision, ce sextuplet décroît lexicographiquement. Le
+raffinement fait certes croître le nombre de dossiers, mais chacun de ceux
+qu'il produit compte une matière abstraite sans valuation de moins que celui
+qu'il remplace. Une saisie sur une matière sans valuation fait décroître la
+deuxième composante sans changer la première ; une autre saisie fait décroître
+la troisième ou la quatrième ; un branchement laisse les quatre premières
+inchangées et fait décroître \(|\Conf|\) ; un pas \(\Resolve\) ne fait
+décroître que \(|\Unres|\). Chaque chemin est donc fini ; il se termine sur un
+scénario, ou sur un raffinement sans précision établie, qui ne produit aucun
+dossier. Chaque nœud a un nombre fini de fils. Un arbre à branchement fini
+dont tous les chemins sont finis est fini (lemme de König) ; son parcours en
+profondeur énumère ses feuilles dans l'ordre annoncé.
 \end{proof}
 
 C'est l'exploration que réalise le gestionnaire de scénarios du prototype
@@ -1493,23 +1606,29 @@ ne branchons donc que sur des valeurs.
 \end{remark}
 
 \paragraph{Exemple.}
-Dans le dossier fil rouge (figure~\ref{fig:decision}), l'assistant demande
-d'abord \(\IDCC\) ; l'entreprise relève sans discussion de la convention
-Syntec, et la réponse \(1486\) est exclusive. Après l'élagage,
-\(\Categorie\in\NeedFacts_D(\Indem)\) : la salariée revendique la qualité de
-cadre et invoque, à titre subsidiaire, sa classification d'ETAM. Le dossier
-\(D'\) obtenu enregistre ce conflit :
+Dans le dossier \(D_L\) de l'indemnité de licenciement
+(figure~\ref{fig:decision}), l'assistant demande d'abord \(\IDCC\) ;
+l'entreprise relève sans discussion de la convention Syntec, et la réponse
+\(1486\) est exclusive. Après l'élagage, la catégorie est requise : la salariée revendique la qualité de cadre et invoque, à titre
+subsidiaire, sa classification d'ETAM. Le dossier \(D'_L\) obtenu enregistre
+ce conflit :
 \[
-\nu_{D'}(\Categorie)=\Cadre\conflit\Etam.
+\nu_{D'_L}(\Categorie)=\Cadre\conflit\Etam.
 \] Comme \(c_{4.5}\) lit la
-catégorie, la boucle calcule \(\Brancher(D',\Categorie)\), qui produit deux
+catégorie, la boucle calcule \(\Brancher(D'_L,\Categorie)\), qui produit deux
 scénarios. Dans \(C_1\), la résolution de la section~\ref{sec:resolution} donne
 10\,000 euros au titre de l'article 4.5. Dans \(C_2\), le barème des ETAM
 jusqu'à dix ans d'ancienneté donne \(3\,000\times10\times\frac14=7\,500\)
 euros, montant égal au plancher légal. Le montant est donc de 7\,500 euros quel
 que soit le candidat sélectionné : la définition~\ref{def:apply-policy}
-sélectionne \(c_{4.5}\), le corpus conserverait le Code. La demande principale
-porte donc sur 10\,000 euros, la demande subsidiaire sur 7\,500 euros.
+sélectionne \(c_{4.5}\), le corpus conserverait le Code. Pour l'indemnité de
+licenciement, la demande principale porte donc sur 10\,000 euros, la demande
+subsidiaire sur 7\,500 euros. Le dossier \(D_P\) de l'indemnité compensatrice
+reçoit les mêmes réponses et branche de même sur la catégorie, qui fixe la
+durée du préavis conventionnel : \(C'_1\) donne \(3\times3\,000=9\,000\) euros
+au titre de l'article 4.2, trois mois pour un cadre, et \(C'_2\) donne
+\(6\,000\) euros, deux mois, comme la loi. Le parcours de l'arbre de décision
+donne la liste \([C_1,C_2,C'_1,C'_2]\).
 
 \begin{figure}
 \centering
@@ -1521,85 +1640,143 @@ porte donc sur 10\,000 euros, la demande subsidiaire sur 7\,500 euros.
   offarr/.style={-{Latex[length=2mm]}, draw=elague, densely dashed},
   lab/.style={font=\scriptsize, fill=white, inner sep=1pt}
 ]
-\node[q] (q1) at (0,0) {\(\Input(D,\IDCC,1486)\)\\ exclusif};
-\node[text=elague] (x1) at (-4.2,-1.8) {\(!\)\ 1979, 3248, \ldots};
-\node[q] (q2) at (0,-1.8) {\(\Brancher(D',\Categorie)\)\\
+\node[q] (r) at (0,0) {\(\Raffiner_1([D],\Indemnite)\)};
+\node[q] (l1) at (-3.4,-1.5) {\(\Input(D_L,\IDCC,1486)\)\\ exclusif};
+\node[q] (p1) at (3.4,-1.5) {\(\Input(D_P,\IDCC,1486)\)\\ exclusif};
+\node[text=elague, align=center] (x1) at (0,-2.75) {\(!\)\ 1979,\\ 3248, \ldots};
+\node[q] (l2) at (-3.4,-3.3) {\(\Brancher(D'_L,\Categorie)\)\\
   \(\Cadre\conflit\Etam\)};
-\node[leaf] (c1) at (-2.6,-3.8) {\(C_1\) : \(\Cadre\)\\ 10\,000 euros};
-\node[leaf] (c2) at (2.6,-3.8) {\(C_2\) : \(\Etam\)\\ 7\,500 euros};
-\draw[arr] (q1) -- node[lab, right]{\(+\)\ 1486} (q2);
-\draw[offarr] (q1) -- (x1);
-\draw[arr] (q2) -- node[lab, left]{\(+\)} (c1);
-\draw[arr, densely dashed] (q2) -- node[lab, right]{\(-\)} (c2);
+\node[q] (p2) at (3.4,-3.3) {\(\Brancher(D'_P,\Categorie)\)\\
+  \(\Cadre\conflit\Etam\)};
+\node[leaf] (c1) at (-5.1,-5.3) {\(C_1\)\\ \(\Cadre\)\\ 10\,000 euros};
+\node[leaf] (c2) at (-1.7,-5.3) {\(C_2\)\\ \(\Etam\)\\ 7\,500 euros};
+\node[leaf] (c3) at (1.7,-5.3) {\(C'_1\)\\ \(\Cadre\)\\ 9\,000 euros};
+\node[leaf] (c4) at (5.1,-5.3) {\(C'_2\)\\ \(\Etam\)\\ 6\,000 euros};
+\draw[arr] (r) -- node[lab]{licenciement} (l1);
+\draw[arr] (r) -- node[lab]{préavis} (p1);
+\draw[arr] (l1) -- node[lab, left]{\(+\)\ 1486} (l2);
+\draw[arr] (p1) -- node[lab, right]{\(+\)\ 1486} (p2);
+\draw[offarr] (l1) -- (x1);
+\draw[offarr] (p1) -- (x1);
+\draw[arr] (l2) -- node[lab, left]{\(+\)} (c1);
+\draw[arr, densely dashed] (l2) -- node[lab, right]{\(-\)} (c2);
+\draw[arr] (p2) -- node[lab, left]{\(+\)} (c3);
+\draw[arr, densely dashed] (p2) -- node[lab, right]{\(-\)} (c4);
 \end{tikzpicture}
-\caption{Arbre de décision du dossier fil rouge : une saisie exclusive de
-  \(\IDCC\), puis un branchement sur la catégorie, en conflit. La valeur
-  retenue (\(+\)) donne le scénario principal \(C_1\), la réserve (\(-\)) le
-  scénario subsidiaire \(C_2\) ; les valeurs écartées (\(!\)) ne sont pas
-    explorées.}
+\caption{Arbre de décision du dossier fil rouge. Le raffinement de la question
+  produit deux dossiers, \(D_L\) pour l'indemnité de licenciement et \(D_P\)
+  pour l'indemnité compensatrice de préavis, qui se cumulent. Dans chacun, une
+  saisie exclusive de \(\IDCC\) précède un branchement sur la catégorie, en
+  conflit : la valeur retenue (\(+\)) donne le scénario principal, la réserve
+  (\(-\)) le scénario subsidiaire ; les valeurs écartées (\(!\)) ne sont pas
+  explorées. Le parcours en profondeur donne la liste
+  \([C_1,C_2,C'_1,C'_2]\).}
 \label{fig:decision}
 \end{figure}
 
-\subsection{Fusion et échange}\label{sec:fusion}
+\subsection{Cumul et fusion}\label{sec:fusion}
 
 Deux matières concrètes distinctes ne sont pas en concours : leurs avantages
 peuvent se cumuler, lorsque le juriste estime qu'ils sont dus ensemble. Leurs
 valeurs forment alors, ensemble, la réponse à une question abstraite que l'une
-et l'autre précisent. La fusion réalise ce cumul. Comme elle combine deux
-dossiers de la liste, nous la restreignons à deux dossiers consécutifs ;
-l'échange permet d'amener côte à côte les dossiers à fusionner.
+et l'autre précisent. Le cumul fait ainsi le chemin inverse du raffinement : il
+rend à la question la somme des réponses à ses précisions. Comme \texttt{git},
+il réduit les différences entre deux dossiers sans les réunir ; la fusion ne
+réunit que des dossiers qui s'accordent.
 
-\begin{defi}[Fusion et échange]\label{def:fusion}
-Soit \(\Liste=[D_1,\ldots,D_n]\) une liste de dossiers et \(i<n\). Soient
-\(m_i\) une matière résolue de \(D_i\), \(m_{i+1}\) une matière résolue de
-\(D_{i+1}\), et \(m\) une matière indéfinie dans ces deux dossiers, telle que
-\(m_i\subtype m\) et \(m_{i+1}\subtype m\), et dont le domaine est muni d'une
-loi de cumul \(+\), comme l'addition des montants. Si \(D_i\) et \(D_{i+1}\)
-attribuent les mêmes valeurs à leurs matières communes, on pose
-\[
-\Fusionner_i(\Liste,m_i,m_{i+1},m):=[D_1,\ldots,D_{i-1},D,D_{i+2},\ldots,D_n],
-\]
-où le dossier \(D\) réunit \(D_i\) et \(D_{i+1}\) et y ajoute la matière
-\(m\) :
+Deux dossiers \(D\) et \(D'\) \emph{s'accordent} lorsque \(\nu_D\) et
+\(\nu_{D'}\) coïncident sur \(\mc M_D\cap\mc M_{D'}\). Nous étendons la notation
+\(D[m:=a]\) de la définition~\ref{def:brancher} aux matières indéfinies :
+\(D[m:=a]:=(\mc M_D\cup\{m\},(\nu_D-m)+[m\mapsto a])\).
+
+\begin{defi}[Cumul, fusion et échange]\label{def:fusion}
+Soient \(\Liste=[D_1,\ldots,D_n]\) une liste de dossiers et \(i\neq j\) deux
+positions telles que \(D_i\) et \(D_j\) s'accordent. Soient \(m\) une matière
+résolue de \(D_i\), de valeur \(v\), \(m'\neq m\) une matière résolue de
+\(D_j\), de valeur \(v'\), et \(m''\neq\Matter\) un antécédent commun,
+\(m\subtype m''\) et \(m'\subtype m''\), dont le domaine est muni d'une loi de
+cumul \(+\), comme l'addition des montants. On suppose qu'aucune autre matière
+de \(D_i\) ne précise \(m'\), qu'aucune autre matière de \(D_j\) ne précise
+\(m\), et que \(m''\), s'il figure dans \(D_i\) ou dans \(D_j\), y est \(m\) ou
+\(m'\). On pose
 \[
 \begin{array}{l}
-\mc M_D:=\mc M_{D_i}\cup\mc M_{D_{i+1}}\cup\{m\},\\
-\nu_D:=(\nu_{D_i}\cup\nu_{D_{i+1}})+[m\mapsto\nu_{D_i}(m_i)+\nu_{D_{i+1}}(m_{i+1})].
+D_i^+:=D_i[m':=v'][m'':=v+v'],\\
+D_j^+:=D_j[m:=v][m'':=v+v'],
 \end{array}
 \]
-Pour \(1\leq i,j\leq n\), \(\Echanger_{i,j}(\Liste)\) est la liste \(\Liste\)
+et \(\Cumuler_{i,j}(\Liste,m,m',m'')\) est la liste \(\Liste\) dans laquelle
+\(D_i\) et \(D_j\) sont remplacés par \(D_i^+\) et \(D_j^+\). Lorsque \(D_i\)
+et \(D_j\) s'accordent, \(\Fusionner_{i,j}(\Liste)\) est la liste \(\Liste\)
+dans laquelle \(D_i\) est remplacé par
+\(D_i\cup D_j:=(\mc M_{D_i}\cup\mc M_{D_j},\nu_{D_i}\cup\nu_{D_j})\), et d'où
+\(D_j\) est retiré. Enfin, \(\Echanger_{i,j}(\Liste)\) est la liste \(\Liste\)
 dans laquelle \(D_i\) et \(D_j\) ont échangé leurs positions.
 \end{defi}
 
 La somme est bien typée, puisque le sous-typage est compatible avec les
-domaines : \(\Raw(m_i)\subseteq\Raw(m)\) et \(\Raw(m_{i+1})\subseteq\Raw(m)\).
-C'est ici que les matières abstraites reçoivent une valeur. L'accord sur les
-matières communes interdit de cumuler des réponses obtenues sous des hypothèses
-incompatibles : deux scénarios issus d'un même branchement diffèrent sur la
-matière branchée, et ne fusionnent pas. La fusion de deux scénarios est un
-scénario, puisque toutes ses matières sont résolues et qu'aucune n'est en
-conflit. L'échange ne modifie aucun dossier, mais l'ordre des demandes : il
+domaines : \(\Raw(m)\subseteq\Raw(m'')\) et \(\Raw(m')\subseteq\Raw(m'')\).
+C'est ainsi que les matières abstraites reçoivent une valeur. Le cumul exige un
+antécédent commun autre que \(\Matter\), dont le domaine réunit des valeurs de
+types différents : une indemnité et la durée du préavis, qui n'ont que
+\(\Matter\) pour antécédent commun (condition~6 de la
+définition~\ref{def:coh-raff}), ne se cumulent pas.
+
+L'accord des deux dossiers interdit de cumuler des réponses obtenues sous des
+hypothèses incompatibles, comme deux scénarios issus d'un même branchement,
+qui diffèrent sur la matière branchée. Les matières \(m\) et \(m'\) restent dans les deux
+dossiers, comme une demande en justice détaille chacun de ses chefs : un
+dossier garde ainsi la trace des avantages qu'il a cumulés, et la condition
+sur les précisions interdit de compter deux fois un même avantage. Un
+troisième avantage s'ajoute en prenant \(m''=m\).
+
+Le cumul ne change pas la longueur de la liste : il rend \(D_i^+\) et
+\(D_j^+\) d'accord sur toutes leurs matières communes, y compris \(m\),
+\(m'\) et \(m''\), sans les réunir. La fusion réunit ensuite deux dossiers qui
+s'accordent et raccourcit la liste ; la fusion de deux scénarios est un
+scénario. L'échange ne modifie aucun dossier, mais l'ordre des demandes : il
 permet au juriste de placer en tête la demande qu'il entend soutenir à titre
 principal.
 
 \paragraph{Exemple.}
-Supposons que la salariée ait été dispensée d'exécuter son préavis :
-l'indemnité compensatrice de préavis lui serait alors due, en plus de
-l'indemnité de licenciement. Les deux matières précisent l'indemnité de rupture
-(section~\ref{sec:hierarchie}). Soit \(\Liste=[D_1,D_2]\), où \(D_1\) résout
-l'indemnité de licenciement et \(D_2\) l'indemnité compensatrice, les deux
-dossiers s'accordant sur les faits. La fusion
+Dans le dossier fil rouge, l'indemnité de licenciement et l'indemnité
+compensatrice de préavis ne sont pas en concours : sœurs sous l'indemnité
+(figure~\ref{fig:hierarchie}), elles sont dues ensemble, et leurs montants
+s'ajoutent. La section~\ref{sec:choix} a laissé la liste
+\(\Liste=[C_1,C_2,C'_1,C'_2]\). Les scénarios \(C_1\) et \(C'_1\) reposent sur
+la même hypothèse, \(\Categorie=\Cadre\), et s'accordent ; de même \(C_2\) et
+\(C'_2\). Notons
 \[
-\Fusionner_1(\Liste,\Indem,\ICP,\IndemRupture)
+\begin{array}{l}
+K_{i,j}:=\Cumuler_{i,j}(\cdot,\Indem,\ICP,\Indemnite),\\
+F_{i,j}:=\Fusionner_{i,j}.
+\end{array}
 \]
-donne la liste \([D]\), où le dossier \(D\) répond à la question de la
-salariée :
+Deux cumuls rendent à la question de la salariée la somme des réponses à ses
+deux précisions, sous chaque hypothèse, et deux fusions réunissent les
+dossiers qui s'accordent désormais :
 \[
 \begin{aligned}
-\nu_D(\IndemRupture)={}&\nu_{D_1}(\Indem)\\
-&+\nu_{D_2}(\ICP).
+\Liste&\xrightarrow{K_{1,3}}[C_1^+,C_2,C'^+_1,C'_2]
+\xrightarrow{K_{2,4}}[C_1^+,C_2^+,C'^+_1,C'^+_2]\\
+&\xrightarrow{F_{1,3}}[M_1,C_2^+,C'^+_2]\xrightarrow{F_{2,3}}[M_1,M_2],
 \end{aligned}
 \]
+où
+\[
+\begin{array}{l}
+\nu_{M_1}(\Indemnite)=10\,000+9\,000=19\,000\ \text{euros},\\
+\nu_{M_2}(\Indemnite)=7\,500+6\,000=13\,500\ \text{euros}.
+\end{array}
+\]
+Chacun de ces deux dossiers conserve, à côté de la somme, le détail de la
+demande :
+l'indemnité de licenciement et l'indemnité compensatrice. La demande
+principale de la salariée, comme cadre, porte sur 19\,000 euros ; sa demande
+subsidiaire, comme ETAM, sur 13\,500 euros. En revanche, \(K_{1,4}\) n'est pas
+défini : \(C_1\) et \(C'_2\) diffèrent sur la catégorie, et leur cumul
+additionnerait l'indemnité de licenciement d'un cadre et l'indemnité
+compensatrice d'un ETAM.
 
 \section{Conclusion}\label{sec:conclusion}
 
@@ -1618,7 +1795,9 @@ répond ; comme seules ses feuilles reçoivent un arbre normatif, le principe de
 faveur ne compare que des calculs d'une même matière concrète. Les valeurs en conflit et l'opérateur de branchement
 permettent à l'assistant de faire appel à l'utilisateur lorsqu'un fait ou une
 qualification est discuté, et d'en tirer un scénario principal et des
-scénarios subsidiaires. Le théorème de
+scénarios subsidiaires. Le raffinement concrétise la question posée ; le
+cumul fait remonter jusqu'à elle les réponses des matières qui la précisent,
+et la fusion réunit les dossiers qui s'accordent. Le théorème de
 résolution montre que, sous des hypothèses de cohérence et d'acyclicité des
 dépendances, ce processus finit par résoudre toutes les matières du dossier, et
 la proposition~\ref{prop:scenarios} étend ce résultat aux scénarios. L'exemple
