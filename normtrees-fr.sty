@@ -54,12 +54,13 @@
 %% Matières et domaines de valeurs (déf. 1)
 %% --------------------------------------------------------------------
 \newcommand{\Matter}{\ensuremath{\mathsf{Matiere}}}
-\newcommand{\CMatter}{\ensuremath{\mathcal{C}_\Matter}}
+\newcommand{\CMatter}{\ensuremath{\mathcal{M}_{\downarrow}}}
 \newcommand{\Raw}{\ensuremath{\mathcal{V}}}                 % domaine : \Raw(m)
 \newcommand{\Money}{\ensuremath{\mathsf{Montant}}}
 \newcommand{\Duration}{\ensuremath{\mathsf{Duree}}}
 \newcommand{\DateT}{\ensuremath{\mathsf{Date}}}
 \newcommand{\IDCC}{\ensuremath{\mathsf{IDCC}}}
+
 % Matières utilisées dans les exemples
 \newcommand{\Indem}{\ensuremath{\mathsf{Indemnite}}}
 \newcommand{\IndemLeg}{\ensuremath{\mathsf{IndemniteLegale}}}
@@ -78,14 +79,15 @@
 %% --------------------------------------------------------------------
 \newcommand{\Dossier}{\ensuremath{\mathsf{Dossier}}}
 \newcommand{\EmptyD}{\ensuremath{\mathbf{0}_\Dossier}}
-\newcommand{\Input}{\ensuremath{\mathsf{Saisir}}}      % \Input(D,m,x)
-\newcommand{\Prune}{\ensuremath{\mathsf{Elaguer}}}     % \Prune(D,m)
-\newcommand{\Resolve}{\ensuremath{\mathsf{Resoudre}}}  % \Resolve(D,m)
+\newcommand{\Input}{\ensuremath{\mathit{Saisir}}}      % \Input(D,m,x)
+\newcommand{\Prune}{\ensuremath{\mathit{Elaguer}}}     % \Prune(D,m)
+\newcommand{\Resolve}{\ensuremath{\mathit{Resoudre}}}  % \Resolve(D,m)
 % Partition des matières d'un dossier D (l'indice D est intégré)
-\newcommand{\Res}{\ensuremath{\mathsf{Res}_D}}
-\newcommand{\Unres}{\ensuremath{\mathsf{NonRes}_D}}
-\newcommand{\Undef}{\ensuremath{\mathsf{Indef}_D}}
-\newcommand{\UnresOf}[1]{\ensuremath{\mathsf{NonRes}_{#1}}}
+\newcommand{\Res}{\ensuremath{\mathit{Resolue}_D}}
+\newcommand{\Unres}{\ensuremath{\mathit{NonResolue}_D}}
+\newcommand{\Undef}{\ensuremath{\mathit{Indefinie}_D}}
+\newcommand{\Unest}{\ensuremath{\mathit{NonEtablie}_D}}
+\newcommand{\UnresOf}[1]{\ensuremath{\mathit{NonResolue}_{#1}}}
 \newcommand{\dep}{\ensuremath{\mathit{dep}}}
 
 %% --------------------------------------------------------------------
@@ -99,12 +101,46 @@
 \newcommand{\AccordInterpro}{\ensuremath{\mathsf{AccordInterprofessionnel}}}
 \newcommand{\Contrat}{\ensuremath{\mathsf{Contrat}}}
 \newcommand{\Syntec}{\ensuremath{\mathsf{Syntec}}}
-\newcommand{\Fun}{\ensuremath{\mathsf{Fonc}}}           % fonctions juridiques typées
-\newcommand{\Cand}{\ensuremath{\mathsf{Cand}}}          % candidats
-\newcommand{\Policy}{\ensuremath{\mathsf{OrdreSocial}}} % régimes d'articulation
+\newcommand{\Fun}{\ensuremath{\mathit{Fonc}}}           % fonctions juridiques typées
+%\newcommand{\Cand}{\ensuremath{\mathsf{Cand}}}          % candidats
+\newcommand{\Policy}{\ensuremath{\mc{R}}}% régimes d'articulation
 \newcommand{\Absolute}{\ensuremath{\mathsf{Absolu}}}
 \newcommand{\Social}{\ensuremath{\mathsf{Social}}}
 \newcommand{\Suppletive}{\ensuremath{\mathsf{Suppletif}}}
+\def\SourceSup{\mc S^\uparrow}
+\def\AccordIndividuel{\mathsf{AccordIndividuel}}
+\def\Arb{\mathit{Arb}}
+
+\newcommand{\ALex}{A-Lex}
+\newcommand{\Brancher}{\ensuremath{\mathsf{Brancher}}}
+\newcommand{\Fusionner}{\ensuremath{\mathsf{Fusionner}}}
+\newcommand{\Echanger}{\ensuremath{\mathsf{Echanger}}}
+\newcommand{\Raffiner}{\ensuremath{\mathsf{Raffiner}}}
+\newcommand{\Cumuler}{\ensuremath{\mathsf{Cumuler}}}
+\newcommand{\Liste}{\ensuremath{\mathbf L}}
+\newcommand{\ICP}{\ensuremath{\mathsf{IndemnitePreavis}}}
+\newcommand{\Indemnite}{\ensuremath{\mathsf{Indemnite}}}
+\newcommand{\conflit}{\mathbin{\#}}
+\newcommand{\Conf}{\ensuremath{\mathsf{Conf}_D}}
+\newcommand{\Categorie}{\ensuremath{\mathsf{Categorie}}}
+\newcommand{\Cadre}{\ensuremath{\mathsf{IngenieurOuCadre}}}
+\newcommand{\Etam}{\ensuremath{\mathsf{Etam}}}
+\newcommand{\Presence}{\ensuremath{\mathsf{AnneesDePresence}}}
+\newcommand{\MoisRem}{\ensuremath{\mathsf{MoisDeRemuneration}}}
+\newcommand{\Pred}{\ensuremath{\mathit{Test}_{{}\wedge{}}}}
+\newcommand{\refby}[1]{\mathrel{\twoheadrightarrow_{#1}}}
+\newcommand{\refine}{\mathrel{\twoheadrightarrow}}
+\newcommand{\Ouv}{\ensuremath{\mathit{Ouverte}}}
+\newcommand{\Etablie}{\ensuremath{\mathit{Etablie}}}
+
+\newcommand{\ModeRupture}{\ensuremath{\mathsf{ModeRupture}}}
+\newcommand{\PreavisNE}{\ensuremath{\mathsf{PreavisNonExecute}}}
+\newcommand{\IndemRupture}{\ensuremath{\mathsf{IndemniteDeRupture}}}
+\renewcommand{\Indem}{\ensuremath{\mathsf{IndemniteDeLicenciement}}}
+\newcommand{\Cand}{\ensuremath{\mathit{Corpus}}}
+
+
+
 \newcommand{\Herit}{\operatorname{Herit}}               % régimes hérités
 
 %% --------------------------------------------------------------------
@@ -114,7 +150,7 @@
 \newcommand{\true}{\ensuremath{\mathsf{vrai}}}
 \newcommand{\false}{\ensuremath{\mathsf{faux}}}
 \newcommand{\unknown}{\ensuremath{\mathord{?}}}
-\newcommand{\Tests}{\ensuremath{\mathsf{Tests}}}
+\newcommand{\Tests}{\ensuremath{\mathit{Tests}}}
 \newcommand{\child}{\ensuremath{\mathit{fils}}}
 \newcommand{\sib}{\ensuremath{\mathit{freres}}}
 \newcommand{\desc}{\ensuremath{\mathit{desc}}}
@@ -122,8 +158,8 @@
 %% --------------------------------------------------------------------
 %% Élagage et demandes
 %% --------------------------------------------------------------------
-\newcommand{\Cut}{\ensuremath{\mathsf{Filtrage}}}
-\newcommand{\Select}{\ensuremath{\mathsf{Retenue}}}
+\newcommand{\Cut}{\ensuremath{\mathit{Filtrage}}}
+\newcommand{\Select}{\ensuremath{\mathit{Retenue}}}
 \newcommand{\redD}{\ensuremath{\to_{D}}}               % un pas d'élagage dans D
 \newcommand{\nf}[1]{\ensuremath{{#1}{\downarrow_D}}}   % forme normale de #1 dans D
 \newcommand{\NeedFacts}{\ensuremath{\mathit{Requis}}}  % \NeedFacts_D(m)

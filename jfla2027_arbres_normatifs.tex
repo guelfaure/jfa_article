@@ -17,33 +17,6 @@
 \colorlet{bande}{black!5}
 
 
-\newcommand{\ALex}{A-Lex}
-\newcommand{\Brancher}{\ensuremath{\mathsf{Brancher}}}
-\newcommand{\Fusionner}{\ensuremath{\mathsf{Fusionner}}}
-\newcommand{\Echanger}{\ensuremath{\mathsf{Echanger}}}
-\newcommand{\Raffiner}{\ensuremath{\mathsf{Raffiner}}}
-\newcommand{\Cumuler}{\ensuremath{\mathsf{Cumuler}}}
-\newcommand{\Liste}{\ensuremath{\mathbf L}}
-\newcommand{\ICP}{\ensuremath{\mathsf{IndemnitePreavis}}}
-\newcommand{\Indemnite}{\ensuremath{\mathsf{Indemnite}}}
-\newcommand{\conflit}{\mathbin{\#}}
-\newcommand{\Conf}{\ensuremath{\mathsf{Conf}_D}}
-\newcommand{\Categorie}{\ensuremath{\mathsf{Categorie}}}
-\newcommand{\Cadre}{\ensuremath{\mathsf{IngenieurOuCadre}}}
-\newcommand{\Etam}{\ensuremath{\mathsf{Etam}}}
-\newcommand{\Presence}{\ensuremath{\mathsf{AnneesDePresence}}}
-\newcommand{\MoisRem}{\ensuremath{\mathsf{MoisDeRemuneration}}}
-\newcommand{\Pred}{\ensuremath{\mathsf{Pred}}}
-\newcommand{\refby}[1]{\mathrel{\overset{#1}{\twoheadrightarrow}}}
-\newcommand{\refine}{\mathrel{\twoheadrightarrow}}
-\newcommand{\Ouv}{\ensuremath{\mathit{Ouv}}}
-\newcommand{\ModeRupture}{\ensuremath{\mathsf{ModeRupture}}}
-\newcommand{\PreavisNE}{\ensuremath{\mathsf{PreavisNonExecute}}}
-\newcommand{\IndemRupture}{\ensuremath{\mathsf{IndemniteDeRupture}}}
-\renewcommand{\Indem}{\ensuremath{\mathsf{IndemniteDeLicenciement}}}
-\renewcommand{\Cand}{\ensuremath{\mathsf{Corpus}}}
-
-
 \jfla{38}{2027}
 
 \title{Arbres normatifs : déterminer la règle applicable en droit du travail
@@ -81,20 +54,15 @@
 
 \section{Introduction}\label{sec:introduction}
 
+\subsection{Le raisonnement du juriste} \label{sec:juriste}
 Supposons qu'une salariée demande quelle indemnité lui serait due en cas de
 licenciement, ou souhaite connaître la durée de son préavis. Même si toutes les
 formules candidates qui représentent fidèlement le droit français sont
 exécutables, la réponse ne peut se réduire à un nombre, ni même à une fonction.
 La question préalable est : \emph{quelle règle juridique est applicable à cette
-salariée, pour cette question, à la date juridiquement pertinente ?} Un
-assistant doit donc identifier le texte dont procède la règle, l'état de ce
-texte dans le temps et les faits qui permettent d'entrer dans sa branche, tout
-en conservant, pour contrôle, les alternatives écartées et le fondement de la
-sélection.
+salariée, pour cette question, à la date juridiquement pertinente ?}
 
-\subsection{Le raisonnement du juriste} \label{sec:juriste}
-
-Un avocat saisi de cette demande ne calcule qu'en dernier lieu. Il commence par
+Un juriste saisi de cette demande ne calcule qu'en dernier lieu. Il commence par
 \emph{qualifier} les faits et la demande : la rupture est-elle un licenciement,
 pour quel motif, et quel avantage la salariée réclame-t-elle exactement ? Nous
 appelons \emph{matière} la question juridique ainsi précisée. Il recense
@@ -188,13 +156,13 @@ Ce schéma de priorité est issu de la réforme de 2017, qui a renforcé la
 négociation d'entreprise dans les champs fixés par la
 loi~\cite{viepublique2017}.
   %%
-\paragraph{Principe de faveur.} Lorsque deux normes sont en concours sous
-  l'ordre public social, c'est la plus favorable au salarié qui s'applique ;
-  on rattache ce principe à l'article L.~2251-1 du Code du travail. Le choix
-  dépend donc du résultat. C'est encore un mécanisme d'exception, mais dont la
-  condition porte sur les valeurs calculées : il faut calculer les réponses
-  concurrentes, puis les comparer selon un ordre propre à l'avantage en cause, un montant plus élevé
-  pour une indemnité, plus faible pour une retenue sur salaire.
+%\paragraph{Principe de faveur.} Lorsque deux normes sont en concours sous
+%  l'ordre public social, c'est la plus favorable au salarié qui s'applique ;
+%  on rattache ce principe à l'article L.~2251-1 du Code du travail. Le choix
+%  dépend donc du résultat. C'est encore un mécanisme d'exception, mais dont la
+%  condition porte sur les valeurs calculées : il faut calculer les réponses
+%  concurrentes, puis les comparer selon un ordre propre à l'avantage en cause, un montant plus élevé
+%  pour une indemnité, plus faible pour une retenue sur salaire.
 %%  
 \paragraph{Demandes principale et subsidiaires.} Une partie peut soumettre au
   juge plusieurs prétentions ordonnées : la demande \emph{principale}, qu'elle
@@ -213,7 +181,7 @@ juridique, éventuellement un grand modèle de langage (LLM), à construire une
 plaidoirie sur une base maîtrisée et transparente ?} 
 
 Nous décrivons, dans cet article, une modélisation des étapes du raisonnement juridique (\autoref{sec:juriste}) qui se trouve à la base de l'assistant \ALex~que nous développons
-(figure~\ref{fig:archi}). Nous nous concentrons ici sur la définition de ces structures ainsi que sur la formalisation des étapes de raisonnement que ces structures supportent. L'implémentation concrète d'\ALex~n'est pas abordée. Les objets et structures de raisonnement juridiques formalisés dans ce papier sont listés ci-dessous. Les ontologies juridiques décrites dans la \autoref{sec:vocabulaire} sont indiqués en caractères gras.
+(figure~\ref{fig:archi}). Nous nous concentrons ici sur la définition de ces structures ainsi que sur la formalisation des étapes de raisonnement que ces structures supportent. L'implémentation concrète d'\ALex~n'est pas abordée. Les objets et structures de raisonnement juridiques formalisés dans ce papier sont listés ci-dessous. Les ontologies juridiques décrites dans la \autoref{sec:vocabulaire} sont rappelées en caractères gras.
 %%
 \paragraph{Matières juridiques.}
 Nous formalisons la notion de matière juridique comme un ensemble de types \emph{matières} équipés d'une relation de sous-typage. Une \emph{matière} $m$ étant un sous-type de $m'$ lorsque $m$ précise $m'$ (par exemple, \textsf{Prime} est un sous-type de \textsf{Montant}). Nous organisons les \emph{matières} dans un \emph{arbre de raffinement} qui permet à \ALex~de traduire une question juridique (une \emph{matière} abstraite) vers l'ensemble de ses concrétisations réalisables, étant donné un dossier client. Une \emph{matière} est concrète lorsqu'elle est une feuille de l'\emph{arbre de raffinement}.
@@ -226,7 +194,7 @@ Un dossier client est ici un \emph{dossier} formel, composé d'un ensemble de \e
 %%
 \paragraph{Arbres normatifs.} %%
 Les \emph{arbres normatifs} reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} des ces fonctions n'est abordée qu'au titre d'exemple dans ce papier, les \emph{candidats} ne retenant que de la signature de ces fonctions et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une politique d'arbitrage qui formalise son
-\textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipé d'un prédicat dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même arbre normatif sont toujours en \textbf{concours}, deux candidats issus d'une même matière abstraite typés par des matières concrètes différentes peuvent parfois se cumuler. 
+\textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipé d'un prédicat dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même \emph{arbre normatif} sont toujours en \textbf{concours}, deux candidats issus d'une même \emph{matière} abstraite typés par des \emph{matières} concrètes différentes peuvent parfois se cumuler. 
 
 \paragraph{Étapes du raisonnement juridique assisté.}
 Le raisonnement juridique est formalisé par une série d'opérateurs sur des listes de \emph{dossiers}. Ces opérateurs permettent d'ajouter des \emph{matières} à certains dossiers, de raffiner une \emph{matière} abstraite en remplaçant le dossier qui la porte par autant de dossiers qu'elle a de précisions, de créer des dossiers alternatifs lorsqu'un fait est discuté, de cumuler, sous une \emph{matière} abstraite commune, les valeurs de deux \emph{matières} que le juriste estime cumulables, de fusionner les dossiers qui s'accordent, et d'en changer l'ordre. Un opérateur de résolution permet de réduire un arbre normatif à une valeur issue d'un calcul fourni par un candidat sélectionné.
@@ -415,7 +383,7 @@ champ d'application MontantIndemnitéDeLicenciement_CCN_1486
 \label{fig:catala}
 \end{figure}
 
-Chaque champ d'application calcule la réponse de sa source, et rien d'autre.
+Chaque champ d'application (une fonction Catala) calcule la réponse de sa source, et rien d'autre.
 Deux informations manquent au code pour conclure : la source qui doit
 l'emporter, et le régime qui en décide. Le corpus les laisse hors du code, à dessein : sous les articles R.~1234-1 et R.~1234-2, un commentaire indique que
 la formule « ne peut être inférieure » fait du barème légal un minimum d'ordre
@@ -501,6 +469,10 @@ sélection et l'exécution restent explicites et contrôlables.
 
 \section{Notations et terminologie}\label{sec:notations}
 
+\def\MatterSup{\mc M^{\uparrow}}
+\def\FMatter{\mc M^\dagger}
+\def\Enum{\mathsf{Enum}}
+
 \begin{defi}[Matières, sous-typage et domaines de valeurs]\label{def:types}
 Une \emph{matière} \(m\in\mc M\) est une question juridique nommée, par
 exemple \(\Salary\), \(\Senior\), \(\IDCC\) ou \(\DateT\). Les matières sont
@@ -510,19 +482,14 @@ licenciement précise l'indemnité de rupture,
 \[
  \Indem\subtype\IndemRupture.
 \]
-La matière \(\Matter\) est le plus
-grand élément de cet ordre, la question la plus générale :
-\(m\subtype\Matter\) pour toute matière \(m\). Chaque matière possède un
-\emph{domaine de valeurs} \(\Raw(m)\), l'ensemble, non vide, de ses
-valeurs brutes possibles, et le sous-typage est compatible avec les domaines :
+La matière \(\Matter\) est l'élément $\top$ de cet ordre. On distingue les matières \emph{supports} $\MatterSup\subset\mc M$ avec $\MatterSup:=\{\Money,\Duration,\DateT,\mathbb{B},\Enum\}$ les types supports de Catala. Chaque matière est associée a son type support par la fonction 
+\(\Raw: \mc M\setminus\{\Matter\}\to \MatterSup\). Le sous-typage étant compatible avec les types supports, i.e., pour tout $m,m'\in\mc M\setminus\{\Matter\}$ :
 \[
  m\subtype m'\implies\Raw(m)\subseteq\Raw(m').
 \]
 Une matière est \emph{concrète} lorsqu'aucune autre ne la précise, et
-\emph{abstraite} sinon ; l'ensemble des matières concrètes est
-\[
- \CMatter:=\{m\subtype\Matter\mid\forall m'\subtype\Matter,\ m'\subtype m\implies m'=m\}.
-\]
+\emph{abstraite} sinon ; l'ensemble des matières concrètes est \(
+ \CMatter:=\{m\in\mc M\mid\forall m'\in\mc M,\ m'\subtype m\implies m'=m\}\).
 Par exemple,
 \[
 \begin{array}{c}
@@ -530,28 +497,31 @@ Par exemple,
  \Raw(\Salary)=\Money,\quad
  \Raw(\Senior)=\Duration,\\
  \Raw(\DateT)=\mathsf{Date},\quad
- \Raw(\IDCC)=\mathbb N
+ \Raw(\IDCC)=\Enum
 \end{array}
 \]
-où \(\Money\) et \(\Duration\) désignent les montants et les durées. Des
-matières distinctes peuvent partager un même domaine : \(\Indem\) et \(\Salary\)
-sont toutes deux des montants, mais ce sont des grandeurs juridiques
-différentes, et les fonctions juridiques (définition~\ref{def:rule-package})
-sont typées par les matières, non par les domaines. Les types de valeurs
-sont eux-mêmes des matières, dont le domaine est l'ensemble qu'ils désignent :
-ainsi \(\Indemnite\subtype\Money\). La matière \(\IDCC\) est un
-identifiant, qui détermine la convention collective applicable.
+Les matières \emph{factuelles} $\FMatter\subset\CMatter$ ont une profondeur de sous-typage d'au plus 2, i.e., 
+\(\FMatter:=\{m\in\CMatter\mid  m\subtype m'\implies m'\in\MatterSup\cup\{\Matter\}\} \).
+
+%où \(\Money\) et \(\Duration\) désignent les montants et les durées. Des
+%matières distinctes peuvent partager un même domaine : \(\Indem\) et \(\Salary\)
+%sont toutes deux des montants, mais ce sont des grandeurs juridiques
+%différentes, et les fonctions juridiques (définition~\ref{def:rule-package})
+%sont typées par les matières, non par les domaines. Les types de valeurs
+%sont eux-mêmes des matières, dont le domaine est l'ensemble qu'ils désignent :
+%ainsi \(\Indemnite\subtype\Money\). La matière \(\IDCC\) est un
+%identifiant, qui détermine la convention collective applicable.
 \end{defi}
 
-Toute matière a donc des valeurs, et une valeur de \(m\) est une valeur de
-toute matière que \(m\) précise : la valeur calculée pour une matière concrète
-est, par son type, une réponse admissible à la question abstraite qu'elle
-précise. En revanche, seules les
-matières concrètes reçoivent un arbre normatif
-(définition~\ref{def:normative-tree}). Devant une matière abstraite,
-l'assistant commence donc par la concrétiser, selon un arbre de raffinement
-défini à la section~\ref{sec:hierarchie}, une fois introduits les prédicats
-d'applicabilité.
+%Toute matière a donc des valeurs, et une valeur de \(m\) est une valeur de
+%toute matière que \(m\) précise : la valeur calculée pour une matière concrète
+%est, par son type, une réponse admissible à la question abstraite qu'elle
+%précise. En revanche, seules les
+%matières concrètes reçoivent un arbre normatif
+%(définition~\ref{def:normative-tree}). Devant une matière abstraite,
+%l'assistant commence donc par la concrétiser, selon un arbre de raffinement
+%défini à la section~\ref{sec:hierarchie}, une fois introduits les prédicats
+%d'applicabilité.
 
 \begin{defi}[Ordre de favorabilité]\label{def:favorable}
 Une matière \(m\) peut être munie d'un ordre total \(\fav{m}\) sur
@@ -578,7 +548,7 @@ en jeu les matières concrètes
 \Indem,\ \ICP,\ \Senior,\\
 \Salary,\ \Presence,\ \MoisRem,\\
 \IDCC,\ \DateT,\ \ModeRupture,\ \PreavisNE\ \text{et}\ \Categorie,\\
-\text{avec}\quad\{\Etam,\Cadre\}\subseteq\Raw(\Categorie),
+\text{avec}\quad\{\Etam,\Cadre\}\subset\Raw(\Categorie),
 \end{array}
 \]
 et l'indemnité de licenciement est munie de l'ordre
@@ -608,39 +578,46 @@ On note
 \[
 \begin{aligned}
 \Res&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\Raw(m)\},\\
-\Unres&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\mc T(m)\cup\{\bot\}\},\\
+\Unres&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\mc T(m)\},\\
+\Unest&:=\{m\in\mathcal M_D\mid \nu_D(m) = \bot\},\\
 \Undef&:= \mc M\setminus\mc M_D
 \end{aligned}
 \]
 
-\begin{defi}[Sources juridiques et ordre normatif]\label{def:source-order}
+\begin{defi}[Sources juridiques]\label{def:source-order}
+\def\SourceSup{\mc S^\uparrow}
+\def\AccordIndividuel{\mathsf{AccordIndividuel}}
+%%
 Les sources juridiques forment un ensemble partiellement ordonné
 \((\mc S,\normge)\), où \(\normge\) modélise l'\emph{ordre normatif}. La
 relation stricte \(s\normgt s'\) signifie que la source \(s\) est au-dessus de
 la source \(s'\) dans la hiérarchie des sources. On note
-\(\normdown(s):=\{s'\in\mc S\mid s'\normlt s\}\).
-\end{defi}
+\(\normdown(s):=\{s'\in\mc S\mid s'\normlt s\}\). Par exemple, $\CodeTravail\normgt\AccordCollectif\normgt\Contrat$.
 
 La source \(\Source\) est le type sommet d'une relation de sous-typage
 \({\subtype}\subseteq\mc S\times\mc S\), qui classe les sources
-selon la taxonomie en usage en droit du travail français. Par exemple
-\[
-\CodeTravail\subtype\Source,\quad
-\AccordCollectif\subtype\Source,\quad
-\Contrat\subtype\Source,
-\]
-et, pour tout type \(s\) parmi \(\AccordInterpro\), \(\ConvBranche\) et
-\(\AccordEntreprise\), on a \(s\subtype\AccordCollectif\). La relation de sous-typage ne doit pas être
-confondue avec l'ordre normatif. Pour tous \(s_i\in\mc S\), on exige
+selon la taxonomie en usage en droit du travail français. 
+%
+%
+Par exemple
+%\[
+%\CodeTravail\subtype\Source,\quad
+%\AccordCollectif\subtype\Source,\quad
+%\Contrat\subtype\Source,
+%\]
+pour tout type \(s\) parmi \(\AccordInterpro\), \(\ConvBranche\) et \(\AccordEntreprise\), on a \(s\subtype\AccordCollectif\). 
+La relation de sous-typage ne doit pas être confondue avec l'ordre normatif. Pour tout \(s_i\in\mc S\), on demande :
 \[
 \begin{array}{rll}
 s_0\normlt s_1&\implies& {s_0 \not\subtype s_1} \wedge {s_1\not\subtype s_0}\\
 {s_0\subtype s_1}\wedge {s_1\normlt s_2}\wedge {s_3\subtype s_2}& \implies &s_0\normlt s_3\quad \text{(clôture par sous-typage)}
 \end{array}
 \]
+Les \emph{sources concrètes} $\mc S_\downarrow$ correspondent aux sources qui sont leur propre sous-type, i.e., \(\mc S_\downarrow:=\{s\in\mc S\mid s'\subtype s\implies s'=s\}\).
+\end{defi}
 
 \begin{defi}[Fonction juridique]\label{def:rule-package}
-Une fonction juridique encode la partie calculatoire d'un texte juridique. On
+Une \emph{fonction juridique} encode la partie calculatoire d'un texte juridique. On
 la note \(f\in\Fun\) ; c'est un couple \(f=(\sigma_f,\phi_f)\) où, pour
 \(n\in\mathbb N\), \(m_0,\ldots,m_n\in\mc M\) et \(m\in\CMatter\),
 \[
@@ -648,7 +625,7 @@ la note \(f\in\Fun\) ; c'est un couple \(f=(\sigma_f,\phi_f)\) où, pour
  \qquad
  \phi_f:\prod_{i=0}^{n}\Raw(m_i)\longrightarrow\Raw(m).
 \]
-On note \(\Fun_m:=\{f\in\Fun\mid\exists \vec m:\sigma_f=\vec m\to m\}\)
+On note \(\Fun(m):=\{f\in\Fun\mid\exists \vec m:\sigma_f=\vec m\to m\}\)
 l'ensemble des fonctions juridiques qui produisent la matière~\(m\).
 \end{defi}
 
@@ -658,7 +635,7 @@ d'application (figure~\ref{fig:catala}). Une fonction juridique calcule une
 matière concrète, et ses matières d'entrée identifient exactement les matières
 résolues du dossier dont elle a besoin.
 
-\begin{defi}[Politique d'arbitrage et extension par sous-typage]\label{def:arbitration-policy}
+\begin{defi}[Politique d'arbitrage]\label{def:arbitration-policy}
 Un \emph{régime d'articulation} (simplifié) est un élément de
 \(
 \Policy:= \{\Absolute, \Social, \Suppletive\}.
@@ -719,16 +696,16 @@ Un texte juridique qui constitue une interprétation candidate pour une matière
 non résolue est modélisé par un \emph{candidat}, triplet \(c=(s,f,p)\). Le
 \emph{corpus} est l'ensemble des candidats :
 \[
- \Cand \subseteq \{(s,f,p) \mid s\in\mc S,\ f\in\Fun,\ p: \normdown(s)\rightharpoonup \Policy \}.
+ \Cand \subseteq \{(s,f,p) \mid s\in\mc S_\downarrow,\ f\in\Fun,\ p: \normdown(s)\rightharpoonup \Policy \}.
 \]
 Les projections d'un candidat sont \(s(c)=s\), \(f(c)=f\) et \(p(c)=p\). On dit que le
-candidat \(c\) est de matière \(m\) lorsque \(f(c)\in\Fun_m\)
+candidat \(c\) est de matière \(m\) lorsque \(f(c)\in\Fun(m)\)
 (définition~\ref{def:rule-package}). La matière identifie la sortie produite par
 le calcul, tandis que la source identifie le texte juridique qui l'autorise.
 La fonction partielle \(p\) est une politique d'arbitrage cohérente pour le
 sous-typage (définition~\ref{def:arbitration-policy}). On note
 \(\sigma_c:=\sigma_{f(c)}\), \(\phi_c:=\phi_{f(c)}\) et
-\(\Cand_m:=\{c\in\Cand\mid f(c)\in\Fun_m\}\).
+\(\Cand(m):=\{c\in\Cand\mid f(c)\in\Fun(m)\}\).
 \end{defi}
 
 La politique d'arbitrage \(p\) définit la manière dont \(c\) doit être comparé
@@ -747,7 +724,7 @@ définition~\ref{def:favorable}. La sélection entre candidats au moyen des
 politiques d'arbitrage fait l'objet de la définition~\ref{def:apply-policy}.
 
 \paragraph{Exemple : du code Catala aux candidats.}
-Chaque champ d'application du corpus qui répond à la question fournit un
+Chaque champ d'application (fonction Catala) du corpus qui répond à la question fournit un
 candidat. Son code est le calcul \(\phi_f\) ; les valeurs qu'il lit
 d'autres champs, que le corpus déclare comme variables externes, forment
 l'interface \(\sigma_f\) ; la condition de version qui garde le champ Syntec
@@ -786,7 +763,7 @@ juridique d'une instance du modèle.
 \subsection{Tests d'applicabilité}
 
 On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
-partir de constantes et de matières. Pour un test \(t\),
+partir de constantes, de matières et clos par disjonction. Pour un test \(t\),
 \(\dep(t)\subseteq\mc M\) est l'ensemble fini de matières qui apparaissent dans \(t\). Un \emph{prédicat
 d'applicabilité} est une conjonction finie \(t_1\land\cdots\land t_k\) de tests
 atomiques, avec \(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\) ; la
@@ -805,7 +782,7 @@ sur~\(\true\).
  \widehat \nu_D(m):=
  \begin{cases}
   \nu_D(m),&m\in\Res,\\
-  \bot,&m\in\Unres\cup\Undef,
+  \bot,&m\in\Unres\cup\Undef\cup\Unest,
  \end{cases}
 \]
 s'étend en une évaluation \(\sem{\cdot}_D:\Tests\to\Bthree\) qui renvoie
@@ -841,42 +818,34 @@ lorsque le dossier satisfait \(\pi\). On pose \(\pi(D):=\sem{\pi}_D\), et
 \(\dep(\rho):=\bigcup_{(m,\pi,m')\in\refine}\dep(\pi)\).
 \end{defi}
 %%
-Nous appelons \emph{factuelles} les matières concrètes qui n'ont que $\Matter$ comme antécédent, comme \(\IDCC\) ou \(\DateT\).
 %%
 \begin{defi}[Cohérence de raffinement]\label{def:coh-raff}
-Un arbre de raffinement \(\rho=(\mc M_\rho,\refine)\) est \emph{cohérent} lorsque :
+Un arbre de raffinement \(\rho=(\mc M_\rho,\refine)\) est \emph{cohérent} vis à vis d'un dossier $D$ lorsque :
 \begin{enumerate}
 \item \emph{Il est enraciné.} Pour tout $m\in\mc M_\rho$, $\not\refine m$ implique $m=\Matter$.
-\item \emph{Il est profond.} Pour tout $m\in\mc M_\rho$, $m$ n'est pas factuelle.
 \item \emph{Il est compatible avec le sous-typage.} Si \(m\refby{\pi}m'\),
   alors \(m'\subtype m\).
+\item \emph{Il est bien typé.} Pour tout $m\in\mc M_\rho\setminus\{\Matter\}$, il existe $m'\in\MatterSup$ telle que $m\subtype m'$.
+\item \emph{Il est bien fondé, i.e.,} $\mc M_\rho\cap\FMatter=\emptyset$ et $\dep(\rho)\subseteq \FMatter$.
 \item \emph{Ses feuilles sont concrètes.} Pour tout \( m \in \mc M_\rho\), $m\not\refine$ implique $m\in\CMatter$.
-\item \emph{Ses prédicats sont factuels.} Pour tout $m\refby\pi m'$, si $m''\in\dep(\pi)$ alors $m''$ est factuelle.
-\item \emph{Ses premiers niveaux sont les types de valeurs.} Les enfants de la
-  racine sont des types de valeurs, comme \(\Money\) ou \(\Duration\), aux
-  domaines deux à deux disjoints.
+\item \emph{Il raffine les matières abstraites de $D$, i.e.,} $(\mc M_D\setminus \CMatter)\subseteq\mc M_\rho$.
 \end{enumerate}
 \end{defi}
-
-Avec la condition~3, la condition~6 interdit les matières hétérogènes : deux
+%%
+Les conditions 1 à 3 interdisent les matières hétérogènes : deux
 matières de types différents n'ont que \(\Matter\) pour ancêtre commun. Une
 matière « préavis » qui réunirait la durée du préavis et l'indemnité
 compensatrice de préavis, une durée et un montant, est ainsi exclue ; la durée
 se range sous \(\Duration\), l'indemnité sous \(\Money\)
 (figure~\ref{fig:hierarchie}).
-
-
-\begin{defi}[Matières ouvertes]\label{def:ouvertes}
-Pour un dossier \(D\), une matière concrète de \(\mc M_\rho\) est \emph{ouverte}
-si aucun prédicat du chemin qui la relie à la racine, unique, ne vaut
-\(\false\) ; elle est alors \emph{établie} si tous ces prédicats valent
-\(\true\), et \emph{en suspens} sinon. Pour \(m\in \mc M_\rho\), on note
-\(\Ouv_D(m)\) l'ensemble des matières ouvertes situées sous \(m\),
-c'est-à-dire atteintes depuis \(m\) par un chemin
-\[
- m=m_0\refby{\pi_1}m_1\refby{\pi_2}\cdots\refby{\pi_k}m_k,
- \qquad k\geq0.
-\]
+%%
+\begin{defi}[Matières établies et ouvertes]\label{def:ouvertes}
+Pour un dossier \(D\) et un arbre de raffinement $\rho$ cohérent pour ce dossier, 
+une matière abstraite (une question) $m\in\mc M_D\setminus\CMatter$ est dite \emph{ouverte} si 
+aucun prédicat du chemin qui la relie à la racine dans $\rho$ ne s'évalue à
+\(\false\) ; elle est \emph{établie} s'il existe un chemin qui la relie à une feuille et dont les prédicats s'évaluent vers 
+\(\true\). Pour \(m\in \mc M_\rho\), on note ces ensembles respectivement
+\(\Ouv_D\), et $\Etablie_D$.
 \end{defi}
 
 \begin{figure}
@@ -920,9 +889,8 @@ c'est-à-dire atteintes depuis \(m\) par un chemin
   enfants sont les types de valeurs \(\Money\) et \(\Duration\). Les matières
   abstraites sont en pointillés ; les matières concrètes sont les feuilles, en
   trait gras. Les arêtes sans étiquette portent le prédicat \(\true\). Pour le
-  dossier fil rouge, l'indemnité de licenciement et l'indemnité compensatrice
-  de préavis sont établies, la salariée ayant été dispensée de préavis.
-  Sœurs sous l'indemnité, l'indemnité de rupture et l'indemnité compensatrice
+  dossier fil rouge, la question de \emph{l'indemnité} est ouverte (rien n'empêche de l'atteindre depuis la racine) et établie aux titres \emph{d'indemnité de licenciement} et \emph{d'indemnité compensatrice de préavis}, la salariée ayant été dispensée de préavis.
+  Dans cet exemple, l'indemnité de rupture et l'indemnité compensatrice
   ne sont pas en concours : leurs montants s'ajoutent (section~\ref{sec:fusion}).}
 \label{fig:hierarchie}
 \end{figure}
@@ -939,10 +907,9 @@ Le dossier indique que la rupture est un licenciement,
 \(\ModeRupture=\mathsf{Licenciement}\), et que la salariée a été dispensée de
 préavis, \(\PreavisNE=\true\) ; ainsi, dans l'extrait de la figure,
 \[
- \Ouv_D(\Indemnite)=\{\Indem,\ICP\},
+ \Indemnite\cap\Etablie_D =\{\Indem,\ICP\},
 \]
-et ces deux matières sont établies. Elles ne sont pas en concours : sœurs sous
-l'indemnité, leurs montants s'ajoutent (section~\ref{sec:fusion}). Le raffinement
+Le raffinement
 (section~\ref{sec:raffinement}) concrétise ainsi la question ; il reste à
 déterminer quelle règle répond à chacune. La suite
 détaille l'indemnité de licenciement ; l'indemnité compensatrice se traite de
@@ -956,7 +923,7 @@ quintuplet \(\theta=(V,E,r,\lambda,\pi)\) où \((V,E)\) est un arbre fini
 enraciné, de racine \(r\in V\), dont les arêtes sont orientées du père vers
 le fils, et
 \[
- \lambda:V\setminus\{r\}\to\Cand_m,\qquad
+ \lambda:V\setminus\{r\}\to\Cand(m),\qquad
  \pi:E\to\Pred.
 \]
 On note \(\pi(e)(D):=\sem{\pi(e)}_D\). Pour \(e\in E\), soit
@@ -972,10 +939,6 @@ Pour \(u\in V\), on utilise comme d'habitude \(\child(u)\), \(\sib_u(v)\) et
 frères et les descendants d'un nœud. Une matière abstraite n'a pas d'arbre
 normatif : \(\mc T(m)=\emptyset\) lorsque \(m\notin\CMatter\).
 \end{defi}
-
-Comme tout nœud autre que la racine possède exactement une arête entrante,
-cette arête porte toutes les conditions d'applicabilité de son candidat, y
-compris les conditions temporelles.
 
 \paragraph{Exemple.} La figure~\ref{fig:arbre} représente l'arbre
 \(\theta_{\Indem}\) du dossier fil rouge. Sous la racine, deux versions du Code
@@ -1096,42 +1059,42 @@ sources supérieures situées sur le même chemin. La condition~(c) garantit
 qu'un arbre normatif contient toujours au moins un candidat applicable. Les conditions~(d) et~(e) assurent que les politiques
 d'arbitrage sont toujours bien définies. La condition~3 permet de s'assurer qu'on trouve l'arbre normatif de $m$ par raffinements successifs d'une question abstraite.
 
-\paragraph{Raffinement et arbres normatifs.}
-Les deux niveaux de prédicats ne se confondent pas : ceux de l'arbre de
-raffinement décident si une question se pose, ceux de l'arbre normatif quelle
-source et quelle version y répondent ; que le droit soit ouvert reste l'affaire
-du calcul, comme l'exclusion de la faute grave dans le code Catala. Ils ne se
-lisent pas non plus de la même façon : les enfants d'une matière peuvent être
-ouverts ensemble, chacun résolu par son propre arbre normatif, alors que les
-fils d'un nœud d'arbre normatif sont en conflit (condition~(b)).
-
-\begin{remark}[Homogénéité des arbres normatifs]
-Tous les candidats d'un arbre \(\theta_m\) calculent la même matière concrète
-\(m\), et le principe de faveur ne compare que des calculs d'une même
-matière. Selon la jurisprudence, en cas de concours de conventions
-collectives, « les avantages ayant le même objet ou la même cause ne peuvent,
-sauf stipulations contraires, se cumuler, le plus favorable d'entre eux pouvant
-seul être accordé »~\cite{cassap1988} ; le corpus retient cette unité
-de comparaison pour tout concours, y compris avec la loi. L'arbre de
-raffinement doit donc être construit de sorte que deux avantages ayant le même
-objet ou la même cause relèvent d'une même matière concrète : c'est, comme
-l'attribution des politiques, une exigence de validation juridique de
-l'instance, que les définitions n'imposent pas. À l'inverse, comparer au niveau
-d'une matière abstraite est l'erreur que censure l'assemblée plénière en 2008 :
-des jours de récupération et des congés payés d'ancienneté, que la cour d'appel
-avait comparés globalement comme « temps rémunéré non ouvré », n'ont « ni la
-même cause ni le même objet »~\cite{cassap2008}. Ce sont deux matières
-concrètes, et deux arbres normatifs.
-\end{remark}
-
-Une matière propre à une convention, comme la prime de vacances Syntec, a un
-arbre normatif réduit à un candidat, atteint par une arête de prédicat
-\(\true\) : la condition \([\IDCC=1486]\) est portée par l'arbre de
-raffinement, et l'exhaustivité de la racine (condition~(c)) est acquise sans
-répéter cette condition dans l'arbre normatif. En contrepartie, l'arbre
-d'une matière ne doit entrer dans un dossier que si cette matière est établie :
-c'est l'hypothèse que la section~\ref{sec:op} impose aux saisies d'arbres.
-
+%\paragraph{Raffinement et arbres normatifs.}
+%Les deux niveaux de prédicats ne se confondent pas : ceux de l'arbre de
+%raffinement décident si une question se pose, ceux de l'arbre normatif quelle
+%source et quelle version y répondent ; que le droit soit ouvert reste l'affaire
+%du calcul, comme l'exclusion de la faute grave dans le code Catala. Ils ne se
+%lisent pas non plus de la même façon : les enfants d'une matière peuvent être
+%ouverts ensemble, chacun résolu par son propre arbre normatif, alors que les
+%fils d'un nœud d'arbre normatif sont en conflit (condition~(b)).
+%
+%\begin{remark}[Homogénéité des arbres normatifs]
+%Tous les candidats d'un arbre \(\theta_m\) calculent la même matière concrète
+%\(m\), et le principe de faveur ne compare que des calculs d'une même
+%matière. Selon la jurisprudence, en cas de concours de conventions
+%collectives, « les avantages ayant le même objet ou la même cause ne peuvent,
+%sauf stipulations contraires, se cumuler, le plus favorable d'entre eux pouvant
+%seul être accordé »~\cite{cassap1988} ; le corpus retient cette unité
+%de comparaison pour tout concours, y compris avec la loi. L'arbre de
+%raffinement doit donc être construit de sorte que deux avantages ayant le même
+%objet ou la même cause relèvent d'une même matière concrète : c'est, comme
+%l'attribution des politiques, une exigence de validation juridique de
+%l'instance, que les définitions n'imposent pas. À l'inverse, comparer au niveau
+%d'une matière abstraite est l'erreur que censure l'assemblée plénière en 2008 :
+%des jours de récupération et des congés payés d'ancienneté, que la cour d'appel
+%avait comparés globalement comme « temps rémunéré non ouvré », n'ont « ni la
+%même cause ni le même objet »~\cite{cassap2008}. Ce sont deux matières
+%concrètes, et deux arbres normatifs.
+%\end{remark}
+%
+%Une matière propre à une convention, comme la prime de vacances Syntec, a un
+%arbre normatif réduit à un candidat, atteint par une arête de prédicat
+%\(\true\) : la condition \([\IDCC=1486]\) est portée par l'arbre de
+%raffinement, et l'exhaustivité de la racine (condition~(c)) est acquise sans
+%répéter cette condition dans l'arbre normatif. En contrepartie, l'arbre
+%d'une matière ne doit entrer dans un dossier que si cette matière est établie :
+%c'est l'hypothèse que la section~\ref{sec:op} impose aux saisies d'arbres.
+%
 \section{Traitement des dossiers}\label{sec:op}
 
 \subsection{Opérateurs}
@@ -1153,8 +1116,10 @@ D &::=& \EmptyD \quad \text{le dossier vide}\\
 \]
 Sur une liste, un opérateur élémentaire \(\mathit{op}\) s'applique à une
 position \(i\) :
-\(\mathit{op}_i(\Liste,\ldots):=[D_1,\ldots,\mathit{op}(D_i,\ldots),\ldots,D_n]\).
+\(\mathit{op}_i(\Liste,\ldots):=[D_1,\ldots,\mathit{op}(D_i,\ldots),\ldots,D_n]\). 
 \end{defi}
+On note qu'aucun opérateur élémentaire ne s'applique sur des matières non établies du dossier. Ces matières abstraites devront d'abord être raffinée par des fonctions qui opèrent sur des listes de dossiers (voir \autoref{sec:raffinement}).
+
 Les applications de \(\Input\) à un arbre forment la forêt
 \(\mc F_D:=\bigl(\nu_D(m)\bigr)_{m\in\Unres}\). Plus précisément,
 \(\Input(D,m,\theta)\) ajoute un nouvel arbre \(\theta\in\mc T(m)\), indexé par
@@ -1170,18 +1135,16 @@ vide. Pour \(D=(\mc M_D,\nu_D)\), on note \(\nu_D-m\) la valuation restreinte
 \(m\notin\mc M_D\) de valeur \(v\in(\Raw(m)\uplus\mc T(m))_\bot\). Alors
 \begin{equation}
 \Input((\mc M_D,\nu_D),m,v)
- :=(\mc M_D\cup\{m\},(\nu_D-m)+[m\mapsto v]).
+ :=(\mc M_D\uplus\{m\},\nu_D+[m\mapsto v]).
 \label{eq:input}
 \end{equation}
-Cette opération ajoute la matière \(m\) au dossier, ou complète sa valuation
-lorsque \(\nu_D(m)=\bot\). En particulier, \(\Input(D,m,\bot)\) pose la
-question \(m\) sans y répondre : c'est ainsi qu'un dossier reçoit la matière,
-souvent abstraite, sur laquelle porte la demande. Nous supposons dans
-toute la suite qu'un arbre \(\theta_m\) n'est saisi que si \(m\) est établie
-(définition~\ref{def:ouvertes}) ; cette hypothèse vaut en particulier pour le
-corollaire~\ref{cor:loop} et la proposition~\ref{prop:scenarios}. Les
-sections~\ref{sec:raffinement} à~\ref{sec:fusion} définissent les opérateurs
-propres aux listes.
+Cette opération ajoute la matière \(m\) au dossier. En particulier, \(\Input(D,m,\bot)\) pose la
+question \(m\) sans y répondre : c'est ainsi qu'un dossier reçoit la matière abstraite sur laquelle porte la demande. Nous supposons dans
+la suite que les saisies sont raisonnables, i.e., pour tout $m\in\mc M$ :
+\begin{itemize}
+\item \emph{Les matières abstraites saisies sont ouvertes.} $D'=\Input((\mc M_D,\nu_D),m,\bot)$ implique $m\in\Ouv_{D'}$. 
+\item \emph{Les matières concrètes saisies et non résolues sont établies.} $D'=\Input((\mc M_D,\nu_D),m,\theta)$ implique $m\in\Etablie_{D'}$.
+\end{itemize}
 
 \subsection{Élagage}
 
@@ -1294,7 +1257,7 @@ sa valeur, obtenue sans modifier le dossier, est
 \(D(c):=\phi_c(\nu_D(m_0),\ldots,\nu_D(m_q))\in\Raw(m)\).
 
 \begin{defi}[Application récursive des politiques]\label{def:apply-policy}
-Pour deux candidats \(a,b\in\Cand_m\) tels que \(s(a)\normlt s(b)\), on pose
+Pour deux candidats \(a,b\in\Cand(m)\) tels que \(s(a)\normlt s(b)\), on pose
 \[
 \Winner_D(a,b):=
 \begin{cases}
@@ -1802,10 +1765,9 @@ résolution montre que, sous des hypothèses de cohérence et d'acyclicité des
 dépendances, ce processus finit par résoudre toutes les matières du dossier, et
 la proposition~\ref{prop:scenarios} étend ce résultat aux scénarios. L'exemple
 fil rouge illustre enfin l'application du modèle à du code Catala existant :
-chaque champ qui calcule la matière devient un candidat, et le régime
+chaque champ (fonction Catala) qui calcule la matière devient un candidat, et le régime
 d'articulation que le corpus laisse hors du code devient la politique du
-candidat. C'est
-l'architecture d'\ALex{}.
+candidat. C'est l'architecture d'\ALex{}.
 
 Plusieurs extensions rapprocheraient ce modèle de la structure du raisonnement
 juridique tel qu'il se pratique. D'abord, le référentiel devrait aussi contenir
