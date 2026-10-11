@@ -28,14 +28,14 @@
   \renewcommand{#1}{#2}%
 }
 
-\reneworprovidecommand{\definitionautorefname}{Définition}
-\reneworprovidecommand{\propositionautorefname}{Proposition}
+\reneworprovidecommand{\defiautorefname}{Définition}
+\reneworprovidecommand{\propautorefname}{Proposition}
 \reneworprovidecommand{\theoremautorefname}{Théorème}
-\reneworprovidecommand{\lemmaautorefname}{Lemme}
-\reneworprovidecommand{\corollaryautorefname}{Corollaire}
+\reneworprovidecommand{\lemmautorefname}{Lemme}
+\reneworprovidecommand{\coroautorefname}{Corollaire}
 \reneworprovidecommand{\remarkautorefname}{Remarque}
-\reneworprovidecommand{\subsectionautorefname}{sous-section}
-\reneworprovidecommand{\sectionautorefname}{section}
+\reneworprovidecommand{\subsectionautorefname}{Section}
+\reneworprovidecommand{\sectionautorefname}{Section}
 
 %% --------------------------------------------------------------------
 %% Outils génériques
@@ -54,12 +54,16 @@
 %% Matières et domaines de valeurs (déf. 1)
 %% --------------------------------------------------------------------
 \newcommand{\Matter}{\ensuremath{\mathsf{Matiere}}}
-\newcommand{\CMatter}{\ensuremath{\mathcal{M}_{\downarrow}}}
+\newcommand{\CMatter}{\ensuremath{\mathcal{M}^{\mathsf{conc}}}}
 \newcommand{\Raw}{\ensuremath{\mathcal{V}}}                 % domaine : \Raw(m)
 \newcommand{\Money}{\ensuremath{\mathsf{Montant}}}
 \newcommand{\Duration}{\ensuremath{\mathsf{Duree}}}
 \newcommand{\DateT}{\ensuremath{\mathsf{Date}}}
 \newcommand{\IDCC}{\ensuremath{\mathsf{IDCC}}}
+\def\MatterSup{\mc M^{\mathsf{support}}}
+\def\FMatter{\mc M^{\mathsf{fact}}}
+\def\Enum{\mathsf{Enum}}
+
 
 % Matières utilisées dans les exemples
 \newcommand{\Indem}{\ensuremath{\mathsf{Indemnite}}}
@@ -83,17 +87,15 @@
 \newcommand{\Prune}{\ensuremath{\mathit{Elaguer}}}     % \Prune(D,m)
 \newcommand{\Resolve}{\ensuremath{\mathit{Resoudre}}}  % \Resolve(D,m)
 % Partition des matières d'un dossier D (l'indice D est intégré)
-\newcommand{\Res}{\ensuremath{\mathit{Resolue}_D}}
-\newcommand{\Unres}{\ensuremath{\mathit{NonResolue}_D}}
-\newcommand{\Undef}{\ensuremath{\mathit{Indefinie}_D}}
-\newcommand{\Unest}{\ensuremath{\mathit{NonEtablie}_D}}
-\newcommand{\UnresOf}[1]{\ensuremath{\mathit{NonResolue}_{#1}}}
+\newcommand{\Undef}{\ensuremath{\mathit{Indefinie}}}
 \newcommand{\dep}{\ensuremath{\mathit{dep}}}
 
 %% --------------------------------------------------------------------
 %% Sources, fonctions juridiques, candidats, politiques (déf. 4 à 7)
 %% --------------------------------------------------------------------
 \newcommand{\Source}{\ensuremath{\mathsf{Source}}}
+\newcommand{\CSource}{\ensuremath{\mc S^\mathsf{conc}}}
+
 \newcommand{\CodeTravail}{\ensuremath{\mathsf{CodeTravail}}}
 \newcommand{\AccordCollectif}{\ensuremath{\mathsf{AccordCollectif}}}
 \newcommand{\ConvBranche}{\ensuremath{\mathsf{ConventionBranche}}}
@@ -107,7 +109,7 @@
 \newcommand{\Absolute}{\ensuremath{\mathsf{Absolu}}}
 \newcommand{\Social}{\ensuremath{\mathsf{Social}}}
 \newcommand{\Suppletive}{\ensuremath{\mathsf{Suppletif}}}
-\def\SourceSup{\mc S^\uparrow}
+\def\SourceSup{\mc S^{\mathsf{support}}}
 \def\AccordIndividuel{\mathsf{AccordIndividuel}}
 \def\Arb{\mathit{Arb}}
 
@@ -130,8 +132,9 @@
 \newcommand{\Pred}{\ensuremath{\mathit{Test}_{{}\wedge{}}}}
 \newcommand{\refby}[1]{\mathrel{\twoheadrightarrow_{#1}}}
 \newcommand{\refine}{\mathrel{\twoheadrightarrow}}
-\newcommand{\Ouv}{\ensuremath{\mathit{Ouverte}}}
+\newcommand{\Ouverte}{\ensuremath{\mathit{Ouverte}}}
 \newcommand{\Etablie}{\ensuremath{\mathit{Etablie}}}
+\newcommand{\Indet}{\ensuremath{\mathit{Indeterminee}}}
 
 \newcommand{\ModeRupture}{\ensuremath{\mathsf{ModeRupture}}}
 \newcommand{\PreavisNE}{\ensuremath{\mathsf{PreavisNonExecute}}}
