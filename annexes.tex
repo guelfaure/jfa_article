@@ -1,0 +1,216 @@
+% !TEX root = jfla2027_arbres_normatifs.tex
+
+\appendix
+\section{Annexes}
+
+\subsection{Figures}
+
+\begin{figure}[htbp]
+\begin{Verbatim}[frame=single, label={Code du travail, article R. 1234-2}]
+champ d'application MontantIndemnitéDeLicenciement_Loi:
+  étiquette plancher_légal_r1234_2
+  définition montant_du_plancher
+    sous condition années_ancienneté <= 10,0
+    conséquence égal à
+      montant_du_salaire_de_référence * années_ancienneté * (1,0 / 4,0)
+
+  étiquette plancher_légal_r1234_2
+  définition montant_du_plancher
+    sous condition années_ancienneté > 10,0
+    conséquence égal à
+      montant_du_salaire_de_référence * 10,0 * (1,0 / 4,0)
+      + montant_du_salaire_de_référence * (années_ancienneté - 10,0)
+        * (1,0 / 3,0)
+\end{Verbatim}
+\begin{Verbatim}[frame=single, label={Convention Syntec (IDCC 1486), article 4.5}]
+champ d'application MontantIndemnitéDeLicenciement_CCN_1486
+  sous condition
+    article_4_5_applicable_VersionApplicableRuptureDuContrat_CCN_1486:
+  étiquette barème
+  définition montant_du_barème
+    sous condition
+      faits_rupture.catégorie = Etam
+      et années_de_présence <= 10,0
+    conséquence égal à
+      mois_de_rémunération * années_de_présence * (1,0 / 4,0)
+
+  étiquette barème
+  définition montant_du_barème
+    sous condition
+      faits_rupture.catégorie = IngénieurOuCadre
+      et années_de_présence >= 2,0
+    conséquence égal à
+      mois_de_rémunération * années_de_présence * (1,0 / 3,0)
+\end{Verbatim}
+\caption{Deux extraits du corpus Catala~\cite{corpuslumo} : le barème légal et
+  le barème conventionnel de l'indemnité de licenciement. Commentaires omis et
+  mise en page adaptée ; les deux autres cas du barème Syntec (ETAM au-delà de
+  dix ans, cadres de moins de deux ans) sont omis.}
+\label{fig:catala}
+\end{figure}
+
+\subsection{Preuves}
+
+\begin{proof}[\autoref{lem:monotone}]
+Munissons \(\Bthree\) de l'ordre d'information \(\leq_i\), dans lequel
+\(\unknown\) est au-dessous de \(\true\) et de \(\false\), incomparables entre
+eux. Pour un test élémentaire \(t\), ou bien \(\sem{t}_D=\unknown\), ou bien
+\(\dep(t)\subseteq\Etablie_D\subseteq\Etablie_{D'}\) et \(\widehat\nu_D\) et
+\(\widehat\nu_{D'}\) coïncident sur \(\dep(t)\), d'où \(\sem{t}_{D'}=\sem{t}_D\) ;
+dans les deux cas \(\sem{t}_D\leq_i\sem{t}_{D'}\). Les connecteurs forts de
+Kleene sont monotones pour \(\leq_i\), de sorte que
+\(\sem{\pi}_D\leq_i\sem{\pi}_{D'}\) pour tout prédicat \(\pi\), par induction.
+Une valeur décidée étant maximale pour \(\leq_i\), elle est conservée.
+\end{proof}
+
+\begin{proof}[\autoref{prop:coh-input}]
+Les conditions~1 à~3 et~6 de la \autoref{def:coh-raff} ne dépendent pas du
+dossier. Pour la condition~4, une matière ouverte de \(D'\) est ouverte dans
+\(D\), ou bien est \(m\) avec \(v=\bot\), abstraite dans \(\rho\) par le
+cas~3. Pour la condition~5, une matière indéterminée de \(D'\) est \(m\) avec
+\(v=\tree(m)\), feuille de \(\rho\) par le cas~2, pour laquelle la dérivation
+\(\tree(m)\to_{D'}^{*}\nu_{D'}(m)\) est vide ; ou bien une matière
+\(m''\in\Indet_D\), avec \(\tree(m'')\redD^{*}\nu_D(m'')\). Comme
+\(D\enrich D'\), les prédicats décidés dans \(D\) le sont identiquement dans
+\(D'\) (\autoref{lem:monotone}), et les frères d'un nœud ne dépendent que de
+l'arbre : chaque pas \(\redD\) de cette dérivation est aussi un pas
+\(\to_{D'}\).
+\end{proof}
+
+
+\begin{proof}[\autoref{prop:coh-precise}]
+Les conditions~4 et~5 de la \autoref{def:coh-raff} passent de \(D\) à
+\(D\ominus m\), dont les matières ouvertes et indéterminées sont celles de
+\(D\) privées de \(m\), et dont la valuation coïncide avec celle de \(D\) sur
+les matières établies. Chaque saisie \(\Input_{\widehat\tree(m')}(\cdot,m')\)
+est ensuite valide : \(m'\in\mc M_\rho\) est un enfant de \(m\), donc
+distinct de \(\Matter\), indéfini dans le dossier courant, et
+\(\widehat\tree(m')\) est son arbre si \(m'\) est concrète, \(\bot\) sinon.
+La \autoref{prop:coh-input} conclut.
+\end{proof}
+
+\begin{proof}[\autoref{lem:reduits}]
+(1) Un pas \((\Cut)\) en \(e\) demande \(\pi(e)(D)=\false\), un pas
+\((\Select)\) en \(e=(u,v)\) demande \(\pi(e)(D)=\true\) et
+\(\sib_u(v)\neq\emptyset\). D'après le \autoref{lem:monotone}, un prédicat
+décidé dans \(D\) a la même valeur dans \(D'\), et les frères d'un nœud ne
+dépendent que de l'arbre courant : chaque pas de la dérivation
+\(\theta_0\redD^{*}\theta\) est un pas de \(\to_{D'}\).
+(2) Les conditions~(a), (d) et~(e) portent sur des couples de nœuds et sont
+héritées par tout sous-arbre ; des frères dans \(\theta\) sont frères dans
+\(\theta_0\), d'où~(b). Pour l'exhaustivité, soit \(v\) un fils de la racine
+de \(\theta_0\) tel que \(\pi((r,v))(D)\neq\false\), qui existe par la
+condition~(c) appliquée à \(\theta_0\) et \(D\). Si \(v\) appartient à
+\(\theta\), c'est fini. Sinon, \(v\) a été retiré par un pas portant sur une
+arête issue de la racine : non par \((\Cut)\) en \((r,v)\), dont le prédicat
+n'est pas faux, donc par \((\Select)\) en \((r,v')\) pour un frère \(v'\) tel
+que \(\pi((r,v'))(D)=\true\). Ce frère subsiste dans \(\theta\) : \((\Cut)\)
+ne s'applique pas à \((r,v')\), et un \((\Select)\) qui le retirerait
+exigerait un autre fils de la racine d'arête vraie, ce qu'exclut~(b) pour
+\(\theta_0\).
+\end{proof}
+
+\begin{proof}[\autoref{prop:norm}]
+Terminaison : chaque pas retire au moins un sommet d'un arbre fini. Pour la
+confluence locale, on remarque que \(\pi(e)(D)\) ne dépend que de \(D\), et
+que tout élagué de \(\nu_D(m)\) dans \(D\) est un élagué de \(\tree(m)\),
+qui vérifie donc~(b) d'après le \autoref{lem:reduits}. Soient deux pas en
+\(e_i=(u_i,v_i)\), \(i=1,2\), qui retirent les ensembles clos par descendants
+\(W_1,W_2\). Si \(v_2\in W_1\), alors \(W_2\subseteq W_1\), et le pas en
+\(e_1\) soit s'applique encore dans \(\theta_2\) et donne \(\theta_1\), soit
+est un \((\Select)\) dont les sous-arbres frères sont tous inclus dans
+\(W_2\), auquel cas \(\theta_1=\theta_2\). Si aucune des deux cibles
+n'appartient à l'ensemble de l'autre, les deux pas s'appliquent encore et
+commutent. Le cas restant, \(v_1\in W_2\) et \(v_2\in W_1\), force \(v_1\) et
+\(v_2\) à être frères avec deux arêtes valant \(\true\), ce qu'exclut~(b). Le
+lemme de Newman permet de conclure.
+\end{proof}
+
+\begin{proof}[\autoref{prop:coh-prune}]
+Les matières établies, ouvertes et indéterminées de \(D'=\Prune(D,m)\) sont
+celles de \(D\), aux mêmes valeurs établies, de sorte que \(\to_{D'}\) et
+\(\redD\) coïncident. La condition~5 vaut pour \(m\) parce que
+\(\tree(m)\redD^{*}\nu_D(m)\redD^{*}\nf{\nu_D(m)}\), et pour les autres
+matières indéterminées parce que leur arbre est inchangé.
+\end{proof}
+
+\begin{proof}[\autoref{lem:linear}]
+(1) Aucune arête de \(\theta'\) ne vaut \(\false\), sinon \((\Cut)\)
+s'appliquerait ; toute arête vaut donc \(\true\). L'arbre \(\theta'\) est un
+élagué de \(\tree(m)\) dans \(D\), et vérifie donc~(a) et~(b), et
+l'exhaustivité de la racine pour \(D\) (\autoref{lem:reduits}). Si un nœud
+avait deux fils, les deux arêtes vaudraient \(\true\), ce qui contredirait
+l'exclusion mutuelle~(b) ; \(\theta'\) est donc un chemin. La racine conserve
+au moins un fils, dont l'arête, non fausse, vaut \(\true\) ; le chemin est
+donc non vide. La monotonie des sources découle de~(a).
+(2) Par totalité (\autoref{def:applicability-predicate}), une matière de
+\(\dep(e)\) n'est pas établie dans \(D\) ; elle est concrète, donc ni ouverte
+(condition~4) ni égale à \(\Matter\), et appartient ainsi à
+\(\Indet_D\cup\Undef_D\).
+\end{proof}
+
+\begin{proof}[\autoref{thm:boucle}]
+Pour la phase de concrétisation, associons à chaque matière
+abstraite $m$ le poids
+\[
+w(m)
+:=
+1+\sum_{\substack{m\refby{\pi}m'\\m'\notin\CMatter}}w(m').
+\]
+Ces poids sont bien définis puisque le raffinement est fini
+et strictement descendant. Posons
+\[
+W_D:=\sum_{m\in\Ouverte_D}w(m).
+\]
+Un pas de précision remplace une matière ouverte par certains
+de ses enfants : les enfants abstraits sont ouverts, tandis
+que les enfants concrets reçoivent directement leur arbre.
+Il fait donc strictement décroître $W_D$.
+Une saisie factuelle laisse $W_D$ inchangé et fait décroître
+le nombre de dépendances de raffinement absentes du dossier.
+Le couple
+\[
+\bigl(W_D,\;|\dep(\rho)\setminus\mc M_D|\bigr)
+\]
+décroît ainsi lexicographiquement à chaque tour de cette phase.
+La totalité des tests garantit qu'un prédicat inconnu possède
+une dépendance factuelle manquante. La phase termine donc
+avec $\Ouverte_D=\emptyset$.
+
+Pour la phase de résolution, soit $I_D$ l'ensemble croissant
+des matières pour lesquelles un arbre du référentiel a déjà
+été introduit, et posons
+\[
+\dep(\mc F_\rho)
+:=
+\bigcup_{\theta\in\mc F_\rho}\dep(\theta).
+\]
+Le triplet
+\[
+\bigl(
+|\mathrm{dom}(\mc F_\rho)\setminus I_D|,
+\;|\dep(\mc F_\rho)\setminus\mc M_D|,
+\;|\Indet_D|
+\bigr)
+\]
+décroît lexicographiquement à chaque tour :
+une saisie d'arbre fait décroître sa première composante,
+une saisie de valeur sa deuxième, et une résolution sa troisième.
+L'élagage termine et est suivi, dans le même tour, d'une saisie
+ou d'une résolution.
+
+L'acyclicité des dépendances permet de choisir une matière
+indéterminée minimale. Ses dépendances bloquantes sont
+indéfinies et peuvent donc être saisies. Lorsqu'elles sont
+établies, la totalité des tests, la cohérence du référentiel
+et la stabilité des prédicats décidés sous enrichissement
+du dossier garantissent un chemin applicable et exécutable ;
+la résolution est alors possible. La seconde phase termine donc avec $\Indet_D=\emptyset$,
+sans introduire de matière ouverte.
+
+Enfin, les matières de $Q$ ont reçu leurs arbres lors de la
+concrétisation et ne sont pas retirées pendant la résolution.
+Elles sont donc toutes établies dans le dossier final.
+Si $Q$ est vide, la réponse est la famille vide ; sinon,
+leurs valeurs constituent la famille annoncée.
+\end{proof}
