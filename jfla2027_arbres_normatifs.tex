@@ -1533,31 +1533,152 @@ donc non vide. La monotonie des sources découle de~(a).
 \(\Indet_D\cup\Undef_D\).
 \end{proof}
 
-\subsection{Dépendances bloquantes}
-%%% TODO ajouter les matieres factuelles manquantes pour raffiner une question
-Le \autoref{lem:linear} identifie exactement ce qui bloque une résolution.
-Pour \(\theta'=\nf{\nu_D(m)}=(V',E',r,\lambda',\pi')\), on définit
+% Macros supplémentaires : à placer dans normtrees-fr.sty ou dans le préambule.
+\providecommand*{\MissingHere}{\ensuremath{\mathit{U}}}
+\providecommand*{\MissingDep}{\ensuremath{\mathit{DepFrontiere}}}
+\providecommand*{\BlockingApp}{\ensuremath{\mathit{Bloquant}^{\mathsf{app}}}}
+\providecommand*{\BlockingCalc}{\ensuremath{\mathit{Bloquant}^{\mathsf{calc}}}}
+\providecommand*{\Blocking}{\ensuremath{\mathit{Bloquant}}}
+
+% Remplacement de la section 6.5.
+\subsection{Dépendances bloquantes}\label{sec:dependances-bloquantes}
+
+Une matière peut être bloquée à deux niveaux. Pour une matière abstraite
+sans valuation, certains prédicats de raffinement peuvent être inconnus :
+il reste à déterminer quelles précisions sont applicables. Pour une matière
+concrète associée à un arbre normatif, certains prédicats de cet arbre
+peuvent être inconnus : il reste à déterminer quels candidats sont
+applicables. Même lorsque cette seconde étape est achevée, une troisième
+source de blocage demeure : les candidats subsistants peuvent manquer
+d'entrées nécessaires à leur exécution. Nous distinguons donc les
+\emph{blocages d'applicabilité} des \emph{blocages de calcul}.
+
+Dans cette section, les dossiers sont supposés $D$-cohérents avec le
+raffinement $\rho$, les référentiels normatifs cohérents, et les tests
+totaux. Les dépendances des prédicats de raffinement sont factuelles ;
+celles des prédicats normatifs et des fonctions des candidats sont
+concrètes. Une dépendance sans valeur établie est donc soit indéfinie,
+soit indéterminée, mais jamais ouverte.
+
+\paragraph{Frontière des prédicats inconnus.}
+Soit $T_u$ un arbre étiqueté par des prédicats, enraciné en un nœud $u$.
+Nous écrivons $\child(u,T_u)$ pour ses enfants et $T_v$ pour le sous-arbre
+enraciné en un enfant $v$. Les dépendances des prédicats inconnus issus
+de $u$ sont
 \[
- \NeedFacts_D(m):=\Bigl(\bigcup_{e\in E',\ \pi(e)(D)=\unknown}\dep(e)
-   \;\cup\bigcup_{u\in V'\setminus\{r\}}\dep(u)\Bigr)
-   \cap\mathit{Inconnu}_D.
+\MissingHere_D(u,T_u)
+:=
+\bigcup_{\substack{v\in\child(u,T_u)\\
+                   \pi(u,v)(D)=\unknown}}
+\dep\bigl(\pi(u,v)\bigr).
 \]
-avec \(\mathit{Inconnu}_D:=\Indet_D\cup\Undef_D\cup\Ouverte_D\).
+Nous collectons les dépendances à la frontière des prédicats inconnus
+par la fonction récursive
+\[
+\MissingDep_D(u,T_u)
+:=
+\begin{cases}
+\MissingHere_D(u,T_u),
+ &\text{si }\MissingHere_D(u,T_u)\neq\emptyset,\\[4pt]
+\displaystyle
+\bigcup_{\substack{v\in\child(u,T_u)\\
+                   \pi(u,v)(D)=\true}}
+\MissingDep_D(v,T_v),
+ &\text{sinon.}
+\end{cases}
+\]
+La réunion vide vaut $\emptyset$. La récursion est bien fondée puisque
+l'arbre est fini. Elle ignore les arêtes fausses et, dès qu'un nœud porte
+une arête inconnue, reporte l'exploration de ses enfants. Elle définit
+ainsi une stratégie de demande d'information : décider d'abord les
+prédicats inconnus rencontrés avant d'interroger leurs descendants.
 
-Lorsque \(\NeedFacts_D(m)=\emptyset\), l'arbre est un chemin de candidats
-exécutables et l'étape déterministe ci-dessous s'applique ; sinon, l'assistant
-soumet \(\NeedFacts_D(m)\) à l'expert (pour les matières indéfinies) ou les
-résout d'abord (pour les matières non résolues).
+\paragraph{Blocages d'applicabilité.}
+Pour une matière abstraite $m\in\Ouverte_D$, soit $T_m$ le sous-arbre
+de raffinement enraciné en $m$, et posons $u_m:=m$.
+Pour une matière concrète $m\in\Indet_D$, soit
+\[
+T_m:=\nf{\nu_D(m)}
+\]
+l'arbre normatif élagué dans $D$, et $u_m:=r_m$ sa racine.
+Dans les deux cas, nous posons
+\[
+\BlockingApp_D(m)
+:=
+\MissingDep_D(u_m,T_m)
+\cap\bigl(\Undef_D\cup\Indet_D\bigr).
+\]
+Le filtre ne conserve que les dépendances sans valeur établie : une matière
+indéfinie doit être saisie, tandis qu'une matière indéterminée doit être
+résolue. Pour le raffinement, les dépendances étant factuelles,
+$\BlockingApp_D(m)$ ne contient que des matières indéfinies.
 
-\paragraph{Exemple.} Tant que \(\IDCC\) est indéfinie, les arêtes qui mènent à
-l'article 4.5, à HCR et à la métallurgie valent \(\unknown\), tandis que celle
-de l'article~19 vaut déjà \(\false\), la date étant connue : sous le candidat du Code,
-\((\Cut)\) ne retire que ce nœud, et \(\IDCC\) appartient à
-\(\NeedFacts_D(\Indem)\). Une fois \(\IDCC\)
-saisie, l'élagage donne le chemin \(r\to c_{\mathsf{Code}}\to c_{4.5}\) de la
-\autoref{fig:arbre}. Il reste alors \(\NeedFacts_D(\Indem)=\{\Categorie\}\),
-puisque \(\Categorie\in\dep(c_{4.5})\) : c'est la question que l'assistant
-pose ensuite, sous la forme d'un point de choix (\autoref{sec:choix}).
+Pour une matière concrète, l'absence de blocage d'applicabilité signifie
+que toutes les arêtes de l'arbre élagué sont décidées. Le
+\autoref{lem:linear} garantit alors que cet arbre est un chemin non vide
+dont les arêtes valent $\true$. Le seul caractère filaire ne suffit pas :
+un chemin peut encore porter une arête de valeur $\unknown$.
+
+Pour une matière abstraite, $\BlockingApp_D(m)$ concerne la
+\emph{concrétisation complète} de la question. Le prochain pas
+$\Precise(D,m)$ ne demande, lui, que la décision des prédicats issus
+de $m$ : il est autorisé lorsque $\rho_{\unknown}(m)=\emptyset$,
+même si un prédicat situé plus bas demeure inconnu. Les dépendances
+qui bloquent ce pas sont précisément
+\[
+\MissingHere_D(m,T_m)\cap\Undef_D.
+\]
+
+\paragraph{Blocages de calcul.}
+Pour une matière concrète $m\in\Indet_D$, écrivons
+$T_m=(V_m,E_m,r_m,\lambda_m,\pi_m)$ et posons
+\[
+\BlockingCalc_D(m)
+:=
+\left(\bigcup_{v\in V_m\setminus\{r_m\}}\dep(v)\right)
+\cap\bigl(\Undef_D\cup\Indet_D\bigr).
+\]
+Cet ensemble rassemble les entrées manquantes des candidats subsistants.
+Il suffit à rendre tous ces candidats exécutables ; certaines politiques
+pourraient permettre une stratégie plus économe, qui ne demanderait pas
+les entrées des candidats dont le résultat ne peut influencer la sélection.
+
+Nous donnons priorité aux blocages d'applicabilité :
+\[
+\Blocking_D(m)
+:=
+\begin{cases}
+\BlockingApp_D(m),
+ &\text{si }\BlockingApp_D(m)\neq\emptyset,\\
+\BlockingCalc_D(m),
+ &\text{sinon, si }m\in\Indet_D,\\
+\emptyset,
+ &\text{sinon.}
+\end{cases}
+\]
+Après chaque saisie ou résolution d'une dépendance, l'assistant réévalue
+les prédicats et, pour une matière concrète, élague de nouveau l'arbre.
+Il décide ainsi d'abord quelles branches subsistent, puis demande les
+entrées nécessaires à leurs calculs. Lorsque $m$ est concrète et que
+$\Blocking_D(m)=\emptyset$, son arbre élagué est un chemin de candidats
+applicables et exécutables : $\Resolve(D,m)$ est alors défini.
+
+\paragraph{Exemple.}
+Dans le dossier fil rouge, la date étant connue, l'article~19 est déjà
+exclu. Tant que $\IDCC$ est indéfinie, les prédicats conduisant aux
+conventions encore possibles sont inconnus, et
+$\BlockingApp_D(\Indem)=\{\IDCC\}$. Une fois $\IDCC=1486$ saisie,
+l'élagage conserve le chemin du Code du travail à l'article~4.5 de
+Syntec. Si les anciennetés et les salaires sont établis mais que la
+catégorie est indéfinie, on obtient
+\[
+\begin{aligned}
+\BlockingApp_D(\Indem)&=\emptyset,\\
+\BlockingCalc_D(\Indem)&=\{\Categorie\}.
+\end{aligned}
+\]
+L'assistant demande alors la catégorie avant d'exécuter les candidats
+et d'appliquer leurs politiques d'arbitrage.
 
 \subsection{Résolution}\label{sec:resolution}
 
