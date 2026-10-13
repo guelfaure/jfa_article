@@ -171,6 +171,12 @@
 \newcommand{\redD}{\ensuremath{\to_{D}}}               % un pas d'élagage dans D
 \newcommand{\nf}[1]{\ensuremath{{#1}{\downarrow_D}}}   % forme normale de #1 dans D
 \newcommand{\NeedFacts}{\ensuremath{\mathit{Requis}}}  % \NeedFacts_D(m)
+% Dépendances bloquantes (section 6.5) ; les \providecommand du .tex restent sans effet
+\newcommand*{\MissingHere}{\ensuremath{\mathit{U}}}
+\newcommand*{\MissingDep}{\ensuremath{\mathit{DepFrontiere}}}
+\newcommand*{\BlockingApp}{\ensuremath{\mathit{Bloquant}^{\mathsf{app}}}}
+\newcommand*{\BlockingCalc}{\ensuremath{\mathit{Bloquant}^{\mathsf{calc}}}}
+\newcommand*{\Blocking}{\ensuremath{\mathit{Bloquant}}}
 
 %% --------------------------------------------------------------------
 %% Résolution

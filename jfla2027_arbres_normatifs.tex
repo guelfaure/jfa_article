@@ -1241,7 +1241,7 @@ Quatre opérateurs élémentaires, que nous définissons à présent, transforme
 && \mid \Input_v(D,m)\quad m\in\Undef_D,\ v \text{ valide pour } m\ (\text{\autoref{sec:saisir}})\\
 && \mid \Precise(D,m)\quad m\in\Ouverte_D \text{ raffinable dans } D\ (\text{\autoref{sec:preciser}})\\
 && \mid \Prune(D,m)\quad m\in\Indet_D\ (\text{\autoref{sec:elagage}})\\
-&& \mid \Resolve(D,m)\quad m\in\Indet_D,\ \NeedFacts_D(m)=\emptyset\ (\text{\autoref{sec:resolution}}).
+&& \mid \Resolve(D,m)\quad m\in\Indet_D,\ \Blocking_D(m)=\emptyset\ (\text{\autoref{sec:dependances-bloquantes}}).
 \end{array}
 \]
 %Sur une liste, un opérateur élémentaire \(\mathit{op}\) s'applique à une
