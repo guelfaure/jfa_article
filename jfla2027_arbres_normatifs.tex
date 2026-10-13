@@ -174,11 +174,11 @@ Un dossier client est ici un \emph{dossier} formel (\autoref{def:dossier}), comp
 Comme pour les \emph{matières}, nous formalisons la notion de sources juridiques par un ensemble de types \emph{sources} équipés d'une relation de sous-typage (\autoref{def:source}). Une \emph{source} $s$ est un sous-type d'une source $s'$ lorsque $s$ précise $s'$ (par exemple, \textsf{ConventionBranche} est un sous-type d'\textsf{AccordCollectif}). Les \emph{sources} sont par ailleurs partiellement ordonnées selon la \textbf{hiérarchie des normes} en vigueur dans le droit du travail. Une \emph{source} est concrète lorsqu'elle est son unique sous-type.
 %%
 \paragraph{Arbres normatifs.} %%
-Les \emph{arbres normatifs} (\autoref{def:normative-tree}) reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} (\autoref{def:candidat}) typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} de ces fonctions n'est abordée qu'au titre d'exemple dans ce papier, les \emph{candidats} ne retenant de ces fonctions que leur signature et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une \emph{politique d'arbitrage} (\autoref{def:arbitrage}) qui formalise son
+Les \emph{arbres normatifs} (\autoref{def:normative-tree}) reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} (\autoref{def:candidat}) typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} de ces fonctions n'est pas abordée dans ce papier, les \emph{candidats} ne retenant de ces fonctions que leur signature et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une \emph{politique d'arbitrage} (\autoref{def:arbitrage}) qui formalise son
 \textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipée d'un \emph{prédicat} (\autoref{def:applicability-predicate}) dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même \emph{arbre normatif} sont toujours en \textbf{concours}, deux candidats issus d'une même \emph{matière} abstraite typés par des \emph{matières} concrètes différentes peuvent parfois se cumuler. 
 
 \paragraph{Étapes du raisonnement juridique assisté.}
-Le raisonnement juridique est formalisé par quatre opérateurs sur les \emph{dossiers} (\autoref{sec:op}) : \emph{saisir} une \emph{matière}, fait ou question ; \emph{préciser} une \emph{matière} abstraite en la remplaçant, dans le même dossier, par celles de ses précisions que le dossier rend applicables ; \emph{élaguer} un \emph{arbre normatif} selon les faits établis ; \emph{résoudre} un arbre élagué en une valeur, issue du calcul du candidat que les \emph{politiques d'arbitrage} sélectionnent. Nous établissons que l'élagage possède une forme normale unique, que la précision fait décroître une mesure bien fondée, et que la résolution des arbres d'un dossier termine. La résolution de toutes les questions d'un dossier, qui enchaîne précisions, demandes de faits et résolutions d'arbres, n'est pas encore établie.
+Le raisonnement juridique est formalisé par quatre opérateurs sur les \emph{dossiers} (\autoref{sec:op}) : \emph{saisir} une \emph{matière}, fait ou question ; \emph{préciser} une \emph{matière} abstraite en la remplaçant, dans le même dossier, par celles de ses précisions que le dossier rend applicables ; \emph{élaguer} un \emph{arbre normatif} selon les faits établis ; \emph{résoudre} un arbre élagué en une valeur, issue du calcul du candidat que les \emph{politiques d'arbitrage} sélectionnent. Nous établissons que l'élagage possède une forme normale unique, que la précision fait décroître une mesure bien fondée, et que la résolution des arbres d'un dossier termine. 
 
 \begin{figure}[t]
 \centering
@@ -373,16 +373,16 @@ convention applicable et la catégorie restent à établir.
 %internes à un texte, comme le barème par catégorie ou l'exclusion de la faute
 %grave, restent au contraire dans le code Catala.
 
-\paragraph{Ce que l'assistant doit établir.}
-L'assistant doit d'abord préciser la question : ici, le licenciement et la
-dispense de préavis ouvrent deux matières, l'indemnité de licenciement et
-l'indemnité compensatrice de préavis, qui se cumulent. Trois questions se posent
-ensuite : quelle convention collective s'applique, quelle version de cette
-convention régit la date de la notification, et dans quelle catégorie ranger
-la salariée. Les sections suivantes reprennent ce dossier à chaque étape :
-matières et candidats (\autoref{sec:notations}), arbre de raffinement et arbre normatif (\autoref{sec:forest}, figures~\ref{fig:hierarchie}
-et~\ref{fig:arbre}), précision de la question, élagage, faits requis et
-sélection finale (\autoref{sec:op}). 
+%\paragraph{Ce que l'assistant doit établir.}
+%L'assistant doit d'abord préciser la question : ici, le licenciement et la
+%dispense de préavis ouvrent deux matières, l'indemnité de licenciement et
+%l'indemnité compensatrice de préavis, qui se cumulent. Trois questions se posent
+%ensuite : quelle convention collective s'applique, quelle version de cette
+%convention régit la date de la notification, et dans quelle catégorie ranger
+%la salariée. Les sections suivantes reprennent ce dossier à chaque étape :
+%matières et candidats (\autoref{sec:notations}), arbre de raffinement et arbre normatif (\autoref{sec:forest}, figures~\ref{fig:hierarchie}
+%et~\ref{fig:arbre}), précision de la question, élagage, faits requis et
+%sélection finale (\autoref{sec:op}). 
 
 \section{Travaux connexes et positionnement}\label{sec:related}
 
