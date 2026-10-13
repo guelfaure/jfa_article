@@ -45,11 +45,12 @@
   concurrentes, et la manière dont elles s'articulent dépend du régime
   d'articulation applicable. Nous modélisons cette couche de sélection de la
   règle comme un processus de résolution déterministe, destiné à assister les
-  experts juridiques. Nous l'illustrons sur un exemple tiré d'un corpus de droit
-  du travail écrit en Catala, et l'étendons par des valeurs en conflit et un
-  opérateur de branchement, qui construisent des demandes principales et
-  subsidiaires. Ce
-  modèle fournit l'architecture de l'assistant A-Lex.
+  experts juridiques : un arbre de raffinement relie la question posée aux
+  matières concrètes qui la précisent, et des opérateurs de saisie, de
+  précision, d'élagage et de résolution conduisent un dossier, sous le
+  contrôle de politiques d'arbitrage explicites, jusqu'au calcul habilité.
+  Nous l'illustrons sur un exemple tiré d'un corpus de droit du travail écrit
+  en Catala. Ce modèle fournit l'architecture de l'assistant A-Lex.
 \end{abstract}
 
 \section{Introduction}\label{sec:introduction}
@@ -91,7 +92,7 @@ Plusieurs notions de droit, employées dans cet article, doivent être introduit
   branche ou d'entreprise, et le contrat de travail. Une norme de rang
   inférieur doit en principe respecter les normes de rang supérieur ; c'est cet
   ordre que formalise l'ordre normatif des sources
-  (\autoref{def:source-order}). En droit du travail, il ne suffit
+  (\autoref{def:source}). En droit du travail, il ne suffit
   pourtant pas à régler un concours : une norme inférieure peut l'emporter sur
   une norme supérieure lorsqu'elle est plus favorable au salarié, ou lorsque la
   loi le lui permet.
@@ -183,20 +184,20 @@ plaidoirie sur une base maîtrisée et transparente ?}
 Nous décrivons, dans cet article, une modélisation des étapes du raisonnement juridique, esquissé \autoref{sec:juriste}, qui se trouve à la base de l'assistant \ALex~que nous développons (voir \autoref{fig:A-Lex}). Nous nous concentrons ici sur la définition de ces structures ainsi que sur la formalisation des étapes de raisonnement que ces structures supportent. L'implémentation concrète d'\ALex~n'est pas abordée. Les objets et structures de raisonnement juridiques formalisés dans ce papier sont listés ci-dessous. Les ontologies juridiques décrites dans la \autoref{sec:vocabulaire} sont rappelées en caractères gras.
 %%
 \paragraph{Matières juridiques.}
-Nous formalisons la notion de matière juridique comme un ensemble de types \emph{matières} équipés d'une relation de sous-typage (\autoref{def:matiere}). Une \emph{matière} $m$ étant un sous-type de $m'$ lorsque $m$ précise $m'$ (par exemple, \textsf{Prime} est un sous-type de \textsf{Montant}). Nous organisons les \emph{matières} dans un \emph{arbre de raffinement} (\autoref{def:raffinement}) qui permet à \ALex~de traduire une question juridique (une \emph{matière} abstraite) vers l'ensemble de ses concrétisations réalisables, étant donné un dossier client. Une \emph{matière} est concrète lorsqu'elle est une feuille de l'\emph{arbre de raffinement}.
+Nous formalisons la notion de matière juridique comme un ensemble de types \emph{matières} équipés d'une relation de sous-typage (\autoref{def:matiere}). Une \emph{matière} $m$ étant un sous-type de $m'$ lorsque $m$ précise $m'$ (par exemple, \textsf{Prime} est un sous-type de \textsf{Montant}). Nous organisons les \emph{matières} dans un \emph{arbre de raffinement} (\autoref{def:raffinement}) qui permet à \ALex~de traduire une question juridique (une \emph{matière} abstraite) vers l'ensemble de ses concrétisations réalisables, étant donné un dossier client. Une \emph{matière} est concrète lorsqu'aucune autre ne la précise ; les matières concrètes sont les feuilles de l'\emph{arbre de raffinement}.
 %%
 \paragraph{Dossier client.}%%
-Un dossier client est ici un \emph{dossier} formel (\autoref{def:dossier}), composé d'un ensemble de \emph{matières} et d'une fonction d'évaluation partielle qui associe certaines \emph{matières} du \emph{dossier} à une valeur ou un \emph{arbre normatif}. Un \emph{dossier} est \emph{clos} lorsque toutes les \emph{matières} du \emph{dossier} sont associées à une valeur. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) est ajoutée. Les \emph{dossiers} sont manipulés par un ensemble d'opérateurs sur des listes de dossiers qui permettent au juriste, via des interactions avec \ALex, de produire une liste de \emph{dossiers} clos dont la tête est le \emph{dossier} support de la \textbf{demande principale} du juriste, suivi des \emph{dossiers} supports des \textbf{demandes subsidiaires}.
+Un dossier client est ici un \emph{dossier} formel (\autoref{def:dossier}), composé d'un ensemble de \emph{matières} et d'une valuation partielle qui associe à certaines d'entre elles une valeur ou un \emph{arbre normatif}. Une \emph{matière} du \emph{dossier} est \emph{établie} lorsqu'elle a une valeur, \emph{indéterminée} lorsqu'elle porte un arbre qu'il reste à résoudre, et \emph{ouverte} lorsqu'elle pose une question abstraite encore sans réponse. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) y est saisie. Les opérateurs de la \autoref{sec:op} permettent au juriste, en interaction avec \ALex, de conduire le \emph{dossier} vers un état où toutes ses \emph{matières} sont établies. La production d'une liste de \emph{dossiers} dont la tête est le support de la \textbf{demande principale} du juriste, suivi des supports des \textbf{demandes subsidiaires}, fait l'objet d'un travail en cours.
 %%
 \paragraph{Sources juridiques.}
-Comme pour les \emph{matières}, nous formalisation la notion de sources juridiques par un ensemble de types \emph{sources} équipés d'une relation de sous-typage (\autoref{def:source}). Une \emph{source} $s$ est un sous-type d'une source $s'$ lorsque $s$ précise $s'$ (par exemple, \textsf{ConventionBranche} est un sous-type d'\textsf{AccordCollectif}). Les \emph{sources} sont par ailleurs partiellement ordonnées selon la \textbf{hiérarchie des normes} en vigueur dans le droit du travail. Une \emph{source} est concrète lorsqu'elle est son unique sous-type.
+Comme pour les \emph{matières}, nous formalisons la notion de sources juridiques par un ensemble de types \emph{sources} équipés d'une relation de sous-typage (\autoref{def:source}). Une \emph{source} $s$ est un sous-type d'une source $s'$ lorsque $s$ précise $s'$ (par exemple, \textsf{ConventionBranche} est un sous-type d'\textsf{AccordCollectif}). Les \emph{sources} sont par ailleurs partiellement ordonnées selon la \textbf{hiérarchie des normes} en vigueur dans le droit du travail. Une \emph{source} est concrète lorsqu'elle est son unique sous-type.
 %%
 \paragraph{Arbres normatifs.} %%
-Les \emph{arbres normatifs} (\autoref{def:normative-tree}) reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} (\autoref{def:candidat}) typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} des ces fonctions n'est abordée qu'au titre d'exemple dans ce papier, les \emph{candidats} ne retenant que de la signature de ces fonctions et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une \emph{politique d'arbitrage} (\autoref{def:arbitrage}) qui formalise son
-\textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipé d'un \emph{prédicat} (\autoref{def:applicability-predicate}) dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même \emph{arbre normatif} sont toujours en \textbf{concours}, deux candidats issus d'une même \emph{matière} abstraite typés par des \emph{matières} concrètes différentes peuvent parfois se cumuler. 
+Les \emph{arbres normatifs} (\autoref{def:normative-tree}) reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble \emph{candidats} (\autoref{def:candidat}) typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} de ces fonctions n'est abordée qu'au titre d'exemple dans ce papier, les \emph{candidats} ne retenant de ces fonctions que leur signature et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une \emph{politique d'arbitrage} (\autoref{def:arbitrage}) qui formalise son
+\textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipée d'un \emph{prédicat} (\autoref{def:applicability-predicate}) dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats d'un même \emph{arbre normatif} sont toujours en \textbf{concours}, deux candidats issus d'une même \emph{matière} abstraite typés par des \emph{matières} concrètes différentes peuvent parfois se cumuler. 
 
 \paragraph{Étapes du raisonnement juridique assisté.}
-Le raisonnement juridique est formalisé par une série d'opérateurs sur des listes de \emph{dossiers} (\autoref{sec:op}). Ces opérateurs permettent d'ajouter des \emph{matières} à certains dossiers, de raffiner une \emph{matière} abstraite en remplaçant le dossier qui la porte par autant de dossiers qu'elle a de précisions, de créer des dossiers alternatifs lorsqu'un fait est discuté, de cumuler, sous une \emph{matière} abstraite commune, les valeurs de deux \emph{matières} que le juriste estime cumulables, de fusionner les dossiers qui s'accordent, et d'en changer l'ordre. Un opérateur de résolution permet de réduire un arbre normatif à une valeur issue d'un calcul fourni par un candidat sélectionné.
+Le raisonnement juridique est formalisé par quatre opérateurs sur les \emph{dossiers} (\autoref{sec:op}) : \emph{saisir} une \emph{matière}, fait ou question ; \emph{préciser} une \emph{matière} abstraite en la remplaçant, dans le même dossier, par celles de ses précisions que le dossier rend applicables ; \emph{élaguer} un \emph{arbre normatif} selon les faits établis ; \emph{résoudre} un arbre élagué en une valeur, issue du calcul du candidat que les \emph{politiques d'arbitrage} sélectionnent. Nous établissons que l'élagage possède une forme normale unique, que la précision fait décroître une mesure bien fondée, et que la résolution des arbres d'un dossier termine. La résolution de toutes les questions d'un dossier, qui enchaîne précisions, demandes de faits et résolutions d'arbres, n'est pas encore établie ; le branchement sur un fait discuté, qui produit des dossiers alternatifs, et le cumul d'avantages que le juriste estime dus ensemble font l'objet d'un travail en cours.
 
 \begin{figure}[t]
 \centering
@@ -399,9 +400,12 @@ ensuite : quelle convention collective s'applique, quelle version de cette
 convention régit la date de la notification, et dans quelle catégorie ranger
 la salariée. Les sections suivantes reprennent ce dossier à chaque étape :
 matières et candidats (\autoref{sec:notations}), arbre de raffinement et arbre normatif (\autoref{sec:forest}, figures~\ref{fig:hierarchie}
-et~\ref{fig:arbre}), élagage, faits requis, sélection finale, raffinement de
-la question, branchement sur la catégorie et cumul des deux indemnités
-(\autoref{sec:op}).
+et~\ref{fig:arbre}), précision de la question, élagage, faits requis et
+sélection finale (\autoref{sec:op}). Le branchement sur la catégorie
+discutée, qui conduit à une demande principale et à une demande subsidiaire,
+et le cumul des deux indemnités relèvent de la gestion de plusieurs dossiers,
+qui fait l'objet d'un travail en cours ; nous nous en tenons ici au scénario
+où la salariée est cadre.
 
 \section{Travaux connexes et positionnement}\label{sec:related}
 
@@ -420,18 +424,22 @@ implémente ces fonctions ; dans notre corpus, c'est Catala.
 \paragraph{Gestion des exceptions dans Catala.}
 Catala résout les définitions concurrentes d'une variable par une logique des
 défauts à priorités~\cite{merigoux2021} : la sélection dépend de conditions
-d'applicabilité et d'un ordre statique entre exceptions, jamais des valeurs que
-produiraient les définitions. Le principe de faveur dépend au contraire du
-résultat ; l'encoder par le mécanisme des exceptions impose de conditionner
-une exception à une comparaison de valeurs placée dans le texte inférieur, pour
-chaque paire de sources. Le corpus de la \autoref{sec:exemple} l'évite en
-écrivant la comparaison dans un module de concours distinct
-(\autoref{fig:concours}), ce qui revient, comme ici, à sortir le principe de
-faveur des textes eux-mêmes. Les arbres normatifs attachent la politique au candidat supérieur,
-fixent une fois pour toutes l'ordre de favorabilité de chaque matière, et
-procèdent par un \emph{fold} uniforme le long du chemin des sources. Les deux
-approches sont complémentaires : Catala structure les exceptions au sein d'un
-texte ; les arbres normatifs articulent des textes concurrents.
+d'applicabilité et d'un ordre statique entre exceptions, et non des valeurs
+que produiraient les définitions. Le principe de faveur dépend au contraire du
+résultat. Rien n'interdit de l'encoder par le mécanisme des exceptions, en
+conditionnant une exception à une comparaison de valeurs ; mais cette
+comparaison doit alors être écrite dans le texte inférieur, pour chaque paire
+de sources, et la politique se trouve dispersée dans les calculs. Le corpus
+de la \autoref{sec:exemple} l'évite en écrivant la comparaison dans un module
+de concours distinct (\autoref{fig:concours}), ce qui revient, comme ici, à
+sortir le principe de faveur des textes eux-mêmes. Les arbres normatifs
+poussent cette séparation jusqu'au bout : les calculs, les sources et les
+politiques d'arbitrage sont trois données distinctes, la politique est
+attachée au candidat supérieur, l'ordre de favorabilité de chaque matière est
+fixé une fois pour toutes, et un même algorithme, un \emph{fold} le long du
+chemin des sources, s'applique quel que soit le régime. Les deux approches
+sont complémentaires : Catala structure les exceptions au sein d'un texte ;
+les arbres normatifs articulent des textes concurrents.
 
 \paragraph{Raisonnement défaisable et conflits de normes.}
 Les conflits entre normes sont classiquement traités par des règles
@@ -446,13 +454,16 @@ propriété du couple de normes mais de la norme supérieure, qui énonce commen
 elle tolère les sources inférieures ; \emph{lex superior} (\(\Absolute\)), son
 inverse (\(\Suppletive\)) et le principe de faveur, qui dépend du résultat
 (\(\Social\)), coexistent ainsi le long d'un même chemin. Ensuite, la sélection
-sous \(\Social\) exige d'évaluer les deux candidats, ce que des priorités
-statiques ou dérivées par des règles n'expriment pas. Enfin, un fait manquant
-bloque la résolution et engendre une demande, au lieu de laisser une règle
-s'appliquer par défaut. En contrepartie, la portée est plus étroite : candidats
-d'une seule matière, frères mutuellement exclusifs plutôt qu'une relation
-générale de spécificité, et politiques non encore dérivées de textes tiers
-(\autoref{sec:conclusion}).
+sous \(\Social\) exige d'évaluer les deux candidats : une priorité statique ne
+l'exprime pas, et une priorité dérivée par des règles ne le peut qu'en prenant
+les valeurs calculées pour prémisses, au prix d'une règle de priorité par
+couple de sources, là où les arbres normatifs séparent les calculs, les
+sources et les politiques et appliquent un algorithme uniforme. Enfin, un
+fait manquant bloque la résolution et engendre une demande, au lieu de laisser
+une règle s'appliquer par défaut. En contrepartie, la portée est plus
+étroite : candidats d'une seule matière, frères mutuellement exclusifs plutôt
+qu'une relation générale de spécificité, et politiques non encore dérivées de
+textes tiers (\autoref{sec:conclusion}).
 
 \paragraph{Modèles du raisonnement juridique.}
 Plusieurs approches modélisent le raisonnement juridique comme un processus
@@ -462,9 +473,9 @@ s'y rattache tout en étant délibérément plus étroit : il automatise
 partiellement les parties de ce processus gouvernées par des calculs
 formalisés, des conditions d'applicabilité et des politiques d'arbitrage. Les
 jugements interprétatifs et stratégiques de l'expert juridique sont représentés
-abstraitement par \(\Input\) et par les valeurs en conflit
-(\autoref{sec:choix}), tandis que leurs conséquences pour l'élagage, la
-sélection et l'exécution restent explicites et contrôlables.
+abstraitement par les saisies (\(\Input\), \autoref{sec:saisir}), tandis que
+leurs conséquences pour l'élagage, la sélection et l'exécution restent
+explicites et contrôlables.
 
 \section{Notations et terminologie}\label{sec:notations}
 
@@ -477,25 +488,46 @@ licenciement précise l'indemnité de rupture,
 \[
  \Indem\subtype\IndemRupture.
 \]
-La matière \(\Matter\) est le type sommet de cet ordre. On distingue les matières \emph{supports} $\MatterSup\subset\mc M$ avec $\MatterSup:=\{\Money,\Duration,\DateT,\mathbb{B},\Enum\}$ les types supports de Catala. Chaque matière est associée a son type support par la fonction 
-\(\Raw: \mc M\setminus\{\Matter\}\to \MatterSup\). Le sous-typage étant compatible avec les types supports, i.e., pour tout $m,m'\in\mc M\setminus\{\Matter\}$ :
+La matière \(\Matter\) est le type sommet de cet ordre. On distingue les
+matières \emph{supports} $\MatterSup\subset\mc M$, avec
+$\MatterSup:=\{\Money,\Duration,\DateT,\mathbb{B},\Enum\}$ les types supports
+de Catala (simplifiés), deux à deux incomparables pour \(\subtype\). Nous
+adoptons la convention suivante, qui distingue le \emph{type} d'une matière de
+son \emph{domaine}. Chaque type support est identifié à l'ensemble des valeurs
+qu'il désigne (les montants, les durées, les dates, les booléens, les
+constantes énumérées), ces ensembles étant deux à deux disjoints. Chaque
+matière \(m\neq\Matter\) a un unique type support \(\Typ(m)\in\MatterSup\),
+tel que \(m\subtype\Typ(m)\), et un \emph{domaine} \(\Raw(m)\subseteq\Typ(m)\),
+non vide, qui est l'ensemble de ses valeurs ; un type support est son propre
+type, et son domaine est l'ensemble tout entier. Le sous-typage est compatible
+avec les domaines : pour tous \(m,m'\in\mc M\setminus\{\Matter\}\),
 \[
  m\subtype m'\implies\Raw(m)\subseteq\Raw(m').
 \]
+Les domaines étant non vides et les types supports disjoints, il s'ensuit que
+\(m\subtype m'\) implique \(\Typ(m)=\Typ(m')\) : toutes les matières qui
+précisent une même matière \(m'\neq\Matter\) ont le type de \(m'\), et deux
+matières de types différents n'ont que \(\Matter\) pour ancêtre commun. La
+matière sommet n'a ni type ni domaine ; elle ne figure dans aucun dossier
+(\autoref{def:dossier}).
 Une matière est \emph{concrète} lorsqu'aucune autre ne la précise, et
 \emph{abstraite} sinon ; l'ensemble des matières concrètes est \(
  \CMatter:=\{m\in\mc M\mid\forall m'\in\mc M,\ m'\subtype m\implies m'=m\}\).
 Par exemple,
 \[
 \begin{array}{c}
- \Raw(\Indem)=\Raw(\IndemRupture)=\Money,\\
- \Raw(\Salary)=\Money,\quad
- \Raw(\Senior)=\Duration,\\
- \Raw(\DateT)=\mathsf{Date},\quad
- \Raw(\IDCC)=\Enum
+ \Typ(\Indem)=\Typ(\IndemRupture)=\Money,\\
+ \Typ(\Salary)=\Money,\quad
+ \Typ(\Senior)=\Duration,\\
+ \Typ(\DateT)=\DateT,\quad
+ \Typ(\IDCC)=\Enum,\\
+ \Raw(\Indem)=\Money,\quad
+ \Raw(\IDCC)\subsetneq\Enum,
 \end{array}
 \]
-On distingue les matières \emph{factuelles} $\FMatter\subset\CMatter$ qui sont les "constantes" des dossiers (voir \autoref{def:dossier}).
+le domaine de \(\IDCC\) étant l'ensemble des identifiants de conventions
+collectives.
+On distingue les matières \emph{factuelles} $\FMatter\subset\CMatter$ qui sont les « constantes » des dossiers (voir \autoref{def:dossier}).
 
 %où \(\Money\) et \(\Duration\) désignent les montants et les durées. Des
 %matières distinctes peuvent partager un même domaine : \(\Indem\) et \(\Salary\)
@@ -530,7 +562,7 @@ l'ordre dépend de la matière :
 
 On note \(\mc M^{\fav{}}\subseteq\mc M\) les matières munies d'un tel ordre.
 Seules ces matières admettent des candidats de politique \(\Social\), ce
-qu'impose la cohérence (\autoref{sec:consistency}) ; la comparaison porte
+qu'impose la cohérence (\autoref{def:consistency}) ; la comparaison porte
 sur les valeurs que les candidats concurrents produisent pour le dossier
 considéré, et non sur les textes eux-mêmes.
 
@@ -539,10 +571,12 @@ considéré, et non sur les textes eux-mêmes.
 en jeu les matières concrètes
 \[
 \begin{array}{c}
-\Indem,\ \ICP,\ \Senior,\\
-\Salary,\ \Presence,\ \MoisRem,\\
-\IDCC,\ \DateT,\ \ModeRupture,\ \PreavisNE\ \text{et}\ \Categorie\subtype\Enum,\\
-\text{avec}\quad\{\Etam,\Cadre\}\subset\Raw(\Categorie),
+\Indem,\ \ICP\subtype\Money,\\
+\Salary,\ \MoisRem\subtype\Money,\\
+\Senior,\ \Presence\subtype\Duration,\qquad \DateT,\\
+\IDCC,\ \ModeRupture,\ \Categorie\subtype\Enum,\qquad
+\PreavisNE\subtype\mathbb B,\\
+\text{avec}\quad\{\Etam,\Cadre\}\subseteq\Raw(\Categorie),
 \end{array}
 \]
 et l'indemnité de licenciement est munie de l'ordre
@@ -554,8 +588,9 @@ elles valent ici dix ans et 3\,000 euros elles aussi.
 
 \begin{defi}[Dossier]\label{def:dossier}
 Un dossier \(D\) est donné par un couple
-\(D:=(\mc M_D,\nu_D)\in\Dossier\), où \(\mc M_D\subseteq\mc M\)
-est l'ensemble des matières soulevées par le dossier et \(\nu_D\), une fonction dépendante partielle qui est la valuation du dossier :
+\(D:=(\mc M_D,\nu_D)\in\Dossier\), où \(\mc M_D\subseteq\mc M\setminus\{\Matter\}\)
+est l'ensemble fini des matières soulevées par le dossier, dont la matière
+sommet est exclue, et \(\nu_D\), une fonction dépendante partielle qui est la valuation du dossier :
 \[
 \nu_D:\prod_{m\in\mc M_D}\left(\Raw(m)\uplus\mc T(m)\right)_\bot,
 \]
@@ -575,9 +610,13 @@ On note
 \Etablie_D&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\Raw(m)\},\\
 \Indet_D&:=\{m\in\mathcal M_D\mid \nu_D(m)\in\mc T(m)\},\\
 \Ouverte_D&:=\{m\in\mathcal M_D\mid \nu_D(m) = \bot\},\\
-\Undef_D&:= \mc M\setminus\mc M_D
+\Undef_D&:= \mc M\setminus(\mc M_D\cup\{\Matter\})
 \end{aligned}
 \]
+les matières \emph{établies}, \emph{indéterminées}, \emph{ouvertes} et
+\emph{indéfinies} de \(D\) ; les trois premières partitionnent \(\mc M_D\), et
+\(\mc M\) est l'union disjointe de \(\mc M_D\), de \(\Undef_D\) et de
+\(\{\Matter\}\).
 
 \begin{defi}[Sources juridiques]\label{def:source}
 %%
@@ -625,8 +664,8 @@ l'ensemble des fonctions juridiques qui produisent la matière~\(m\).
 Ici \(\sigma_f\) est l'interface typée complète de \(f\), et \(\phi_f\) son
 calcul ordinaire : dans le corpus, \(\phi_f\) est le code Catala d'un champ
 d'application (\autoref{fig:catala}). Une fonction juridique calcule une
-matière concrète, et ses matières d'entrée, concrètes elles aussi, identifient exactement les matières
-résolues du dossier dont elle a besoin.
+matière concrète, et ses matières d'entrée, concrètes elles aussi, identifient
+les matières du dossier qui doivent être établies pour qu'elle s'exécute.
 
 \begin{defi}[Politique d'arbitrage]\label{def:arbitrage}
 Un \emph{régime d'articulation} (simplifié) est un élément de
@@ -686,7 +725,7 @@ sont ici réunis sous \(\Suppletive\).
 
 \begin{defi}[Candidats et corpus]\label{def:candidat}
 Un texte juridique qui constitue une interprétation candidate pour une matière concrète
-non résolue est modélisé par un \emph{candidat}, triplet \(c=(s,f,p)\). Le
+est modélisé par un \emph{candidat}, triplet \(c=(s,f,p)\). Le
 \emph{corpus} est l'ensemble des candidats :
 \[
  \Cand \subseteq \{(s,f,p) \mid s\in\CSource,\ f\in\Fun,\ p: \normdown(s)\rightharpoonup \Policy \}.
@@ -755,17 +794,30 @@ politiques d'arbitrage fait l'objet de la \autoref{def:apply-policy}.
 
 \subsection{Tests d'applicabilité}
 
-On fixe un ensemble \(\Tests\) de \emph{tests atomiques}, écrits chacun à
-partir de constantes, de matières concrètes et clos par disjonction. Pour un test \(t\),
-\(\dep(t)\subseteq\mc M\) est l'ensemble fini de matières qui apparaissent dans \(t\). Un \emph{prédicat
-d'applicabilité} est une conjonction finie \(t_1\land\cdots\land t_k\) de tests
-atomiques, avec \(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\) ; la
+Un \emph{test élémentaire} compare une matière concrète à une constante ou à
+une autre matière concrète : \([\IDCC=1486]\), \([\DateT\geq d]\),
+\([\Senior>\text{2 ans}]\). Nous n'en fixons pas la syntaxe : il suffit que
+chaque test élémentaire \(t\) mentionne un ensemble fini
+\(\dep(t)\subseteq\CMatter\) de matières et dénote, pour toute valuation
+\(\nu\) qui attribue une valeur de son domaine à chaque matière de \(\dep(t)\),
+une valeur \(t(\nu)\in\{\true,\false\}\). L'ensemble \(\Tests\) des
+\emph{tests} est engendré à partir des tests élémentaires par disjonction,
+avec \(\dep(t\lor t'):=\dep(t)\cup\dep(t')\). Un \emph{prédicat
+d'applicabilité} est une conjonction finie \(t_1\land\cdots\land t_k\) de
+tests, avec \(\dep(t_1\land\cdots\land t_k):=\bigcup_i\dep(t_i)\) ; la
 conjonction vide est le prédicat \(\true\), et \(\Pred\) désigne l'ensemble de
 ces prédicats.
 
 On utilise la logique trivaluée \(\Bthree:=\{\true,\false,\unknown\}\), dont les
 valeurs signifient respectivement établi, exclu et actuellement inconnu, avec
-les connecteurs forts de Kleene~\cite{kleene1952introduction}.
+les connecteurs forts de Kleene~\cite{kleene1952introduction} : pour l'ordre
+\(\false<\unknown<\true\), la disjonction est le maximum et la conjonction le
+minimum. Dans une disjonction, \(\true\) l'emporte donc sur \(\unknown\), qui
+l'emporte sur \(\false\) ; dans une conjonction, \(\false\) l'emporte sur
+\(\unknown\), qui l'emporte sur \(\true\). En particulier
+\(\false\lor\unknown=\unknown\) : une branche gardée par
+\([x=1]\lor[y=1]\) n'est pas exclue lorsque \(x=0\) et que \(y\) est
+inconnue, puisqu'une saisie de \(y\) peut encore la rendre applicable.
 
 \begin{defi}[Sémantique des tests]\label{def:applicability-predicate}
 Étant donné un dossier \(D=(\mc M_D,\nu_D)\), la valuation partielle
@@ -776,11 +828,44 @@ les connecteurs forts de Kleene~\cite{kleene1952introduction}.
   \bot,&m\in\Indet_D\cup\Undef_D\cup\Ouverte_D,
  \end{cases}
 \]
-s'étend en une évaluation \(\sem{\cdot}_D:\Tests\to\Bthree\) avec $\true$ qui l'emporte sur $\false$ qui l'emporte sur $\unknown$ dans une disjonction. Un test \(t\) est \emph{total} lorsque
-\(\dep(t)\subseteq\Etablie_D\) implique \(\sem{t}_D\in\{\true,\false\}\).
-L'évaluation s'étend aux prédicats de \(\Pred\) par la conjonction de Kleene,  avec \(\false\) qui l'emporte sur \(\unknown\), qui l'emporte
-sur~\(\true\).
+s'étend en une évaluation \(\sem{\cdot}_D:\Pred\to\Bthree\), définie par
+induction. Pour un test élémentaire \(t\), \(\sem{t}_D:=t(\widehat\nu_D)\) si
+\(\dep(t)\subseteq\Etablie_D\), et \(\sem{t}_D:=\unknown\) sinon : il suffit
+qu'un argument manque pour que le test soit inconnu. Les connecteurs sont
+ensuite évalués de façon compositionnelle,
+\(\sem{t\lor t'}_D:=\sem{t}_D\lor\sem{t'}_D\) et
+\(\sem{t_1\land\cdots\land t_k}_D:=\sem{t_1}_D\land\cdots\land\sem{t_k}_D\),
+avec les connecteurs de Kleene.
 \end{defi}
+
+Tout prédicat est ainsi \emph{total} : si \(\dep(\pi)\subseteq\Etablie_D\),
+alors \(\sem{\pi}_D\in\{\true,\false\}\), par une induction immédiate ; par
+contraposée, \(\sem{\pi}_D=\unknown\) implique qu'une matière de \(\dep(\pi)\)
+n'est pas établie dans \(D\). Comme \(\dep(\pi)\subseteq\CMatter\), les
+matières ouvertes d'un dossier, qui seront toujours abstraites
+(\autoref{def:coh-raff}), n'influent jamais sur un prédicat.
+
+Un dossier \(D'\) \emph{enrichit} \(D\), ce que l'on note \(D\enrich D'\),
+lorsque \(\Etablie_D\subseteq\Etablie_{D'}\) et \(\nu_{D'}(m)=\nu_D(m)\) pour
+tout \(m\in\Etablie_D\) : \(D'\) établit tout ce que \(D\) établit, aux mêmes
+valeurs. Tous les opérateurs de la \autoref{sec:op} enrichissent le dossier
+auquel ils s'appliquent : aucun ne revient sur une valeur établie.
+
+\begin{lemm}[Stabilité des tests décidés]\label{lem:monotone}
+Si \(D\enrich D'\), alors, pour tout prédicat \(\pi\in\Pred\),
+\(\sem{\pi}_D\neq\unknown\) implique \(\sem{\pi}_{D'}=\sem{\pi}_D\).
+\end{lemm}
+\begin{proof}
+Munissons \(\Bthree\) de l'ordre d'information \(\leq_i\), dans lequel
+\(\unknown\) est au-dessous de \(\true\) et de \(\false\), incomparables entre
+eux. Pour un test élémentaire \(t\), ou bien \(\sem{t}_D=\unknown\), ou bien
+\(\dep(t)\subseteq\Etablie_D\subseteq\Etablie_{D'}\) et \(\widehat\nu_D\) et
+\(\widehat\nu_{D'}\) coïncident sur \(\dep(t)\), d'où \(\sem{t}_{D'}=\sem{t}_D\) ;
+dans les deux cas \(\sem{t}_D\leq_i\sem{t}_{D'}\). Les connecteurs forts de
+Kleene sont monotones pour \(\leq_i\), de sorte que
+\(\sem{\pi}_D\leq_i\sem{\pi}_{D'}\) pour tout prédicat \(\pi\), par induction.
+Une valeur décidée étant maximale pour \(\leq_i\), elle est conservée.
+\end{proof}
 
 \subsection{Arbres normatifs}
 
@@ -884,10 +969,15 @@ supposées dans toute la suite. Une \emph{forêt normative} est un ensemble fini
 \(\mc F\subseteq\bigcup_{m\in\mc M}\mc T(m)\) contenant au plus un arbre par
 matière ; on note \(\theta_m\) l'arbre de \(m\) lorsqu'il existe, et
 \(\mathrm{dom}(\mc F)\) l'ensemble des matières qui ont un arbre dans
-\(\mc F\).
+\(\mc F\). La \emph{forêt d'un dossier} \(D\) est l'ensemble des arbres qu'il
+porte,
+\[
+ \mc F_D:=\{\nu_D(m)\mid m\in\Indet_D\},
+\]
+forêt normative de domaine \(\Indet_D\).
 
 \begin{defi}[Cohérence d'arbres normatifs]\label{def:consistency}
-Une forêt d'arbre normatifs \(\mc F\) est \emph{cohérente} lorsque pour tout dossier $D$:
+Une forêt d'arbres normatifs \(\mc F\) est \emph{cohérente} lorsque, pour tout dossier $D$ :
 \begin{enumerate}
 \item \emph{Les dépendances sont bien fondées.} Posons \(m'<_{\dep}m\) si et
   seulement si \(\theta_m\in\mc F\) et \(m'\in\dep(\theta_m)\). La relation
@@ -920,8 +1010,12 @@ scénario factuel ne peut satisfaire à la fois deux prédicats frères
 collectives différentes ou des versions temporelles différentes d'un même
 texte. Un candidat n'est jamais en conflit avec ses ancêtres, qui sont des
 sources supérieures situées sur le même chemin. La condition~(c) garantit
-qu'un arbre normatif contient toujours au moins un candidat applicable. Les conditions~(d) et~(e) assurent que les politiques
-d'arbitrage sont toujours bien définies. 
+qu'aucun dossier n'exclut tous les candidats d'un arbre normatif : sous la
+racine subsiste toujours une arête qui n'est pas fausse. Les conditions~(d)
+et~(e) assurent que les politiques d'arbitrage sont toujours bien définies.
+Ces conditions sont quantifiées sur tous les dossiers ; les arbres qu'un
+dossier porte en sont des élagués, dont la \autoref{sec:elagage} établit
+ce qui est conservé.
 %\paragraph{Raffinement et arbres normatifs.}
 %Les deux niveaux de prédicats ne se confondent pas : ceux de l'arbre de
 %raffinement décident si une question se pose, ceux de l'arbre normatif quelle
@@ -974,37 +1068,77 @@ chaque précision un prédicat d'applicabilité.
 \def\tree{t_\rho}
 %%
 \begin{defi}[Arbre de raffinement]\label{def:raffinement}
-Un \emph{arbre de raffinement} est un triplet 
+Un \emph{arbre de raffinement} est un triplet
 \[
-\rho=(\mc M_\rho\subseteq\mc M,{}\refine{}\subseteq \mc M_\rho\times\Pred\times \mc M_\rho,\tree:\prod_{m\in\mc M_\rho\cap\CMatter}\mc T(m))
-\] 
-où
-\(\mc M_\rho\) est un ensemble fini de matières, la relation \(\refine\) est étiquetée par des prédicats d'applicabilité et
-la fonction $\tree$ associe chaque feuille $m$ de $\rho$ a un arbre normatif $\theta\in\mc T(m)$.
+\rho=(\mc M_\rho,\ {\refine},\ \tree),
+\qquad
+\mc M_\rho\subseteq\mc M,\quad
+{\refine}\subseteq \mc M_\rho\times\Pred\times \mc M_\rho,\quad
+\tree\in\prod_{m\in\mc M_\rho\cap\CMatter}\mc T(m),
+\]
+où \(\mc M_\rho\) est un ensemble fini de matières contenant \(\Matter\), et
+\(\refine\) une relation étiquetée par des prédicats d'applicabilité telle que
+\((\mc M_\rho,\refine)\) soit un arbre fini de racine \(\Matter\) : toute
+matière \(m'\in\mc M_\rho\setminus\{\Matter\}\) a exactement un \emph{parent},
+c'est-à-dire un unique couple \((m,\pi)\) tel que \((m,\pi,m')\in{\refine}\),
+la racine n'en a aucun, et chaque matière de \(\mc M_\rho\) est reliée à la
+racine par un chemin, nécessairement unique. Enfin, \(\tree\) est une fonction
+dépendante qui associe à chaque matière concrète \(m\) de \(\rho\) un arbre
+normatif \(\tree(m)\in\mc T(m)\).
 
-On écrit \(m\refby{\pi}m'\) pour \((m,\pi,m')\in{\refine}\). On dit que \(m\) se \emph{raffine} en \(m'\)
-lorsque le dossier satisfait \(\pi\). On pose \(\pi(D):=\sem{\pi}_D\), et
+On écrit \(m\refby{\pi}m'\) pour \((m,\pi,m')\in{\refine}\) ; \(m'\) est alors un
+\emph{enfant} de \(m\), et une matière sans enfant est une \emph{feuille}. On
+dit que \(m\) se \emph{raffine} en \(m'\) lorsque le dossier satisfait
+\(\pi\). On pose \(\pi(D):=\sem{\pi}_D\), et
 \(\dep(\rho):=\bigcup_{(m,\pi,m')\in\refine}\dep(\pi)\).
 \end{defi}
 %%
 %%
 \begin{defi}[$D$-Cohérence de raffinement]\label{def:coh-raff}
-Un arbre de raffinement \(\rho=(\mc M_\rho,\refine,\tree)\) est \emph{cohérent} vis à vis d'un dossier $D$ lorsque :
+Un arbre de raffinement \(\rho=(\mc M_\rho,\refine,\tree)\) est \emph{cohérent} vis-à-vis d'un dossier $D$ lorsque :
 \begin{enumerate}
-\item \emph{Il est enraciné.} Pour tout $m\in\mc M_\rho$, $\not\refine m$ implique $m=\Matter$.
-\item \emph{Il est compatible avec le sous-typage.} Si \(m\refby{\pi}m'\),
-  alors \(m'\subtype m\).
-\item \emph{Il est bien typé.} Pour tout $m\in\mc M_\rho\setminus\{\Matter\}$, il existe $m'\in\MatterSup$ telle que $m\subtype m'$.
-\item \emph{Il est bien fondé, i.e.,} $\mc M_\rho\cap\FMatter=\emptyset$ et $\dep(\rho)\subseteq \FMatter$.
-\item \emph{Ses feuilles sont concrètes.} Pour tout \( m \in \mc M_\rho\), $m\not\refine$ implique $m\in\CMatter$.
+\item \emph{Le raffinement est strict et compatible avec le sous-typage.} Si
+  \(m\refby{\pi}m'\), alors \(m'\subtype m\) et \(m'\neq m\).
+\item \emph{Ses prédicats sont factuels.} $\mc M_\rho\cap\FMatter=\emptyset$ et $\dep(\rho)\subseteq \FMatter$.
+\item \emph{Ses feuilles sont concrètes.} Toute feuille de \(\rho\) appartient à \(\CMatter\).
 \item \emph{Les matières ouvertes de $D$ sont abstraites dans $\rho$, i.e.,} $\Ouverte_D \subseteq (\mc M_\rho\setminus\CMatter)$.
-\item \emph{Les matières indéterminées de $D$ sont concrètes dans $\rho$, i.e.,} $\Indet_D\subseteq \mc M_\rho\cap\CMatter$.
-\item \emph{Les arbres normatifs de $\rho$ sont cohérents}. Pour tout feuille $m$ de $\rho$, l'arbre normatif associé $\tree(m)$ est cohérent (voir \autoref{def:consistency}).
+\item \emph{Les matières indéterminées de $D$ sont des feuilles de $\rho$, et
+  leurs arbres en sont issus par élagage.} $\Indet_D\subseteq \mc M_\rho\cap\CMatter$
+  et, pour tout \(m\in\Indet_D\), \(\tree(m)\redD^{*}\nu_D(m)\), où \(\redD\)
+  est la relation d'élagage dans \(D\) (\autoref{def:reduction}).
+\item \emph{La forêt de $\rho$ est cohérente.} La forêt normative
+  \(\mc F_\rho:=\{\tree(m)\mid m\in\mc M_\rho\cap\CMatter\}\) est cohérente
+  au sens de la \autoref{def:consistency}.
 \end{enumerate}
 \end{defi}
 %%
-Les conditions 1 à 3 interdisent les matières hétérogènes : deux
-matières de types différents n'ont que \(\Matter\) pour ancêtre commun. La condition 4 garanti que les prédicats d'applicabilité puisse s'évaluer sans blocage. La condition 5 est une contrainte de complétude : le raffinement ne peut pas s'arrêter sur une matière abstraite. La condition 6 impose que seules les matières abstraites de $\rho$ peuvent ne pas avoir de valuation dans un dossier, tandis que la 7 demande que seules les feuilles de $\rho$ puissent être associées à un arbre normatif. La condition 8 requiert qu'un arbre normatif d'un raffinement $D$-cohérent le soit aussi.
+La structure d'arbre de la \autoref{def:raffinement} exclut qu'une matière ait
+plusieurs parents, et la condition~1 exclut qu'une matière se raffine en
+elle-même ou en une matière qui ne la précise pas ; comme \(\subtype\) est un
+ordre, tout chemin de \(\rho\) est une chaîne strictement décroissante pour le
+sous-typage. Réciproquement, une matière concrète de \(\rho\) est une feuille,
+puisqu'elle n'a pas de sous-type strict : les feuilles de \(\rho\) sont donc
+exactement les matières de \(\mc M_\rho\cap\CMatter\), et \(\tree\) est définie
+sur chacune d'elles. Avec l'homogénéité des types supports
+(\autoref{def:matiere}), la condition~1 interdit les matières hétérogènes :
+deux matières de types différents n'ont que \(\Matter\) pour ancêtre commun
+dans \(\rho\). La condition~2 rend les prédicats de raffinement indépendants
+de toute résolution normative : leurs matières sont factuelles, et une valeur
+qui manque au dossier s'obtient par une saisie, non par la résolution d'un
+arbre ; elle n'assure pas que ces matières figurent dans le dossier. La
+condition~3 est une contrainte de complétude : le raffinement ne peut pas
+s'arrêter sur une matière abstraite. La condition~4 impose que seules les
+matières abstraites de $\rho$ peuvent ne pas avoir de valuation dans un
+dossier, tandis que la~5 demande que seuls les arbres normatifs fournis par
+$\rho$, éventuellement élagués dans le dossier, puissent y figurer. La
+condition~6 porte sur la forêt entière : la cohérence de chaque arbre pris
+séparément ne garantit pas l'acyclicité de leurs dépendances réunies, puisque
+deux feuilles \(a\) et \(b\) peuvent avoir des arbres tels que
+\(\dep(\tree(a))=\{b\}\) et \(\dep(\tree(b))=\{a\}\). C'est cette forêt
+\(\mc F_\rho\), fixée une fois pour toutes, qui sert de référentiel aux arbres
+que les dossiers reçoivent (\autoref{sec:saisir}) et à la résolution
+(\autoref{sec:resolution}). Les conditions~1 à~3 et~6 ne dépendent pas de
+\(D\) ; seules les conditions~4 et~5 lient l'arbre de raffinement au dossier.
 
 Nous donnons un exemple d'arbre de raffinement pour notre fil rouge à la \autoref{fig:hierarchie}.
 %Une
@@ -1062,9 +1196,9 @@ Nous donnons un exemple d'arbre de raffinement pour notre fil rouge à la \autor
   enfants sont les types de valeurs \(\Money\) et \(\Duration\). Les matières
   abstraites sont en pointillés ; les matières concrètes sont les feuilles, en
   trait gras. Les arêtes sans étiquette portent le prédicat \(\true\). Pour le
-  dossier fil rouge, la question de \emph{l'indemnité} est fondée (rien n'empêche de l'atteindre depuis la racine) et peut être déclinées aux titres de l'\emph{indemnité de licenciement} et de l'\emph{indemnité compensatrice de préavis}, qui sont deux sous-types accessibles (la salariée ayant été dispensée de préavis).
+  dossier fil rouge, la question de \emph{l'indemnité} est fondée (rien n'empêche de l'atteindre depuis la racine) et peut être déclinée aux titres de l'\emph{indemnité de licenciement} et de l'\emph{indemnité compensatrice de préavis}, qui sont deux sous-types accessibles (la salariée ayant été dispensée de préavis).
   Dans cet exemple, l'indemnité de rupture et l'indemnité compensatrice
-  ne sont pas en concours : leurs montants s'ajoutent (voir \autoref{sec:fusion}).}
+  ne sont pas en concours : leurs montants s'ajoutent.}
 \label{fig:hierarchie}
 \end{figure}
 
@@ -1090,86 +1224,193 @@ Nous donnons un exemple d'arbre de raffinement pour notre fil rouge à la \autor
 
 \section{Traitement des dossiers}\label{sec:op}
 
-\subsection{Opérateurs}
-L'assistant manipule une liste ordonnée de dossiers
-\(\Liste=[D_1,\ldots,D_n]\), dont la tête porte la demande principale et les
-suivants les demandes subsidiaires. Ces manipulations se font sous le contrôle d'un unique arbre de raffinement $\rho$, qui permet de préciser les questions abstraites et d'invoquer les arbres normatifs de matières qui le nécessitent. 
-Trois opérateurs élémentaires, que nous définissons à présent, transforment un dossier ($\rho$ est laissé implicite).
+\subsection{Opérateurs}\label{sec:operateurs}
+L'assistant manipule un dossier sous le contrôle d'un unique arbre de
+raffinement $\rho$, fixé dans toute la suite, qui permet de préciser les
+questions abstraites et d'invoquer les arbres normatifs des matières concrètes
+qui le nécessitent. La gestion d'une liste ordonnée de dossiers, dont la tête
+porterait la demande principale et les suivants les demandes subsidiaires
+(\autoref{sec:vocabulaire}), fait l'objet d'un travail en cours et n'est pas
+formalisée ici.
+Quatre opérateurs élémentaires, que nous définissons à présent, transforment un dossier ($\rho$ est laissé implicite).
 
 \begin{defi}[Opérateurs élémentaires]\label{def:operateurs}
 \[
 \begin{array}{lll}
 \mathit{op} &::=& \EmptyD \quad \text{le dossier vide}\\
-&& \mid \Input_v(D,m)\quad m\in\Undef_D,\ v\in(\Raw(m)\uplus\mc T(m))_\bot\\
-&& \mid \Prune(D,m)\quad m\in\Indet_D \\
-&& \mid \Resolve(D,m)\quad m\in\Indet_D \\
-&& \mid \Precise(D,m)\quad m\in\Ouverte_D.
+&& \mid \Input_v(D,m)\quad m\in\Undef_D,\ v \text{ valide pour } m\ (\text{\autoref{sec:saisir}})\\
+&& \mid \Precise(D,m)\quad m\in\Ouverte_D \text{ raffinable dans } D\ (\text{\autoref{sec:preciser}})\\
+&& \mid \Prune(D,m)\quad m\in\Indet_D\ (\text{\autoref{sec:elagage}})\\
+&& \mid \Resolve(D,m)\quad m\in\Indet_D,\ \NeedFacts_D(m)=\emptyset\ (\text{\autoref{sec:resolution}}).
 \end{array}
 \]
 %Sur une liste, un opérateur élémentaire \(\mathit{op}\) s'applique à une
 %position \(i\) :
-%\(\mathit{op}_i(\Liste,m):=[D_1,\ldots,\mathit{op}(D_i,m),\ldots,D_n]\). 
+%\(\mathit{op}_i(\Liste,m):=[D_1,\ldots,\mathit{op}(D_i,m),\ldots,D_n]\).
 \end{defi}
 
 Le dossier vide est \(\EmptyD=(\emptyset,[])\), où \([]\) désigne la valuation
-vide. 
+vide.
+
+\paragraph{Invariant.} Nous supposons que \(\rho\) satisfait les conditions~1
+à~3 et~6 de la \autoref{def:coh-raff}, qui ne dépendent pas du dossier ;
+\(\rho\) est alors \(\EmptyD\)-cohérent. Nous ne considérons dans toute la
+suite que des dossiers \(D\) tels que \(\rho\) soit \(D\)-cohérent : le
+dossier vide l'est, et chaque opérateur préserve cette propriété
+(propositions~\ref{prop:coh-input}, \ref{prop:coh-precise}
+et~\ref{prop:coh-prune} ; pour \(\Resolve\), qui remplace un arbre par une
+valeur, c'est immédiat). Tous les énoncés de cette section portent sur de tels
+dossiers, sans que l'hypothèse soit répétée. En particulier, les matières
+ouvertes d'un dossier sont abstraites et n'apparaissent dans aucun test
+(condition~4), et les arbres d'un dossier sont des élagués, dans ce dossier,
+d'arbres de la forêt cohérente \(\mc F_\rho\) (condition~5).
 %%
 \paragraph{Notations pour les mises à jour de dossier.} Pour \(D=(\mc M_D,\nu_D)\), on note \(\nu_D-m\) la valuation restreinte
 \(\nu_D\mathrel\upharpoonright(\mc M_D\setminus\{m\})\), et
 \(\nu_D+[m\mapsto v]\) l'extension de \(\nu_D\) par une nouvelle entrée
-\(m\notin\mc M_D\) de valeur \(v\in(\Raw(m)\uplus\mc T(m))_\bot\). On note $D\ominus m:=(\mc M_D\setminus\{m\},\nu_D-m)$ le fait de supprimer une matière d'un dossier, et la fusion (partielle) de dossier $D\oplus D':=(\mc M_D\cup\mc M_{D'},\nu_D\oplus\nu_{D'})$ avec $\nu'=\nu_D \oplus \nu_{D'}$ la valuation 
-telle que $\nu'(m)=v$ si $\nu_D(m)=\nu_{D'}(m)=v$ ou $\nu_D(m)=\bot$ et $\nu_{D'}(m)=v$ (et le symétrique).
+\(m\notin\mc M_D\) de valeur \(v\in(\Raw(m)\uplus\mc T(m))_\bot\) ; plus
+généralement, \(\nu_D+[m'\mapsto v_{m'}]_{m'\in X}\) est l'extension de
+\(\nu_D\) par une entrée pour chaque matière d'un ensemble
+\(X\subseteq\Undef_D\). On note $D\ominus m:=(\mc M_D\setminus\{m\},\nu_D-m)$
+le dossier \(D\) privé de la matière \(m\). Une valuation n'est jamais
+prolongée hors de son domaine : une matière absente d'un dossier (indéfinie)
+se distingue d'une matière présente sans valuation (ouverte). Deux dossiers
+\(D\) et \(D'\) sont \emph{compatibles} lorsque, pour toute matière commune
+\(m\in\mc M_D\cap\mc M_{D'}\), on a \(\nu_D(m)=\nu_{D'}(m)\), ou
+\(\nu_D(m)=\bot\), ou \(\nu_{D'}(m)=\bot\). Pour deux dossiers compatibles, la
+\emph{fusion} est $D\oplus D':=(\mc M_D\cup\mc M_{D'},\nu_D\oplus\nu_{D'})$,
+où la valuation \(\nu_D\oplus\nu_{D'}\) est définie sur
+\(\mc M_D\cup\mc M_{D'}\) par
+\[
+ (\nu_D\oplus\nu_{D'})(m):=
+ \begin{cases}
+  \nu_D(m), & m\in\mc M_D\setminus\mc M_{D'},\\
+  \nu_{D'}(m), & m\in\mc M_{D'}\setminus\mc M_D,\\
+  \nu_D(m), & m\in\mc M_D\cap\mc M_{D'}\text{ et }\nu_{D'}(m)=\bot,\\
+  \nu_{D'}(m), & m\in\mc M_D\cap\mc M_{D'}\text{ et }\nu_{D'}(m)\neq\bot :
+ \end{cases}
+\]
+une matière présente dans un seul dossier garde sa valuation, et une matière
+commune reçoit la valuation définie, unique par compatibilité, ou \(\bot\) si
+les deux dossiers la laissent ouverte.
 
-\subsection{Saisir}
-Soit $m\in\Undef_D$, une valeur $v$ de saisie est \emph{valide} pour $m$ si :
+\subsection{Saisir}\label{sec:saisir}
+Soit $m\in\Undef_D$. Une valeur de saisie $v$ est \emph{valide} pour $m$ dans
+l'un des trois cas suivants :
 \begin{enumerate}
-\item $v\in\Raw(m)$.
-\item $v\in\mc T(m)$ et si $m\in\mc M_\rho$ et $\tree(m)=v$.
-\item $v=\bot$ et si $m\in \mc M_\rho\setminus\CMatter$.
-\end{enumerate} 
+\item $v\in\Raw(m)$ : une valeur brute ;
+\item $m\in\mc M_\rho\cap\CMatter$ et $v=\tree(m)$ : l'arbre normatif d'une
+  feuille de $\rho$, tel que la forêt $\mc F_\rho$ le fournit ;
+\item $m\in \mc M_\rho\setminus\CMatter$ et $v=\bot$ : une question abstraite,
+  posée sans réponse.
+\end{enumerate}
 Pour toute valeur $v$ valide pour $m$ on définit :
 \begin{equation}
 \Input_v(D,m):=(\mc M_D\uplus\{m\},\nu_D+[m\mapsto v]).
 \label{eq:input}
 \end{equation}
 Cette opération ajoute la matière \(m\) au dossier. En particulier, \(\Input_\bot(D,m)\) pose la
-question \(m\) sans y répondre : c'est ainsi qu'un dossier reçoit la matière abstraite sur laquelle porte la demande. 
+question \(m\) sans y répondre : c'est ainsi qu'un dossier reçoit la matière abstraite sur laquelle porte la demande. Une saisie n'altère aucune valeur établie : \(D\enrich\Input_v(D,m)\).
 
 \begin{prop}[Saisie cohérente pour le raffinement]\label{prop:coh-input}
-Pour tout dossier $D$ tel que $\rho$ est $D$-cohérent, pour toute saisie valide $D'=\Input_v((\mc M_D,\nu_D),m)$, $\rho$ est $D'$-cohérent.
+Pour toute saisie valide $D'=\Input_v(D,m)$, $\rho$ est $D'$-cohérent.
 \end{prop}
+\begin{proof}
+Les conditions~1 à~3 et~6 de la \autoref{def:coh-raff} ne dépendent pas du
+dossier. Pour la condition~4, une matière ouverte de \(D'\) est ouverte dans
+\(D\), ou bien est \(m\) avec \(v=\bot\), abstraite dans \(\rho\) par le
+cas~3. Pour la condition~5, une matière indéterminée de \(D'\) est \(m\) avec
+\(v=\tree(m)\), feuille de \(\rho\) par le cas~2, pour laquelle la dérivation
+\(\tree(m)\to_{D'}^{*}\nu_{D'}(m)\) est vide ; ou bien une matière
+\(m''\in\Indet_D\), avec \(\tree(m'')\redD^{*}\nu_D(m'')\). Comme
+\(D\enrich D'\), les prédicats décidés dans \(D\) le sont identiquement dans
+\(D'\) (\autoref{lem:monotone}), et les frères d'un nœud ne dépendent que de
+l'arbre : chaque pas \(\redD\) de cette dérivation est aussi un pas
+\(\to_{D'}\).
+\end{proof}
 
-\subsection{Préciser}
-Soit $D$ un dossier tel que $\rho$ est $D$-cohérent. Pour tout $m\in\mc M_\rho$, on pose :
+\subsection{Préciser}\label{sec:preciser}
+Soit $m\in\Ouverte_D$ ; par la condition~4, $m$ est une matière abstraite de
+$\rho$. Pour $b\in\Bthree$, on note
 \[
-\begin{array}{lll}
-\rho_b(m) & := & b\in\Bthree,\ \{m'\in\mc M_\rho\mid m\refby\pi m' \wedge \pi(D)=b\} \\
-\widehat\tree(m)&:=& \left\{
-\begin{array}{l}
-\tree(m), \text{ si } m\in\mc M_\rho\cap\CMatter \\
-\bot \text{ sinon.} 
-\end{array}\right.
-\end{array}
+\rho_b(m):=\{m'\in\mc M_\rho\mid \exists\pi\in\Pred,\ m\refby{\pi}m'\ \text{et}\ \pi(D)=b\}
 \]
-%%
-et $D\oplus D':=(\mc M_D\cup\mc M_D',\nu_D\oplus\nu_{D'})$. Pour toute matière $m\in\mc M_D\cup{(\mc M_\rho\setminus\CMatter)}$, on définit :
-%%
+l'ensemble des enfants de $m$ dans $\rho$ dont le prédicat vaut $b$ pour $D$,
+et, pour $m'\in\mc M_\rho$, $\widehat\tree(m'):=\tree(m')$ si
+$m'\in\CMatter$ et $\widehat\tree(m'):=\bot$ sinon : la valeur avec laquelle
+$m'$ entre dans un dossier. La matière $m$ est \emph{raffinable} dans $D$
+lorsque $\rho_{\unknown}(m)=\emptyset$, c'est-à-dire lorsque le dossier décide
+chacun des prédicats qui gardent ses enfants. Pour $m$ raffinable, on pose
 \begin{equation}\label{eq:precise}
-\Precise(D,m):=\bigoplus_{m'\in\rho_{\true}(m)} \Input_{\widehat\tree(m')}(D\ominus m,m')
+\Precise(D,m):=\Bigl(\,(\mc M_D\setminus\{m\})\cup\rho_{\true}(m),\ \
+ (\nu_D-m)+[m'\mapsto\widehat\tree(m')]_{m'\in\rho_{\true}(m)\setminus\mc M_D}\Bigr).
 \end{equation}
+Autrement dit, $\Precise(D,m)$ s'obtient de $D\ominus m$ par une suite de
+saisies valides, une pour chaque enfant applicable $m'$ absent du dossier,
+de la forme $\Input_{\widehat\tree(m')}(\cdot,m')$ ; l'ordre de ces saisies
+est indifférent.
+Les enfants déjà présents dans $D$, établis, indéterminés ou ouverts,
+conservent leur valuation, et, lorsqu'aucun enfant n'est applicable
+($\rho_{\true}(m)=\emptyset$), $\Precise(D,m)=D\ominus m$ : la question est sans
+objet pour ce dossier. Préciser retire donc la question abstraite et la
+remplace, dans le même dossier, par celles de ses précisions que le dossier
+rend applicables. Dans le fil rouge, la question de l'indemnité ouvre ainsi
+l'indemnité de licenciement et l'indemnité compensatrice de préavis
+(\autoref{fig:hierarchie}), chacune avec son arbre normatif, dans un même
+dossier.
 
 \begin{prop}[Précision cohérente pour le raffinement]\label{prop:coh-precise}
-Une matière abstraite $m$ est \emph{raffinable} si $\rho_{\unknown}(m)=\emptyset$.
-Soit $D$ un dossier, tel que $\rho$ est $D$-cohérent. Pour toute précision $D'=\Precise(D,m)$, si $m$ est raffinable alors $\rho$ est $D'$-cohérent.
+Si $m\in\Ouverte_D$ est raffinable dans $D$, alors $\rho$ est
+$\Precise(D,m)$-cohérent.
 \end{prop}
+\begin{proof}
+Les conditions~4 et~5 de la \autoref{def:coh-raff} passent de \(D\) à
+\(D\ominus m\), dont les matières ouvertes et indéterminées sont celles de
+\(D\) privées de \(m\), et dont la valuation coïncide avec celle de \(D\) sur
+les matières établies. Chaque saisie \(\Input_{\widehat\tree(m')}(\cdot,m')\)
+est ensuite valide : \(m'\in\mc M_\rho\) est un enfant de \(m\), donc
+distinct de \(\Matter\), indéfini dans le dossier courant, et
+\(\widehat\tree(m')\) est son arbre si \(m'\) est concrète, \(\bot\) sinon.
+La \autoref{prop:coh-input} conclut.
+\end{proof}
+
+Préciser peut remplacer une question abstraite par plusieurs enfants
+abstraits : le nombre de matières ouvertes d'un dossier peut croître. La
+structure d'arbre de \(\rho\) fournit néanmoins une mesure qui décroît.
+Notons \(\haut_\rho(m)\) la \emph{hauteur} de \(m\) dans \(\rho\) : \(0\)
+pour une feuille, et un de plus que la plus grande hauteur de ses enfants
+sinon ; elle est bien définie puisque \(\rho\) est un arbre fini. Pour un
+dossier \(D\), soit \(\mu(D)\) le multiensemble des hauteurs de ses matières
+ouvertes, \(\mu(D):=\{\!\{\haut_\rho(m)\mid m\in\Ouverte_D\}\!\}\).
+
+\begin{prop}[Mesure de précision]\label{prop:mesure-precise}
+Si \(D'=\Precise(D,m)\), alors \(\mu(D')\mulord\mu(D)\), pour l'extension aux
+multiensembles finis de l'ordre strict sur les entiers, qui est bien
+fondée~\cite{dershowitz1979}.
+\end{prop}
+\begin{proof}
+On a \(\Ouverte_{D'}=(\Ouverte_D\setminus\{m\})\cup
+\bigl(\rho_{\true}(m)\setminus(\mc M_D\cup\CMatter)\bigr)\) : \(m\) cesse
+d'être ouverte, les enfants concrets entrent avec leur arbre, et seuls les
+enfants abstraits absents de \(D\) entrent sans valuation. Le multiensemble
+\(\mu(D')\) s'obtient donc de \(\mu(D)\) en remplaçant une occurrence de
+\(\haut_\rho(m)\) par un nombre fini d'entiers strictement inférieurs, les
+hauteurs des enfants de \(m\), ce qui est un pas de l'ordre multiensemble.
+\end{proof}
+
+Cette mesure prépare la preuve de terminaison de la boucle complète, qui
+alterne précisions, saisies des faits requis par les prédicats de raffinement
+et résolution des arbres ; cette boucle reste à définir et sa terminaison à
+établir (\autoref{sec:resolution}).
 
 
-\subsection{Élaguer}
+\subsection{Élaguer}\label{sec:elagage}
 
 L'élagage est une relation de réécriture sur les arbres normatifs, indexée par
 le dossier courant. Pour \(\theta=(V,E,r,\lambda,\pi)\) et
 \(W\subseteq V\setminus\{r\}\) clos par descendants, on note
-\(\theta\setminus W\) la restriction de \(\theta\) à \(V\setminus W\).
+\(\theta\setminus W\) la restriction de \(\theta\) à \(V\setminus W\) ; c'est
+encore un arbre normatif de la même matière, de même racine.
 
 \begin{defi}[Réduction]\label{def:reduction}
 Pour une arête \(e=(u,v)\in E\), on définit
@@ -1185,55 +1426,111 @@ Pour une arête \(e=(u,v)\in E\), on définit
 
 La règle \((\Cut)\) retire une arête dont le prédicat est faux ainsi que le
 sous-arbre devenu inatteignable ; la règle \((\Select)\) retient la branche dont
-le prédicat est établi et écarte ses frères.
+le prédicat est établi et écarte ses frères. Un \emph{élagué} de \(\theta\)
+dans \(D\) est un arbre \(\theta'\) tel que \(\theta\redD^{*}\theta'\). La
+relation \(\redD\) ne dépend du dossier que par les valeurs des prédicats ;
+les arbres d'un dossier sont des élagués, dans ce dossier, des arbres de
+\(\mc F_\rho\) (condition~5 de la \autoref{def:coh-raff}). Le lemme suivant
+dit ce que l'élagage conserve, pour le dossier courant comme pour ceux qui
+l'enrichissent.
 
-\begin{prop}[Formes normales]\label{prop:norm}
-Soit \(D\) un dossier dont la forêt \(\mc F_D\) est cohérente. Sur les arbres
-de \(\mc F_D\) et leurs réduits, \(\redD\) termine et est confluente. Tout
-\(\theta\in\mc F_D\) possède donc une unique forme normale, notée \(\nf\theta\).
-\end{prop}
+\begin{lemm}[Élagués]\label{lem:reduits}
+Soient \(\theta_0\in\mc F_\rho\) et \(\theta\) un élagué de \(\theta_0\) dans
+\(D\).
+\begin{enumerate}
+\item Si \(D\enrich D'\), alors \(\theta\) est aussi un élagué de
+  \(\theta_0\) dans \(D'\) : les pas d'élagage effectués dans \(D\) restent
+  valides dans tout dossier qui l'enrichit.
+\item \(\theta\) vérifie les conditions~(a), (b), (d) et~(e) de la
+  \autoref{def:consistency}, et sa racine reste exhaustive pour \(D\) : il
+  existe \(v\in\child(r)\) tel que \(\pi((r,v))(D)\neq\false\).
+\end{enumerate}
+\end{lemm}
 \begin{proof}
-Terminaison : chaque pas retire un sommet d'un arbre fini. Pour la confluence
-locale, on remarque que \(\pi(e)(D)\) ne dépend que de \(D\), et que des frères
-dans un réduit sont frères dans \(\theta\), de sorte que~(b) vaut dans tout
-réduit. Soient deux pas en \(e_i=(u_i,v_i)\), \(i=1,2\), qui retirent les
-ensembles clos par descendants \(W_1,W_2\). Si \(v_2\in W_1\), alors
-\(W_2\subseteq W_1\), et le pas en \(e_1\) soit s'applique encore dans
-\(\theta_2\) et donne \(\theta_1\), soit est un \((\Select)\) dont les
-sous-arbres frères sont tous inclus dans \(W_2\), auquel cas
-\(\theta_1=\theta_2\). Si aucune des deux cibles n'appartient à l'ensemble de
-l'autre, les deux pas s'appliquent encore et commutent. Le cas restant,
-\(v_1\in W_2\) et \(v_2\in W_1\), force \(v_1\) et \(v_2\) à être frères avec
-deux arêtes valant \(\true\), ce qu'exclut~(b). Le lemme de Newman permet de
-conclure.
+(1) Un pas \((\Cut)\) en \(e\) demande \(\pi(e)(D)=\false\), un pas
+\((\Select)\) en \(e=(u,v)\) demande \(\pi(e)(D)=\true\) et
+\(\sib_u(v)\neq\emptyset\). D'après le \autoref{lem:monotone}, un prédicat
+décidé dans \(D\) a la même valeur dans \(D'\), et les frères d'un nœud ne
+dépendent que de l'arbre courant : chaque pas de la dérivation
+\(\theta_0\redD^{*}\theta\) est un pas de \(\to_{D'}\).
+(2) Les conditions~(a), (d) et~(e) portent sur des couples de nœuds et sont
+héritées par tout sous-arbre ; des frères dans \(\theta\) sont frères dans
+\(\theta_0\), d'où~(b). Pour l'exhaustivité, soit \(v\) un fils de la racine
+de \(\theta_0\) tel que \(\pi((r,v))(D)\neq\false\), qui existe par la
+condition~(c) appliquée à \(\theta_0\) et \(D\). Si \(v\) appartient à
+\(\theta\), c'est fini. Sinon, \(v\) a été retiré par un pas portant sur une
+arête issue de la racine : non par \((\Cut)\) en \((r,v)\), dont le prédicat
+n'est pas faux, donc par \((\Select)\) en \((r,v')\) pour un frère \(v'\) tel
+que \(\pi((r,v'))(D)=\true\). Ce frère subsiste dans \(\theta\) : \((\Cut)\)
+ne s'applique pas à \((r,v')\), et un \((\Select)\) qui le retirerait
+exigerait un autre fils de la racine d'arête vraie, ce qu'exclut~(b) pour
+\(\theta_0\).
 \end{proof}
 
+\begin{prop}[Formes normales]\label{prop:norm}
+Soient \(D\) un dossier et \(m\in\Indet_D\). Sur les élagués de \(\nu_D(m)\)
+dans \(D\), la relation \(\redD\) termine et est confluente. L'arbre
+\(\nu_D(m)\) possède donc une unique forme normale, notée \(\nf{\nu_D(m)}\).
+\end{prop}
+\begin{proof}
+Terminaison : chaque pas retire au moins un sommet d'un arbre fini. Pour la
+confluence locale, on remarque que \(\pi(e)(D)\) ne dépend que de \(D\), et
+que tout élagué de \(\nu_D(m)\) dans \(D\) est un élagué de \(\tree(m)\),
+qui vérifie donc~(b) d'après le \autoref{lem:reduits}. Soient deux pas en
+\(e_i=(u_i,v_i)\), \(i=1,2\), qui retirent les ensembles clos par descendants
+\(W_1,W_2\). Si \(v_2\in W_1\), alors \(W_2\subseteq W_1\), et le pas en
+\(e_1\) soit s'applique encore dans \(\theta_2\) et donne \(\theta_1\), soit
+est un \((\Select)\) dont les sous-arbres frères sont tous inclus dans
+\(W_2\), auquel cas \(\theta_1=\theta_2\). Si aucune des deux cibles
+n'appartient à l'ensemble de l'autre, les deux pas s'appliquent encore et
+commutent. Le cas restant, \(v_1\in W_2\) et \(v_2\in W_1\), force \(v_1\) et
+\(v_2\) à être frères avec deux arêtes valant \(\true\), ce qu'exclut~(b). Le
+lemme de Newman permet de conclure.
+\end{proof}
+
+L'opérateur \(\Prune\) remplace l'arbre d'une matière indéterminée par sa
+forme normale :
 \begin{equation}
 \Prune((\mc M_D,\nu_D),m):=(\mc M_D,(\nu_D-m)+[m\mapsto\nf{\nu_D(m)}]).
 \label{eq:prune}
 \end{equation}
 
+\begin{prop}[Élagage cohérent pour le raffinement]\label{prop:coh-prune}
+Pour tout \(m\in\Indet_D\), \(\rho\) est \(\Prune(D,m)\)-cohérent.
+\end{prop}
+\begin{proof}
+Les matières établies, ouvertes et indéterminées de \(D'=\Prune(D,m)\) sont
+celles de \(D\), aux mêmes valeurs établies, de sorte que \(\to_{D'}\) et
+\(\redD\) coïncident. La condition~5 vaut pour \(m\) parce que
+\(\tree(m)\redD^{*}\nu_D(m)\redD^{*}\nf{\nu_D(m)}\), et pour les autres
+matières indéterminées parce que leur arbre est inchangé.
+\end{proof}
+
 \begin{lemm}[Structure des formes normales]\label{lem:linear}
-Soit \(\theta\in\mc T(m)\) un arbre d'une forêt cohérente et
-\(\theta'=\nf\theta=(V',E',r,\lambda',\pi')\).
+Soient \(D\) un dossier, \(m\in\Indet_D\) et
+\(\theta'=\nf{\nu_D(m)}=(V',E',r,\lambda',\pi')\).
 \begin{enumerate}
 \item Si \(\pi(e)(D)\neq \unknown\) pour toute arête \(e\in E'\), alors
   \(\theta'\) est un chemin non vide \(r\to v_1\to\cdots\to v_k\) (\(k\geq1\))
   dont toutes les arêtes valent \(\true\), et
   \(s(\lambda(v_i))\normgt s(\lambda(v_{i+1}))\).
 \item Si une arête \(e\in E'\) vérifie \(\pi(e)(D)=\unknown\), alors
-  \(\dep(e)\cap(\Indet_D\cup\Undef)\neq\emptyset\).
+  \(\dep(e)\cap(\Indet_D\cup\Undef_D)\neq\emptyset\).
 \end{enumerate}
 \end{lemm}
 \begin{proof}
 (1) Aucune arête de \(\theta'\) ne vaut \(\false\), sinon \((\Cut)\)
-s'appliquerait ; toute arête vaut donc \(\true\). Si un nœud avait deux fils,
-les deux arêtes vaudraient \(\true\), ce qui contredirait l'exclusion
-mutuelle~(b) ; \(\theta'\) est donc un chemin. La racine conserve au moins un
-fils par exhaustivité~(c) : son arête non fausse vaut \(\true\), et
-\((\Select)\) a retiré les autres. La monotonie des sources découle de~(a).
-(2) est la contraposée de la totalité
-(\autoref{def:applicability-predicate}).
+s'appliquerait ; toute arête vaut donc \(\true\). L'arbre \(\theta'\) est un
+élagué de \(\tree(m)\) dans \(D\), et vérifie donc~(a) et~(b), et
+l'exhaustivité de la racine pour \(D\) (\autoref{lem:reduits}). Si un nœud
+avait deux fils, les deux arêtes vaudraient \(\true\), ce qui contredirait
+l'exclusion mutuelle~(b) ; \(\theta'\) est donc un chemin. La racine conserve
+au moins un fils, dont l'arête, non fausse, vaut \(\true\) ; le chemin est
+donc non vide. La monotonie des sources découle de~(a).
+(2) Par totalité (\autoref{def:applicability-predicate}), une matière de
+\(\dep(e)\) n'est pas établie dans \(D\) ; elle est concrète, donc ni ouverte
+(condition~4) ni égale à \(\Matter\), et appartient ainsi à
+\(\Indet_D\cup\Undef_D\).
 \end{proof}
 
 \subsection{Dépendances bloquantes}
