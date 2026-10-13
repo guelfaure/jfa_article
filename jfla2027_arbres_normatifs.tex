@@ -907,11 +907,10 @@ supposées dans toute la suite. Une \emph{forêt normative} est un ensemble fini
 matière ; on note \(\theta_m\) l'arbre de \(m\) lorsqu'il existe, et
 \(\mathrm{dom}(\mc F)\) l'ensemble des matières qui ont un arbre dans
 \(\mc F\). La \emph{forêt d'un dossier} \(D\) est l'ensemble des arbres qu'il
-porte,
+porte :
 \[
  \mc F_D:=\{\nu_D(m)\mid m\in\Indet_D\},
 \]
-forêt normative de domaine \(\Indet_D\).
 
 \begin{defi}[Cohérence d'arbres normatifs]\label{def:consistency}
 Une forêt d'arbres normatifs \(\mc F\) est \emph{cohérente} lorsque, pour tout dossier $D$ :
@@ -1124,7 +1123,7 @@ qui le nécessitent. Quatre opérateurs élémentaires, que nous définissons à
 && \mid \Input_v(D,m)\quad m\in\Undef_D,\ v \text{ valide pour } m\ (\text{\autoref{sec:saisir}})\\
 && \mid \Precise(D,m)\quad m\in\Ouverte_D \text{ raffinable dans } D\ (\text{\autoref{sec:preciser}})\\
 && \mid \Prune(D,m)\quad m\in\Indet_D\ (\text{\autoref{sec:elagage}})\\
-&& \mid \Resolve(D,m)\quad m\in\Indet_D,\ \Blocking_D(m)=\emptyset\ (\text{\autoref{sec:dependances-bloquantes}}).
+&& \mid \Resolve(D,m)\quad m\in\Indet_D,\ (\text{\autoref{sec:dependances-bloquantes}}).
 \end{array}
 \]
 %Sur une liste, un opérateur élémentaire \(\mathit{op}\) s'applique à une
@@ -1153,25 +1152,7 @@ d'arbres de la forêt cohérente \(\mc F_\rho\) (condition~5).
 \(\nu_D\) par une entrée pour chaque matière d'un ensemble
 \(X\subseteq\Undef_D\). Une valuation n'est jamais
 prolongée hors de son domaine : une matière absente d'un dossier (indéfinie)
-se distingue d'une matière présente sans valuation (ouverte). Deux dossiers
-\(D\) et \(D'\) sont \emph{compatibles} lorsque, pour toute matière commune
-\(m\in\mc M_D\cap\mc M_{D'}\), on a \(\nu_D(m)=\nu_{D'}(m)\), ou
-\(\nu_D(m)=\bot\), ou \(\nu_{D'}(m)=\bot\). Pour deux dossiers compatibles, la
-\emph{fusion} est $D\oplus D':=(\mc M_D\cup\mc M_{D'},\nu_D\oplus\nu_{D'})$,
-où la valuation \(\nu_D\oplus\nu_{D'}\) est définie sur
-\(\mc M_D\cup\mc M_{D'}\) par
-\[
- (\nu_D\oplus\nu_{D'})(m):=
- \begin{cases}
-  \nu_D(m), & m\in\mc M_D\setminus\mc M_{D'},\\
-  \nu_{D'}(m), & m\in\mc M_{D'}\setminus\mc M_D,\\
-  \nu_D(m), & m\in\mc M_D\cap\mc M_{D'}\text{ et }\nu_{D'}(m)=\bot,\\
-  \nu_{D'}(m), & m\in\mc M_D\cap\mc M_{D'}\text{ et }\nu_{D'}(m)\neq\bot :
- \end{cases}
-\]
-une matière présente dans un seul dossier garde sa valuation, et une matière
-commune reçoit la valuation définie, unique par compatibilité, ou \(\bot\) si
-les deux dossiers la laissent ouverte.
+se distingue d'une matière présente sans valuation (ouverte). 
 
 \subsection{Saisir}\label{sec:saisir}
 Soit $m\in\Undef_D$. Une valeur de saisie $v$ est \emph{valide} pour $m$ dans
