@@ -66,37 +66,40 @@
 %% --------------------------------------------------------------------
 %% Matières, types supports et domaines
 %% --------------------------------------------------------------------
-\newcommand{\Matter}{\ensuremath{\mathsf{Matiere}}}
-\newcommand{\CMatter}{\ensuremath{\mathcal{M}^{\mathsf{conc}}}}
-\newcommand*{\FMatter}{\mc M^{\mathsf{fact}}}
-\newcommand*{\MatterSup}{\mc M^{\mathsf{support}}}
+\newcommand{\m}[1]{\mathsf{#1}}
+\newcommand{\Matter}{\ensuremath{\m{Matiere}}}
+\newcommand{\CMatter}{\ensuremath{\mathcal{M}^{\m{conc}}}}
+\newcommand*{\FMatter}{\mc M^{\m{fact}}}
+\newcommand*{\MatterSup}{\mc M^{\m{support}}}
 % Type support : \Typ(m).
 \newcommand{\Typ}{\ensuremath{\tau}}
 % Domaine de valeurs : \Raw(m).
 \newcommand{\Raw}{\ensuremath{\mathcal{V}}}
-\newcommand{\Money}{\ensuremath{\mathsf{Montant}}}
-\newcommand{\Duration}{\ensuremath{\mathsf{Duree}}}
-\newcommand{\DateT}{\ensuremath{\mathsf{Date}}}
-\newcommand*{\Enum}{\mathsf{Enum}}
+\newcommand{\Money}{\ensuremath{\m{Montant}}}
+\newcommand{\Duration}{\ensuremath{\m{Duree}}}
+\newcommand{\DateT}{\ensuremath{\m{Date}}}
+\newcommand*{\Enum}{\m{Enum}}
 
 %% --------------------------------------------------------------------
 %% Matières et valeurs de l’exemple
 %% --------------------------------------------------------------------
-\newcommand{\IDCC}{\ensuremath{\mathsf{IDCC}}}
-\newcommand{\Indemnite}{\ensuremath{\mathsf{Indemnite}}}
-\newcommand{\IndemRupture}{\ensuremath{\mathsf{IndemniteDeRupture}}}
-\newcommand{\Indem}{\ensuremath{\mathsf{IndemniteDeLicenciement}}}
-\newcommand{\IndemLeg}{\ensuremath{\mathsf{IndemniteLegale}}}
-\newcommand{\ICP}{\ensuremath{\mathsf{IndemnitePreavis}}}
-\newcommand{\Senior}{\ensuremath{\mathsf{Anciennete}}}
-\newcommand{\Salary}{\ensuremath{\mathsf{SalaireDeReference}}}
-\newcommand{\Presence}{\ensuremath{\mathsf{AnneesDePresence}}}
-\newcommand{\MoisRem}{\ensuremath{\mathsf{MoisDeRemuneration}}}
-\newcommand{\Categorie}{\ensuremath{\mathsf{Categorie}}}
-\newcommand{\Cadre}{\ensuremath{\mathsf{IngenieurOuCadre}}}
-\newcommand{\Etam}{\ensuremath{\mathsf{Etam}}}
-\newcommand{\ModeRupture}{\ensuremath{\mathsf{ModeRupture}}}
-\newcommand{\PreavisNE}{\ensuremath{\mathsf{PreavisNonExecute}}}
+\newcommand{\IDCC}{\ensuremath{\m{IDCC}}}
+\newcommand{\Indemnite}{\ensuremath{\m{Indemnite}}}
+\newcommand{\Licenciement}{\ensuremath{\m{Licenciement}}}
+\newcommand{\RetenueSal}{\ensuremath{\m{RetenueSalaire}}}
+\newcommand{\IndemRupture}{\ensuremath{\m{IndemRupt.}}}
+\newcommand{\Indem}{\ensuremath{\m{IndemLic.}}}
+\newcommand{\IndemLeg}{\ensuremath{\m{IndemLegale}}}
+\newcommand{\ICP}{\ensuremath{\m{IndemPreavis}}}
+\newcommand{\Senior}{\ensuremath{\m{Anciennete}}}
+\newcommand{\Salary}{\ensuremath{\m{SalaireRef.}}}
+\newcommand{\Presence}{\ensuremath{\m{AnneesDePresence}}}
+\newcommand{\MoisRem}{\ensuremath{\m{MoisDeRemuneration}}}
+\newcommand{\Categorie}{\ensuremath{\m{Categorie}}}
+\newcommand{\Cadre}{\ensuremath{\m{IngenieurOuCadre}}}
+\newcommand{\Etam}{\ensuremath{\m{Etam}}}
+\newcommand{\ModeRupture}{\ensuremath{\m{ModeRupture}}}
+\newcommand{\PreavisNE}{\ensuremath{\m{PreavisNonExec.}}}
 
 %% --------------------------------------------------------------------
 %% Favorabilité
@@ -110,8 +113,8 @@
 %% --------------------------------------------------------------------
 %% Dossiers, états et opérateurs élémentaires
 %% --------------------------------------------------------------------
-\newcommand{\Dossier}{\ensuremath{\mathsf{Dossier}}}
-\newcommand{\EmptyD}{\ensuremath{\mathbf{0}_D}}
+\newcommand{\Dossier}{\ensuremath{\mc{D}}}
+\newcommand{\EmptyD}{\ensuremath{\mathbf{0}_{\mc D}}}
 % États des matières : ajouter l’indice D dans le document.
 \newcommand{\Undef}{\ensuremath{\mathit{Indefinie}}}
 \newcommand{\Ouverte}{\ensuremath{\mathit{Ouverte}}}
@@ -128,17 +131,18 @@
 %% --------------------------------------------------------------------
 %% Sources et ordre normatif
 %% --------------------------------------------------------------------
-\newcommand{\Source}{\ensuremath{\mathsf{Source}}}
-\newcommand{\CSource}{\ensuremath{\mc S^\mathsf{conc}}}
-\newcommand*{\SourceSup}{\mc S^{\mathsf{support}}}
-\newcommand{\CodeTravail}{\ensuremath{\mathsf{CodeTravail}}}
-\newcommand{\AccordCollectif}{\ensuremath{\mathsf{AccordCollectif}}}
-\newcommand{\AccordInterpro}{\ensuremath{\mathsf{AccordInterprofessionnel}}}
-\newcommand{\ConvBranche}{\ensuremath{\mathsf{ConventionBranche}}}
-\newcommand{\AccordEntreprise}{\ensuremath{\mathsf{AccordEntreprise}}}
-\newcommand*{\AccordIndividuel}{\mathsf{AccordIndividuel}}
-\newcommand{\Contrat}{\ensuremath{\mathsf{Contrat}}}
-\newcommand{\Syntec}{\ensuremath{\mathsf{Syntec}}}
+\newcommand{\s}[1]{\mathsf{#1}}
+\newcommand{\Source}{\ensuremath{\s{Source}}}
+\newcommand{\CSource}{\ensuremath{\mc S^\s{conc}}}
+\newcommand*{\SourceSup}{\mc S^{\s{support}}}
+\newcommand{\CodeTravail}{\ensuremath{\s{CodeTravail}}}
+\newcommand{\AccordCollectif}{\ensuremath{\s{AccordCollectif}}}
+\newcommand{\AccordInterpro}{\ensuremath{\s{AccordInterprofessionnel}}}
+\newcommand{\ConvBranche}{\ensuremath{\s{ConventionBranche}}}
+\newcommand{\AccordEntreprise}{\ensuremath{\s{AccordEntreprise}}}
+\newcommand*{\AccordIndividuel}{\s{AccordIndividuel}}
+\newcommand{\Contrat}{\ensuremath{\s{Contrat}}}
+\newcommand{\Syntec}{\ensuremath{\s{Syntec}}}
 \newcommand{\normgt}{\succ_{\mathit{norm}}}
 \newcommand{\normge}{\succeq_{\mathit{norm}}}
 \newcommand{\normlt}{\prec_{\mathit{norm}}}
@@ -147,12 +151,13 @@
 %% --------------------------------------------------------------------
 %% Fonctions juridiques, candidats et politiques
 %% --------------------------------------------------------------------
+\newcommand{\p}[1]{\mathsf{#1}}
 \newcommand{\Fun}{\ensuremath{\mathit{Fonc}}}
 \newcommand{\Cand}{\ensuremath{\mathit{Corpus}}}
 \newcommand{\Policy}{\ensuremath{\mc{R}}}
-\newcommand{\Absolute}{\ensuremath{\mathsf{Absolu}}}
-\newcommand{\Social}{\ensuremath{\mathsf{Social}}}
-\newcommand{\Suppletive}{\ensuremath{\mathsf{Suppletif}}}
+\newcommand{\Absolute}{\ensuremath{\p{Absolu}}}
+\newcommand{\Social}{\ensuremath{\p{Social}}}
+\newcommand{\Suppletive}{\ensuremath{\p{Suppletif}}}
 \newcommand{\Herit}{\operatorname{Herit}}
 \newcommand*{\Arb}{\mathit{Arb}}
 
@@ -160,8 +165,8 @@
 %% Tests et valeurs de vérité
 %% --------------------------------------------------------------------
 \newcommand{\Bthree}{\ensuremath{\mathbb{B}_3}}
-\newcommand{\true}{\ensuremath{\mathsf{vrai}}}
-\newcommand{\false}{\ensuremath{\mathsf{faux}}}
+\newcommand{\true}{\ensuremath{{\mathsf{t\!t}}}}
+\newcommand{\false}{\ensuremath{{\mathsf{f\!f}}}}
 \newcommand{\unknown}{\ensuremath{\mathord{?}}}
 \newcommand{\Tests}{\ensuremath{\mathit{Tests}}}
 \newcommand{\Pred}{\ensuremath{\mathit{Test}_{{}\wedge{}}}}
@@ -197,15 +202,13 @@
 \newcommand*{\BlockingCalc}{\ensuremath{\mathit{Bloquant}^{\mathsf{calc}}}}
 \newcommand*{\Blocking}{\ensuremath{\mathit{Bloquant}}}
 % Ancienne notation Requis, conservée pour compatibilité.
-\newcommand{\NeedFacts}{\ensuremath{\mathit{Requis}}}
+%\newcommand{\NeedFacts}{\ensuremath{\mathit{Requis}}}
 
 %% --------------------------------------------------------------------
 %% Sélection des candidats
 %% --------------------------------------------------------------------
-% \Winner_D(a,b) : candidat retenu entre a et b.
-\newcommand{\Winner}{\ensuremath{\mathit{gagnant}}}
-% \ApplyPolicy_D(L) : sélection sur une liste de candidats.
-\newcommand{\ApplyPolicy}{\ensuremath{\mathit{select}}}
+% \Licite_D(m) : candidats du chemin tolérés par tous leurs ancêtres.
+\newcommand{\Licite}{\ensuremath{\mathit{Licite}}}
 
 %% --------------------------------------------------------------------
 %% Notations des extensions : scénarios, branchement et cumul
