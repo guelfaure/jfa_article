@@ -1484,13 +1484,13 @@ retenue est la même.
 \section{Boucle interactive de \ALex}\label{sec:ALex}
 
 Soit $\rho$ un arbre de raffinement équipé d'une forêt normative
-\(\mc F_\rho := \{t_\rho(m)\mid m\in\mc M_\rho\cap\CMatter\}\) cohérente. Un état de \ALex{} est donné par $D$, le dossier courant, tel que $\rho$ soit $D$-cohérent. Soit $m_0\in\mc M\setminus\CMatter$ une question initiale.
+\(\mc F_\rho := \{t_\rho(m)\mid m\in\mc M_\rho\cap\CMatter\}\) cohérente. Un état de \ALex{} est donné par $D$, le dossier courant, tel que $\rho$ soit $D$-cohérent. Étant donnée $m_0\in\mc M\setminus\CMatter$, une question initiale formulée sous forme d'une matière ouverte, l'assistant \ALex~, par l'intermédiaire d'une boucle interactive, donnée \autoref{alg:boucle}, va tenter de faire évoluer le dossier jusqu'à ce que toute les matières du dossier soient établies. Au sortir de cette boucle, \ALex~renvoie son dossier final (contenant toutes les matière concrètes requises par le dossier) ainsi que le vecteur de matières distinguées $(m\in\mc M_D)_{m<:m_0}$, correspondant aux raffinements de $m_0$ ayant été établis avec succès. Ce vecteur est vide lorsque la question ouverte ne peut être résolue à l'aide des saisies du juriste.
 
 \begin{algorithm}[ht]
   \caption{Boucle interactive de résolution d'une question}
   \label{alg:boucle}
 \begin{algorithmic}[1]
-\State $D \gets \Input_\bot(D,m_0)$
+\State $D \gets \Input_\bot(\EmptyD,m_0)$
 \Statex \textit{Concrétisation de la question}
 \While{$\Ouverte_{D}\neq\emptyset$}
   \State Choisir $m\in\Ouverte_{D}$
@@ -1504,7 +1504,7 @@ Soit $\rho$ un arbre de raffinement équipé d'une forêt normative
   \EndIf
 \EndWhile
 
-\State $Q \gets \mc M_D\cap\mc M_\rho\cap\CMatter$
+\State $Q \gets \mc M_D\cap\mc M_\rho\cap\CMatter$ \label{l:rep}
 
 \Statex \textit{Résolution des arbres normatifs}
 \While{$\Indet_D\neq\emptyset$}
@@ -1524,24 +1524,19 @@ Soit $\rho$ un arbre de raffinement équipé d'une forêt normative
 \end{algorithmic}
 \end{algorithm}
 
-\begin{theo}[Terminaison de la boucle interactive]\label{thm:boucle}
+\begin{theo}[Terminaison de l'\autoref{alg:boucle}.]\label{thm:boucle}
 \label{cor:loop}
-Pour toute question abstraite
-$m_0\in\mc M_\rho\setminus(\CMatter\cup\{\Matter\})$, la boucle interactive termine sur un dossier $D_f$
+Sous réserve que l'expert fournisse des saisies valides, et pour toute question abstraite
+$m_0\in\mc M_\rho\setminus(\CMatter\cup\{\Matter\})$, la boucle interactive, décrite \autoref{alg:boucle}, termine sur un dossier $D_f$
 tel que
 \[
 \Ouverte_{D_f}=\Indet_{D_f}=\emptyset.
 \]
-Si $Q$ est l'ensemble des matières concrètes mémorisé à la fin
-de la phase de concrétisation, la réponse retournée est :
-\begin{itemize}
-\item soit la famille vide, lorsque $Q=\emptyset$ ;
-\item soit la famille
-  $\bigl(\nu_{D_f}(q)\bigr)_{q\in Q}$,
-  où chaque $q\in Q$ est établie dans $D_f$ et
-  $\nu_{D_f}(q)\in\Raw(q)$.
-\end{itemize}
+Pour $Q$, l'ensemble des matières précisions de $m_0$, mémorisé ligne \ref{l:rep}, la réponse retournée est :
+\(\bigl(\nu_{D_f}(q)\bigr)_{q\in Q} \), où chaque $q\in Q$ est établie dans $D_f$ et $\nu_{D_f}(q)\in\Raw(m_0)$.
 \end{theo}
+
+\paragraph{Exemple.} TODO expliquer ce que Alex renvoie a la question initiale \textsf{Indemnite} de la cliente.
 
 \section{Conclusion}\label{sec:conclusion}
 
