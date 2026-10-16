@@ -1,0 +1,313 @@
+% !TEX root = ./jfla2027_arbres_normatifs.tex
+
+\section{Introduction}\label{sec:introduction}
+
+\subsection{Le raisonnement du juriste} \label{sec:juriste}
+Supposons qu'une salariée demande quelle indemnité lui serait due en cas de
+licenciement, ou souhaite connaître la durée de son préavis. Même si toutes les
+formules candidates qui représentent fidèlement le droit français sont
+exécutables, la réponse ne peut se réduire à un nombre, ni même à une fonction.
+La question préalable est : \emph{quelle règle juridique est applicable à cette
+salariée, pour cette question, à la date juridiquement pertinente ?}
+
+Un juriste saisi de cette demande ne calcule qu'en dernier lieu. Il commence par
+\emph{qualifier} les faits et la demande : la rupture est-elle un licenciement,
+pour quel motif, et quel avantage la salariée réclame-t-elle exactement ? Nous
+appelons \emph{matière} la question juridique ainsi précisée. Il recense
+ensuite les \emph{sources} qui peuvent régir cette matière : la loi, ici le
+Code du travail ; la convention collective de branche dont relève l'entreprise,
+accord négocié entre syndicats de salariés et organisations d'employeurs d'un
+secteur d'activité ; un éventuel accord d'entreprise ; le contrat de travail.
+Pour chaque source, il retient la \emph{version} du texte en vigueur à la date
+pertinente, ici celle de la notification du licenciement, et vérifie que la
+salariée en remplit les \emph{conditions d'application}. Si plusieurs textes
+subsistent, il règle leur \emph{concours}, au besoin en calculant la
+réponse de chacun. 
+
+\subsection{Vocabulaire juridique}\label{sec:vocabulaire}
+%
+Plusieurs notions de droit, employées dans cet article, doivent être introduites.
+
+\paragraph{Hiérarchie des normes.} Les sources du droit sont ordonnées par
+  rang : la Constitution, puis les traités internationaux, la loi et les
+  règlements, que le Code du travail réunit dans ses articles L et R, enfin,
+  propres au droit du travail, les accords collectifs, interprofessionnels, de
+  branche ou d'entreprise, et le contrat de travail. Une norme de rang
+  inférieur doit en principe respecter les normes de rang supérieur ; c'est cet
+  ordre que formalise l'ordre normatif des sources
+  (\autoref{def:source}). En droit du travail, il ne suffit
+  pourtant pas à régler un concours : une norme inférieure peut l'emporter sur
+  une norme supérieure lorsqu'elle est plus favorable au salarié, ou lorsque la
+  loi le lui permet.
+ %%
+\paragraph{Concours de normes.} Il y a concours lorsque plusieurs textes, tous
+  applicables à la salariée à la date considérée, lui accordent un avantage
+  ayant, selon la formule de la jurisprudence, « le même objet ou la même
+  cause »~\cite{cassap1988} : ainsi l'indemnité de licenciement du Code du
+  travail et celle de sa convention collective. En principe, ces avantages ne
+  se cumulent pas : un seul est dû, et régler le concours, c'est dire lequel.
+  En termes de programmation, une même fonction reçoit plusieurs définitions,
+  de rangs différents, dont une seule doit être retenue pour un appel donné.
+ %%
+\paragraph{Ordre public et régime d'articulation.} Un concours ne se règle pas
+  toujours de la même façon, car les sources du droit du travail ne
+  s'articulent pas selon la seule hiérarchie des normes. La solution dépend du
+  caractère d'\emph{ordre public} de la disposition de rang supérieur,
+  c'est-à-dire de la latitude que celle-ci laisse aux sources de rang inférieur
+  pour s'en écarter. Nous appelons \emph{régime d'articulation} la règle qui en
+  résulte ; on en distingue trois~\cite{viepublique2021}. Sous l'ordre public
+  \emph{absolu}, toute dérogation contractuelle ou conventionnelle est exclue,
+  même plus favorable au salarié : la disposition supérieure s'applique seule.
+  Sous l'ordre public \emph{social}, elle fixe un socle, que les sources
+  inférieures peuvent améliorer : le concours se règle par le principe de
+  faveur. Enfin, l'ordre public dérogatoire et les dispositions
+  \emph{supplétives} autorisent des dérogations négociées dans un champ défini
+  par le législateur : l'accord s'y applique, même moins favorable, et la
+  disposition supérieure ne vaut qu'à défaut d'accord. Ces trois régimes
+  évoquent respectivement une méthode que l'on ne peut redéfinir, une
+  redéfinition dont le résultat n'est retenu que s'il est meilleur, et une
+  implémentation par défaut.
+  
+Le régime dépend de la matière, et il vaut aussi entre accords collectifs de
+niveaux différents : le calcul en cause doit donc être identifié avant que la
+hiérarchie des sources puisse sélectionner une règle. Ainsi, l'article L2253-1
+du \emph{Code du travail} dispose :
+\begin{quote}\itshape
+  Dans les matières énumérées au 1° à 13°, les stipulations de la convention de
+  branche ou de l'accord couvrant un champ territorial ou professionnel plus
+  large prévalent sur la convention d'entreprise conclue antérieurement ou
+  postérieurement à la date de leur entrée en vigueur, sauf lorsque la
+  convention d'entreprise assure des garanties au moins équivalentes. [\dots]
+\end{quote}
+Cette disposition illustre comment un texte peut empêcher qu'un calcul fourni
+par une source de rang supérieur soit écarté par une source de rang inférieur
+lorsque celle-ci produirait un résultat moins favorable. À l'inverse,
+l'article L2253-3 dispose :
+\begin{quote}\itshape
+  Dans les matières autres que celles mentionnées aux articles L. 2253-1 et
+  L. 2253-2, les stipulations de la convention d'entreprise conclue
+  antérieurement ou postérieurement à la date d'entrée en vigueur de la
+  convention de branche ou de l'accord couvrant un champ territorial ou
+  professionnel plus large prévalent sur celles ayant le même objet prévues par
+  la convention de branche ou l'accord couvrant un champ territorial ou
+  professionnel plus large. En l'absence d'accord d'entreprise, la convention
+  de branche ou l'accord couvrant un champ territorial ou professionnel plus
+  large s'applique.
+\end{quote}
+Pour ces autres matières, l'accord d'entreprise, s'il existe, écarte l'accord
+de branche ; à défaut, ce dernier demeure la règle de repli~\cite{frarticulation}.
+Ce schéma de priorité est issu de la réforme de 2017, qui a renforcé la
+négociation d'entreprise dans les champs fixés par la
+loi~\cite{viepublique2017}.
+
+\subsection{Question de recherche et contributions}\label{sec:question}
+%%
+Notre question de recherche est la suivante : \emph{comment un assistant
+juridique peut-il organiser et résoudre des calculs concurrents de droit du
+travail, identifier les informations nécessaires à leur sélection, et conserver
+explicites et contrôlables les choix qui en résultent, afin d'aider un expert
+juridique, éventuellement un grand modèle de langage (LLM), à construire une
+plaidoirie sur une base maîtrisée et transparente ?} 
+
+Nous décrivons, dans cet article, une modélisation des étapes du raisonnement juridique, esquissé \autoref{sec:juriste}, qui se trouve à la base de l'assistant \ALex~que nous développons (voir \autoref{fig:A-Lex}). Nous nous concentrons ici sur la définition de ces structures ainsi que sur la formalisation des étapes de raisonnement que ces structures supportent. L'implémentation concrète d'\ALex~n'est pas abordée, mais abstraite par une boucle d'interaction (\autoref{sec:ALex}) qui montre comment l'assistant utilise les structures introduites dans ce papier et que nous listons ci-dessous. Les ontologies juridiques décrites dans la \autoref{sec:vocabulaire} sont rappelées en caractères gras.
+%%
+\paragraph{Matières juridiques.}
+Nous formalisons la notion de matière juridique comme un ensemble de types \emph{matières} équipés d'une relation de sous-typage (\autoref{def:matiere}). Une \emph{matière} $m$ étant un sous-type de $m'$ lorsque $m$ précise $m'$ (par exemple, \textsf{Prime} est un sous-type de \textsf{Montant}). Nous organisons les \emph{matières} dans un \emph{arbre de raffinement} (\autoref{def:raffinement}) qui permet à \ALex~de traduire une question juridique (une \emph{matière} abstraite) vers l'ensemble de ses concrétisations réalisables, étant donné un dossier client. Une \emph{matière} est concrète lorsqu'aucune autre ne la précise ; les matières concrètes sont les feuilles de l'\emph{arbre de raffinement}.
+%%
+\paragraph{Dossier client.}%%
+Un dossier client est ici un \emph{dossier} formel (\autoref{def:dossier}), composé d'un ensemble de \emph{matières} et d'une valuation partielle qui associe à certaines d'entre elles une valeur ou un \emph{arbre normatif}. Une \emph{matière} du \emph{dossier} est \emph{établie} lorsqu'elle a une valeur, \emph{indéterminée} lorsqu'elle porte un arbre qu'il reste à résoudre, et \emph{ouverte} lorsqu'elle pose une question abstraite encore sans réponse. Un \emph{dossier} est créé lorsqu'une matière abstraite (la question posée) y est saisie. Les opérateurs de la \autoref{sec:op} permettent au juriste, en interaction avec \ALex, de conduire le \emph{dossier} vers un état où toutes ses \emph{matières} sont établies. 
+%%
+\paragraph{Sources juridiques.}
+Comme pour les \emph{matières}, nous formalisons la notion de sources juridiques par un ensemble de types \emph{sources} équipés d'une relation de sous-typage (\autoref{def:source}). Une \emph{source} $s$ est un sous-type d'une source $s'$ lorsque $s$ précise $s'$ (par exemple, \textsf{ConventionBranche} est un sous-type d'\textsf{AccordCollectif}). Les \emph{sources} sont par ailleurs partiellement ordonnées selon la \textbf{hiérarchie des normes} en vigueur dans le droit du travail. Une \emph{source} est concrète lorsqu'elle est son unique sous-type.
+%%
+\paragraph{Arbres normatifs.} %%
+Les \emph{arbres normatifs} (\autoref{def:normative-tree}) reposent sur un corpus~\cite{corpuslumo}, composé d'un ensemble de \emph{candidats} (\autoref{def:candidat}) typés par des \emph{matières} concrètes et indexés par leur \emph{source} concrète. L'implémentation Catala~\cite{merigoux2021} de ces fonctions n'est pas abordée dans ce papier, les \emph{candidats} ne retenant de ces fonctions que leur signature et une abstraction du calcul effectivement réalisé. Chaque \emph{candidat} est aussi équipé d'une \emph{politique d'arbitrage} (\autoref{def:arbitrage}) qui formalise son
+\textbf{régime d'articulation}.  Un \emph{arbre normatif} structure des \emph{candidats} pour une même \emph{matière} $m$ en fonction de leur \emph{source} : la relation parent-enfant de l'arbre reflétant la \textbf{hiérarchie des normes}. Chaque arête de l'arbre est équipée d'un \emph{prédicat} (\autoref{def:applicability-predicate}) dont l'évaluation dépend du \emph{dossier} support et qui détermine si le candidat peut être retenu par le juriste, au titre d'une demande soutenue par ce \emph{dossier}. Deux candidats applicables d'un même \emph{arbre normatif} sont toujours en conflit et une norme doit l'emporter sur l'autre, deux candidats issus d'une même \emph{matière} abstraite typés par des \emph{matières} concrètes différentes peuvent parfois se cumuler. 
+
+\paragraph{Étapes du raisonnement juridique assisté.}
+Le raisonnement juridique est formalisé par quatre opérateurs sur les \emph{dossiers} (\autoref{sec:op}) : \emph{saisir} une \emph{matière}, fait ou question ; \emph{préciser} une \emph{matière} abstraite en la remplaçant, dans le même dossier, par celles de ses précisions que le dossier rend applicables ; \emph{élaguer} un \emph{arbre normatif} selon les faits établis ; \emph{résoudre} un arbre élagué en une valeur, issue du calcul du candidat que les \emph{politiques d'arbitrage} sélectionnent. Nous établissons que l'élagage possède une forme normale unique et que la résolution d'une matière abstraite vers un ensemble de valeurs possibles termine (\autoref{thm:boucle}). 
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  scale=0.85, transform shape,
+  x=1cm, y=1cm, font=\scriptsize,
+  couche/.style={rotate=90, align=center, font=\scriptsize\bfseries},
+  abs/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
+    densely dashed, fill=white},
+  conc/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
+    thick, fill=white},
+  cand/.style={draw, rounded corners=2pt, align=center, inner sep=2.5pt,
+    fill=white},
+  gris/.style={draw=elague, text=elague},
+  vert/.style={draw=chemin, very thick},
+  bleu/.style={draw=foret, very thick},
+  racine/.style={circle, fill=foret, inner sep=1.8pt},
+  module/.style={draw, align=center, inner sep=3pt, fill=white,
+    font=\scriptsize\ttfamily},
+  texte/.style={align=center, font=\tiny\itshape},
+  arr/.style={-{Latex[length=1.6mm]}},
+  arrv/.style={-{Latex[length=1.8mm]}, draw=chemin, very thick},
+  arrb/.style={-{Latex[length=1.8mm]}, draw=foret, very thick},
+  arrg/.style={-{Latex[length=1.6mm]}, draw=elague, densely dashed},
+  lien/.style={-{Latex[length=1.6mm]}, densely dotted},
+  lienb/.style={-{Latex[length=1.8mm]}, draw=foret, thick, densely dotted},
+  pred/.style={font=\tiny, fill=bande, inner sep=1pt, align=center}
+]
+% Bandes
+\fill[bande, rounded corners=3pt] (0,0.15) rectangle (13.6,-3.95);
+\fill[bande, rounded corners=3pt] (0,-4.05) rectangle (13.6,-7.25);
+\fill[bande, rounded corners=3pt] (0,-7.35) rectangle (13.6,-9.8);
+\node[couche] at (0.35,-1.9) {2. Arbre de\\ raffinement};
+\node[couche] at (0.35,-5.65) {1. Forêt\\ normative};
+\node[couche] at (0.35,-8.57) {0. Corpus};
+
+% Couche 2 : arbre de raffinement
+\node[abs] (top) at (4.2,-0.35) {\(\Matter\)};
+\node[abs] (dty) at (1.7,-1.1) {\(\Duration\)};
+\node[abs] (mon) at (5.4,-1.1) {\(\Money\)};
+\node[abs, vert, densely dashed] (ind) at (5.4,-1.85) {indemnité};
+\node[abs, vert, densely dashed] (rup) at (6.9,-2.6) {indemnité de rupture};
+\node[conc] (dur) at (1.7,-3.45) {\(\DureePreavis\)};
+\node[conc, vert] (icp) at (3.9,-3.45) {\(\ICP\)};
+\node[conc, vert] (lic) at (6.9,-3.45) {\(\Indem\)};
+\node[draw=chemin, very thick, rounded corners=2pt, align=left, inner sep=3pt,
+  fill=white] (q) at (11.2,-1.6)
+  {\textit{question :} les indemnités\\ dues à la salariée};
+\draw[arr] (top) -- (dty);
+\draw[arr] (top) -- (mon);
+\draw[arr] (dty) -- (dur);
+\draw[arr] (mon) -- (ind);
+\draw[arrv] (ind) -- node[pred, pos=0.5, left=1pt]{\(\PreavisNE\)} (icp);
+\draw[arrv] (ind) -- (rup);
+\draw[arrv] (q) -- (ind);
+\draw[arrv] (rup) -- node[pred, right=2pt]{\(\ModeRupture=\Licenciement\)} (lic);
+
+% Couche 1 : foret normative
+\draw[fill=white] (1.7,-4.35) -- (1.2,-5.2) -- (2.2,-5.2) -- cycle;
+\draw[draw=foret, very thick, fill=white] (3.9,-4.35) -- (3.4,-5.2) -- (4.4,-5.2) -- cycle;
+\draw[lien] (dur) -- (1.7,-4.35);
+\draw[arrb, densely dashed] (icp) -- (3.9,-4.35);
+\node[racine] (r) at (6.9,-4.45) {};
+\node[cand, gris] (old) at (5.6,-5.45) {Code, rédaction\\ antérieure};
+\node[cand, bleu] (code) at (8.6,-5.45) {Code, R.~1234-2\\
+  {\tiny\(\ConvBranche\mapsto\Social\)}};
+\node[cand, gris] (s19) at (11.6,-4.5) {Syntec, art.~19};
+\node[cand, gris] (hcr) at (11.6,-5.3) {HCR};
+\node[cand, bleu] (s45) at (11.6,-6.6) {Syntec, art.~4.5};
+\draw[arrb, densely dashed] (lic) -- (r);
+\draw[arrg] (r) -- (old);
+\draw[arrb] (r) -- node[pred, pos=0.45, right=3pt]{\(\DateT\geq\text{27/09/2017}\)} (code);
+\draw[arrg] (code) -- (s19);
+\draw[arrg] (code) -- (hcr);
+\draw[arrb] (code) -- (s45);
+\node[pred, anchor=west] at (10.55,-5.95)
+  {\(\IDCC=1486\)\\ \(\DateT\geq\text{01/05/2023}\)};
+
+% Couche 0 : corpus
+\node[module, draw=foret, thick] (mpre) at (2.4,-8.15) {Loi\_preavis};
+\node[module] (mhcr) at (5.6,-8.15) {Ccn\_1979\_\\ rupture\_du\_contrat};
+\node[module, draw=foret, thick] (mlic) at (8.6,-8.15) {Loi\_indemnite\_\\ licenciement};
+\node[module, draw=foret, thick] (msyn) at (11.6,-8.15) {Ccn\_1486\_\\ rupture\_du\_contrat};
+\node[texte] (tpre) at (2.4,-9.25) {\S\ C. trav., L.~1234-1\\ et L.~1234-5};
+\node[texte] (thcr) at (5.6,-9.25) {\S\ convention HCR\\ (IDCC 1979)};
+\node[texte] (tlic) at (8.6,-9.25) {\S\ C. trav., L.~1234-9\\ et R.~1234-2};
+\node[texte] (tsyn) at (11.6,-9.25) {\S\ convention Syntec,\\ art.~19 et 4.5};
+\foreach \m/\t in {mpre/tpre, mhcr/thcr, mlic/tlic, msyn/tsyn}
+  \draw[lien] (\m) -- (\t);
+\draw[lienb] (code) -- (mlic);
+\draw[lienb] (s45) -- (msyn);
+\draw[lienb] (3.75,-5.2) -- (mpre);
+\draw[lien] (1.7,-5.2) -- (mpre);
+\end{tikzpicture}
+\caption{Architecture d'\ALex{}. La couche~0, le corpus, réunit des modules
+  Catala indépendants : chacun calcule la réponse d'un texte sans connaître les
+  autres, et renvoie aux articles qu'il traduit (\S). La couche~1, la forêt
+  normative, organise ces calculs en candidats, avec leurs conditions
+  d'application et leurs politiques d'arbitrage, que le corpus laisse hors du
+  code. La couche~2, l'arbre de raffinement, relie les questions abstraites aux
+  matières concrètes, rangées sous leur type de valeurs
+  (\autoref{fig:hierarchie}) ; les feuilles sont désignées par leur
+  identifiant. En vert, le raffinement : le chemin part de la question de la
+  salariée et se divise sous l'indemnité, entre \(\Indem\) et \(\ICP\), dues
+  ensemble, qui ont chacune leur arbre normatif. En bleu, la forêt normative
+  et son élagage : dans le premier arbre (racine en point), les candidats qui
+  répondent au dossier fil rouge, avec les prédicats de leurs arêtes,
+  jusqu'aux modules qui les calculent ; le second, esquissé, puise dans
+  \texttt{Loi\_preavis} et dans le module Syntec. En gris, ce que le dossier
+  écarte.}
+\label{fig:A-Lex}
+\end{figure}
+
+\subsection{Exemple fil rouge}\label{sec:exemple}
+Nous introduisons ici notre exemple fil rouge, tiré du corpus~\cite{corpuslumo}, qui illustrera, au fil des sections, les notions de notre formalisation à mesure qu'elles seront définies.
+
+\textit{Une salariée d'une société de conseil relevant de la convention collective
+Syntec (IDCC~1486) reçoit, en mars 2025, la notification de son licenciement,
+qui n'est pas prononcé pour faute grave ; son employeur la dispense d'exécuter
+son préavis. Ingénieure, elle relève de la catégorie des ingénieurs et cadres
+de la convention, et non de celle des ETAM (employés, techniciens et agents de
+maîtrise) ; elle compte dix ans d'ancienneté et son salaire de référence est
+de 3\,000 euros. Elle demande les indemnités qui lui sont dues.}
+
+Cette demande, « les indemnités qui lui sont dues », ne désigne encore aucun
+calcul : c'est une \emph{matière abstraite}, au sens de la
+\autoref{def:matiere}, que seuls les faits du dossier permettront de préciser.
+Elle est, au départ, le seul contenu du dossier de la salariée
+(\autoref{def:dossier}). Au fur et à mesure de l'exécution de cette question
+initiale, on y ajoutera de nouvelles matières. La poursuite de l'exemple, au
+fil de l'article, illustre le reste.
+
+\subsection{Travaux connexes et positionnement}\label{sec:related}
+
+Les travaux dits \emph{Rules as Code} étudient l'évaluation, la représentation
+et l'exécution disciplinées des dispositions juridiques~\cite{ali2025} :
+LegalRuleML structure règles, sources, exceptions et
+métadonnées~\cite{nazarenko2016,legalruleml}, L4 dote les contrats d'une
+sémantique d'exécution déontique et temporelle~\cite{watt2023}, Catala
+modélise les règles par défaut et les exceptions de la
+loi~\cite{merigoux2021}. Le présent travail commence là où ce problème est
+supposé résolu : les textes sont représentés par des objets formels qui en
+contiennent la partie calculatoire, quel que soit le langage qui les
+implémente ; dans notre corpus, c'est Catala.
+
+Catala résout les définitions concurrentes d'une variable par une logique des
+défauts à priorités~\cite{merigoux2021} : la sélection dépend de conditions
+d'applicabilité et d'un ordre statique entre exceptions, non des valeurs que
+produiraient les définitions, alors que le principe de faveur dépend du
+résultat. On peut l'encoder par une exception conditionnée à une
+comparaison de valeurs, mais celle-ci doit être écrite dans le texte
+inférieur, pour chaque paire de sources, et la politique se disperse dans
+les calculs ; le corpus de la \autoref{sec:exemple} l'évite en isolant la
+comparaison dans un module de concours. Les arbres normatifs poussent cette
+séparation jusqu'au bout : les calculs, les sources et les politiques
+d'arbitrage sont trois données distinctes, et un même critère, la tolérance
+de chaque ancêtre le long du chemin des sources, s'applique quel que soit le
+régime. Les deux approches sont complémentaires : Catala structure les
+exceptions au sein d'un texte, les arbres normatifs articulent des textes
+concurrents.
+
+Les conflits entre normes sont classiquement traités par des règles
+défaisables munies d'une relation de priorité, éventuellement dérivée par
+des règles~\cite{prakkensartor1996,prakkensartor1997}, et par des logiques
+défaisables où \emph{lex superior}, \emph{lex specialis} et \emph{lex
+posterior} instancient la relation de supériorité~\cite{governatori2021},
+les versions temporelles d'un texte étant des modifications de
+normes~\cite{governatori2005}. Les arbres normatifs s'en distinguent sur
+trois points : la priorité est une propriété de la norme supérieure, qui
+énonce ce qu'elle tolère des sources inférieures, de sorte que
+\(\Absolute\), \(\Suppletive\) et \(\Social\) coexistent le long d'un même
+chemin ; la sélection sous \(\Social\) exige d'évaluer les deux candidats,
+ce qu'une priorité statique n'exprime pas ; un fait manquant bloque la
+résolution et engendre une demande, au lieu de laisser une règle s'appliquer
+par défaut. En contrepartie, la portée est plus étroite : candidats d'une
+seule matière, frères mutuellement exclusifs plutôt qu'une relation
+générale de spécificité, et politiques non encore dérivées de textes tiers
+(\autoref{sec:conclusion}). Enfin, les modèles du raisonnement juridique
+comme construction et résolution
+d'arguments~\cite{gordon1993pleadings,benchcapon2009argumentation} sont plus
+larges : notre travail n'en automatise que les parties gouvernées par des
+calculs, des conditions d'applicabilité et des politiques, les jugements
+interprétatifs de l'expert étant représentés par les saisies (\(\Input\),
+\autoref{sec:saisir}).
+
