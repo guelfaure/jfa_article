@@ -260,32 +260,28 @@ fil de l'article, illustre le reste.
 
 \subsection{Travaux connexes et positionnement}\label{sec:related}
 
-Les travaux dits \emph{Rules as Code} étudient l'évaluation, la représentation
-et l'exécution disciplinées des dispositions juridiques~\cite{ali2025} :
+Les travaux dits \emph{Rules as Code} étudient la représentation et
+l'exécution disciplinées des dispositions juridiques~\cite{ali2025} :
 LegalRuleML structure règles, sources, exceptions et
 métadonnées~\cite{nazarenko2016,legalruleml}, L4 dote les contrats d'une
-sémantique d'exécution déontique et temporelle~\cite{watt2023}, Catala
-modélise les règles par défaut et les exceptions de la
-loi~\cite{merigoux2021}. Le présent travail commence là où ce problème est
-supposé résolu : les textes sont représentés par des objets formels qui en
+sémantique déontique et temporelle~\cite{watt2023}, Catala modélise les
+règles par défaut et les exceptions de la loi~\cite{merigoux2021}. Nous
+supposons ce problème résolu : les textes sont des objets formels qui en
 contiennent la partie calculatoire, quel que soit le langage qui les
-implémente ; dans notre corpus, c'est Catala.
+implémente, ici Catala.
 
 Catala résout les définitions concurrentes d'une variable par une logique des
 défauts à priorités~\cite{merigoux2021} : la sélection dépend de conditions
-d'applicabilité et d'un ordre statique entre exceptions, non des valeurs que
-produiraient les définitions, alors que le principe de faveur dépend du
-résultat. On peut l'encoder par une exception conditionnée à une
-comparaison de valeurs, mais celle-ci doit être écrite dans le texte
-inférieur, pour chaque paire de sources, et la politique se disperse dans
-les calculs ; le corpus de la \autoref{sec:exemple} l'évite en isolant la
-comparaison dans un module de concours. Les arbres normatifs poussent cette
-séparation jusqu'au bout : les calculs, les sources et les politiques
-d'arbitrage sont trois données distinctes, et un même critère, la tolérance
-de chaque ancêtre le long du chemin des sources, s'applique quel que soit le
-régime. Les deux approches sont complémentaires : Catala structure les
-exceptions au sein d'un texte, les arbres normatifs articulent des textes
-concurrents.
+d'applicabilité et d'un ordre statique entre exceptions, non des valeurs
+produites, alors que le principe de faveur dépend du résultat. Une exception
+conditionnée à une comparaison de valeurs peut l'encoder, mais doit être
+écrite dans le texte inférieur, pour chaque paire de sources, et la politique
+se disperse dans les calculs ; notre corpus l'évite en isolant la comparaison
+dans un module de concours. Les arbres normatifs poussent cette séparation
+jusqu'au bout : calculs, sources et politiques d'arbitrage sont trois données
+distinctes, et un même critère, la tolérance de chaque ancêtre le long du
+chemin des sources, vaut pour tout régime. Catala structure les exceptions au
+sein d'un texte, les arbres normatifs articulent des textes concurrents.
 
 Les conflits entre normes sont classiquement traités par des règles
 défaisables munies d'une relation de priorité, éventuellement dérivée par
@@ -296,18 +292,16 @@ les versions temporelles d'un texte étant des modifications de
 normes~\cite{governatori2005}. Les arbres normatifs s'en distinguent sur
 trois points : la priorité est une propriété de la norme supérieure, qui
 énonce ce qu'elle tolère des sources inférieures, de sorte que
-\(\Absolute\), \(\Suppletive\) et \(\Social\) coexistent le long d'un même
+\(\Absolute\), \(\Suppletive\) et \(\Social\) coexistent sur un même
 chemin ; la sélection sous \(\Social\) exige d'évaluer les deux candidats,
 ce qu'une priorité statique n'exprime pas ; un fait manquant bloque la
-résolution et engendre une demande, au lieu de laisser une règle s'appliquer
-par défaut. En contrepartie, la portée est plus étroite : candidats d'une
-seule matière, frères mutuellement exclusifs plutôt qu'une relation
-générale de spécificité, et politiques non encore dérivées de textes tiers
+résolution et engendre une demande, au lieu qu'une règle s'applique par
+défaut. En contrepartie, la portée est plus étroite : candidats d'une seule
+matière, frères mutuellement exclusifs plutôt qu'une relation générale de
+spécificité, politiques non encore dérivées de textes tiers
 (\autoref{sec:conclusion}). Enfin, les modèles du raisonnement juridique
 comme construction et résolution
 d'arguments~\cite{gordon1993pleadings,benchcapon2009argumentation} sont plus
-larges : notre travail n'en automatise que les parties gouvernées par des
-calculs, des conditions d'applicabilité et des politiques, les jugements
-interprétatifs de l'expert étant représentés par les saisies (\(\Input\),
-\autoref{sec:saisir}).
-
+larges : nous n'en automatisons que la part gouvernée par des calculs, des
+conditions d'applicabilité et des politiques, les jugements interprétatifs
+de l'expert étant représentés par les saisies (\autoref{sec:saisir}).

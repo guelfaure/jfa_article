@@ -841,17 +841,10 @@ rien : la branche demeure la règle de repli.
 La salariée relève des ingénieurs et cadres : une fois la catégorie saisie,
 \(\nu_D(\Categorie)=\Cadre\). Le chemin subsistant est
 \(r\to \cCode\to \cSyntecLic\), et
-\[
-\widehat p(\cCode)(\Syntec)=\Social
-\quad\text{puisque}\quad \Syntec\subtype\ConvBranche.
-\]
+\(\widehat p(\cCode)(\Syntec)=\Social\) puisque \(\Syntec\subtype\ConvBranche\).
 Le dossier, une fois les entrées des deux candidats saisies, donne
-\[
-\begin{array}{l}
-\nu_D(\Salary)=\nu_D(\MoisRem)=3\,000\ \text{euros},\\
-\nu_D(\Senior)=\nu_D(\Presence)=10\ \text{ans},
-\end{array}
-\]
+\(\nu_D(\Salary)=\nu_D(\MoisRem)=3\,000\) euros et
+\(\nu_D(\Senior)=\nu_D(\Presence)=10\) ans,
 et les deux candidats s'évaluent : \(D(\cCode)=3\,000\times10\times\frac14
 =7\,500\) euros par le premier cas de R.~1234-2, et
 \(D(\cSyntecLic)=3\,000\times10\times\frac13=10\,000\) euros par le barème des
@@ -860,8 +853,9 @@ le candidat conventionnel est licite et, de source la plus basse, retenu
 (\autoref{def:apply-policy}) ; si la politique du candidat du Code avait été
 \(\Absolute\), il aurait été seul licite, quels que soient les montants. Si
 \(\Salary\) avait été indéfinie, on aurait eu
-\(\Blocking_D(\Indem)=\{\Salary\}\), et l'assistant l'aurait demandée avant
-toute comparaison.
+\(\Resolve^\dagger_D(\Indem)=\{\Salary\}\)
+(\autoref{sec:dependances-bloquantes}), et l'assistant l'aurait demandée
+avant toute comparaison.
 
 \subsection{Dépendances bloquantes}\label{sec:dependances-bloquantes}
 
@@ -874,32 +868,32 @@ nécessaires à leur exécution (obstacles à l'exécution).
 %%
 \paragraph{Obstacle au raffinement.}
 %%
-Une matière $m\in\mc M_D\setminus\CMatter$ est non raffinable dans $D$ lorsque son fondement est incertain, i.e., $\rho\vdash^{\unknown}m$, ou lorsqu'un de ses raffinement ne peut être décidé, i.e., $\rho_{\unknown}(m)\neq\emptyset$. On pose $\mathit{Chemin}_\rho(m):=\Matter\refby{\pi_0}m_1\dots m_n\refby{\pi_n}m$ le chemin de raffinement menant à $m$ dans $\rho$.
+Une matière $m\in\mc M_D\setminus\CMatter$ est non raffinable dans $D$ lorsque son fondement est incertain, i.e., $\rho\vdash^{\unknown}_D m$, ou lorsqu'un de ses raffinements ne peut être décidé, i.e., $\rho_{\unknown}(m)\neq\emptyset$. On pose $\mathit{Chemin}_\rho(m):=\Matter\refby{\pi_0}m_1\dots m_n\refby{\pi_n}m$ le chemin de raffinement menant à $m$ dans $\rho$.
 \[
 \Precise^\dagger_D(m) := \left(\hspace{-0.1cm} \bigcup_{\substack{(m_i\refby\pi_i m_{i+1})\in\mathit{Chemin}_\rho(m) \\ \pi_i(D)=\unknown}}\hspace{-1cm} \dep(\pi_i) 
 \bigcup_{\substack{m\refby\pi m'\\ \pi(D)=\unknown}}
-\dep(\pi(u,v))\right) \cap \Undef_D
+\dep(\pi)\right) \cap \Undef_D
 \]
 
 \paragraph{Obstacle à l'élagage.}
-Un matière $m\in\mc M_D\cap\CMatter$ telle que $\nu_D(m)\in\mc T(m)$ est inélagable lorsque certaines branches ne peuvent être éliminées en raison de prédicats à la valeur inconnue.
+Une matière $m\in\mc M_D\cap\CMatter$ telle que $\nu_D(m)\in\mc T(m)$ est inélagable lorsque certaines branches ne peuvent être éliminées en raison de prédicats à la valeur inconnue.
 Pour ces matières nous allons construire les dépendances manquantes des premiers prédicats bloquants. Soit $\theta=(V,E,r,\lambda,\pi)$ un arbre normatif. Pour tout $u\in V$, on définit
 \[
-\MissingHere_D(u,\theta) := \bigcup_{\substack{(u,v)\in E \\ \pi(u,v)(D)=\unknown}} \dep(\pi) 
+\MissingHere_D(u,\theta) := \bigcup_{\substack{(u,v)\in E \\ \pi(u,v)(D)=\unknown}} \dep(\pi(u,v)) 
 \]
-Les dépendances des premiers prédicats bloquants de l'arbre sont définis par induction :
+Les dépendances des premiers prédicats bloquants de l'arbre sont définies par induction :
 \[
-\MissingDep_D(u,\theta) := \begin{cases}  \MissingHere_D(u,\theta) \hbox{ si } \MissingHere_D(u,\theta) \neq\emptyset \\ \bigcup_{(u,v)\in E} \MissingDep_D(v,\theta) \end{cases}
+\MissingDep_D(u,\theta) := \begin{cases}  \MissingHere_D(u,\theta) \hbox{ si } \MissingHere_D(u,\theta) \neq\emptyset \\ \bigcup_{(u,v)\in E} \MissingDep_D(v,\theta) \hbox{ sinon} \end{cases}
 \]
 et on pose :
 \[
 \Prune^\dagger_D(m) := \MissingDep_D(r,\theta) \cap (\Undef_D\cup\Indet_D)
 \]
 
-\paragraph{Obstacles à la l'exécution.}
-Cette question se pose sur des arbres totalement élagués, lorsqu'on cherche a comparer les candidats restants en utilisant leurs politiques d'arbitrage. On collecte les signatures des fonctions candidates et on extrait les dépendances manquantes. Pour tout $m\in\mc M\cap\CMatter$ tel que $\nu_D(m)=(V,E,r,\lambda,\pi)$ on pose :
+\paragraph{Obstacle à l'exécution.}
+Cette question se pose sur des arbres totalement élagués, lorsqu'on cherche à comparer les candidats restants en utilisant leurs politiques d'arbitrage. On collecte les signatures des fonctions candidates et on extrait les dépendances manquantes. Pour tout $m\in\mc M\cap\CMatter$ tel que $\nu_D(m)=(V,E,r,\lambda,\pi)$ on pose :
 \[
-\Resolve^\dagger(m) := \big(\bigcup_{u\in V} \dep(u)\big) \cap (\Undef_D\cup\Indet_D)
+\Resolve^\dagger_D(m) := \big(\bigcup_{u\in V} \dep(u)\big) \cap (\Undef_D\cup\Indet_D)
 \]
 
 %L'ensemble des matières immédiatement bloquantes pour une étape de résolution de $m\in\mc M_D$ est défini par :
@@ -933,16 +927,15 @@ de la \autoref{fig:arbre}, encore intact, et qu'on y ajoute la date de la
 notification, mars 2025. L'élagage retire alors la rédaction antérieure du
 Code et, sous le candidat de l'article R.~1234-2, l'article~19 de la
 convention Syntec, que la date exclut ; l'arête qui mène au candidat du Code
-est vraie, et la frontière s'arrête sur lui, dont les arêtes sortantes sont
-inconnues tant que \(\IDCC\) est indéfinie et dont les entrées manquent :
-\(\Prune^\dagger_D(\Indem)=\{\IDCC,\Senior,\Salary\}\). Supposons que l'on
-ajoute ensuite \(\IDCC=1486\), puis l'ancienneté et le salaire de
-référence. L'élagage conserve le chemin \(r\to\cCode\to\cSyntecLic\), le
-candidat du Code devient exécutable, et la frontière descend sur
-l'article~4.5, dont les entrées manquent à leur tour :
-\(\Blocking_D(\Indem)=\{\Presence,\MoisRem,\Categorie\}\). Une fois ces
-trois matières ajoutées, \(\Blocking_D(\Indem)=\emptyset\) : le chemin est
-fait de candidats exécutables. Nous verrons à la \autoref{sec:ALex} comment
+est vraie, et les premiers prédicats inconnus sont ceux de ses arêtes
+sortantes, qui testent \(\IDCC\), encore indéfinie :
+\(\Prune^\dagger_D(\Indem)=\{\IDCC\}\). Supposons que l'on ajoute ensuite
+\(\IDCC=1486\). L'élagage conserve le chemin \(r\to\cCode\to\cSyntecLic\),
+dont tous les prédicats sont décidés, \(\Prune^\dagger_D(\Indem)=\emptyset\) ;
+restent les entrées des deux candidats,
+\(\Resolve^\dagger_D(\Indem)=\{\Senior,\Salary,\Presence,\allowbreak\MoisRem,\Categorie\}\).
+Une fois ces matières ajoutées, \(\Resolve^\dagger_D(\Indem)=\emptyset\) : le
+chemin est fait de candidats exécutables, et \(\Resolve\) s'applique. Nous verrons à la \autoref{sec:ALex} comment
 ces ajouts s'enchaînent au cours d'une boucle interactive.
 
 
@@ -1049,34 +1042,28 @@ sont \(Q=\{\ICP,\Indem\}\).
 \]
 }
 
-\emph{Résolution des arbres (lignes 14 à 25).} Les deux matières
+\emph{Résolution des arbres (lignes 14 à 32).} Les deux matières
 indéterminées ne dépendent pas l'une de l'autre ; nous suivons \(\Indem\),
-en notant
-\[
-\begin{array}{l}
-X_1:=\{\Senior,\Salary\},\\
-X_2:=\{\Presence,\MoisRem,\Categorie\}
-\end{array}
-\]
+en notant \(X_1:=\{\Senior,\Salary\}\) et
+\(X_2:=\{\Presence,\MoisRem,\Categorie\}\)
 les entrées du candidat du Code et celles de l'article~4.5, et en
 regroupant les saisies successives des matières d'un même blocage en une
 saisie multiple \(\Input^{*}\). Au premier tour, l'élagage ne retire rien :
 les prédicats de \(\theta'\) portent sur la date et la convention, encore
-indéfinies. La frontière s'arrête à la racine, dont les deux arêtes sont
-inconnues, d'où \(\mc B=\{\DateT\}\). La date saisie, l'arête vers la
+indéfinies. Les deux arêtes de la racine sont inconnues, d'où
+\(\mc B=\Prune^\dagger_D(\Indem)=\{\DateT\}\). La date saisie, l'arête vers la
 rédaction antérieure du Code devient fausse et celle vers l'article
 R.~1234-2 vraie : \((\Cut)\) retire la première et, sous le candidat du
 Code, l'article~19, que la date exclut aussi ; c'est l'arbre \(\theta_1\).
-La frontière traverse l'arête vraie et s'arrête sur le candidat du Code :
-ses arêtes sortantes, qui testent \(\IDCC\), sont inconnues et ses entrées
-manquent, d'où \(\mc B=\{\IDCC\}\cup X_1\). L'expert peut lever ces blocages
-dans l'ordre qu'il veut ; en saisissant d'abord \(\IDCC=1486\), il fait
+Les premiers prédicats inconnus sont alors ceux des arêtes sortantes du
+candidat du Code, qui testent \(\IDCC\), d'où \(\mc B=\{\IDCC\}\). En
+saisissant \(\IDCC=1486\), l'expert fait
 retirer par \((\Cut)\) les conventions HCR et de la métallurgie et retenir
 par \((\Select)\) l'article~4.5 : \(\theta_2\) est le chemin
-\(r\to\cCode\to\cSyntecLic\) de la \autoref{fig:arbre}. Restent les entrées
-\(X_1\) du candidat du Code, puis, la frontière descendant sur l'article~4.5
-une fois celui-ci exécutable, les entrées \(X_2\). Lorsque \(\mc B\) est
-vide, \(\Resolve\) s'applique : c'est la sélection de la
+\(r\to\cCode\to\cSyntecLic\) de la \autoref{fig:arbre}. Tous ses prédicats
+sont décidés et \(\mc B=\Resolve^\dagger_D(\Indem)=X_1\cup X_2\) réunit les
+entrées des deux candidats, que l'expert saisit dans l'ordre qu'il veut.
+Lorsque \(\mc B\) est vide, \(\Resolve\) s'applique : c'est la sélection de la
 \autoref{sec:resolution}, qui retient l'article~4.5 et établit \(\Indem\)
 à 10\,000 euros.
 \def\ops#1#2{\begin{array}{l} #1 \\ #2 \end{array}}
@@ -1084,10 +1071,9 @@ vide, \(\Resolve\) s'applique : c'est la sélection de la
 \[
 \begin{array}{ll}
 \Prune(D,\Indem) & \state{\dots,\Indem_{\theta'}}{\{\DateT\}}\\[4pt]
-\ops{\Input_{\text{mars 2025}}(D,\DateT),}{\Prune(D,\Indem)} & \state{\dots,\DateT_{\text{mars 2025}},\Indem_{\theta_1}}{\{\IDCC\}\cup X_1}\\[4pt]
-\ops{\Input_{1486}(D,\IDCC),}{\Prune(D,\Indem)} & \state{\dots,\IDCC_{1486},\Indem_{\theta_2}}{X_1}\\[4pt]
-\Input^{*}(D,X_1) & \state{\dots,\Senior_{10},\Salary_{3\,000},\Indem_{\theta_2}}{X_2}\\[4pt]
-\Input^{*}(D,X_2) & \state{\dots,\Categorie_{\Cadre},\Indem_{\theta_2}}{\emptyset}\\[4pt]
+\ops{\Input_{\text{mars 2025}}(D,\DateT),}{\Prune(D,\Indem)} & \state{\dots,\DateT_{\text{mars 2025}},\Indem_{\theta_1}}{\{\IDCC\}}\\[4pt]
+\ops{\Input_{1486}(D,\IDCC),}{\Prune(D,\Indem)} & \state{\dots,\IDCC_{1486},\Indem_{\theta_2}}{X_1\cup X_2}\\[4pt]
+\Input^{*}(D,X_1\cup X_2) & \state{\dots,\Categorie_{\Cadre},\Indem_{\theta_2}}{\emptyset}\\[4pt]
 \Resolve(D,\Indem) & \state{\dots,\Indem_{10\,000}}{\emptyset}\\[4pt]
 \ops{\Prune(D,\ICP),}{\Resolve(D,\ICP)} & \state{\dots,\Indem_{10\,000},\ICP_{9\,000}}{\emptyset}\\
 \end{array}

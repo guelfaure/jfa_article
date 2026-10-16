@@ -89,7 +89,7 @@
 \newcommand{\RetenueSal}{\ensuremath{\m{RetenueSalaire}}}
 \newcommand{\IndemRupture}{\ensuremath{\m{IndemRupt.}}}
 \newcommand{\Indem}{\ensuremath{\m{IndemLic.}}}
-\newcommand{\IndemLeg}{\ensuremath{\m{IndemLegale}}}
+%\newcommand{\IndemLeg}{\ensuremath{\m{IndemLegale}}}
 \newcommand{\ICP}{\ensuremath{\m{IndemPreavis}}}
 \newcommand{\Senior}{\ensuremath{\m{Anciennete}}}
 \newcommand{\Salary}{\ensuremath{\m{SalaireRef.}}}
@@ -97,7 +97,7 @@
 \newcommand{\MoisRem}{\ensuremath{\m{MoisDeRemuneration}}}
 \newcommand{\Categorie}{\ensuremath{\m{Categorie}}}
 \newcommand{\Cadre}{\ensuremath{\m{IngenieurOuCadre}}}
-\newcommand{\Etam}{\ensuremath{\m{Etam}}}
+%\newcommand{\Etam}{\ensuremath{\m{Etam}}}
 \newcommand{\ModeRupture}{\ensuremath{\m{ModeRupture}}}
 \newcommand{\PreavisNE}{\ensuremath{\m{PreavisNonExec.}}}
 \newcommand{\DureePreavis}{\ensuremath{\m{DureePreavis}}}
@@ -140,13 +140,13 @@
 \newcommand{\s}[1]{\mathsf{#1}}
 \newcommand{\Source}{\ensuremath{\s{Source}}}
 \newcommand{\CSource}{\ensuremath{\mc S^\s{conc}}}
-\newcommand*{\SourceSup}{\mc S^{\s{support}}}
+%\newcommand*{\SourceSup}{\mc S^{\s{support}}}
 \newcommand{\CodeTravail}{\ensuremath{\s{CodeTravail}}}
 \newcommand{\AccordCollectif}{\ensuremath{\s{AccordCollectif}}}
 \newcommand{\AccordInterpro}{\ensuremath{\s{AccordInterprofessionnel}}}
 \newcommand{\ConvBranche}{\ensuremath{\s{ConventionBranche}}}
 \newcommand{\AccordEntreprise}{\ensuremath{\s{AccordEntreprise}}}
-\newcommand*{\AccordIndividuel}{\s{AccordIndividuel}}
+%\newcommand*{\AccordIndividuel}{\s{AccordIndividuel}}
 \newcommand{\Contrat}{\ensuremath{\s{Contrat}}}
 \newcommand{\Syntec}{\ensuremath{\s{Syntec}}}
 \newcommand{\normgt}{\succ_{\mathit{norm}}}
@@ -165,7 +165,7 @@
 \newcommand{\Social}{\ensuremath{\p{Social}}}
 \newcommand{\Suppletive}{\ensuremath{\p{Suppletif}}}
 \newcommand{\Herit}{\operatorname{Herit}}
-\newcommand*{\Arb}{\mathit{Arb}}
+%\newcommand*{\Arb}{\mathit{Arb}}
 
 %% --------------------------------------------------------------------
 %% Tests et valeurs de vérité
@@ -185,10 +185,10 @@
 \newcommand{\desc}{\ensuremath{\mathit{desc}}}
 \newcommand{\refby}[1]{\mathrel{\twoheadrightarrow_{#1}}}
 \newcommand{\refine}{\mathrel{\twoheadrightarrow}}
-% \haut_\rho(m) : hauteur dans le raffinement.
-\newcommand{\haut}{\ensuremath{\mathit{haut}}}
-% Ordre multiensemble.
-\newcommand{\mulord}{\mathrel{<_{\mathrm{mul}}}}
+%% \haut_\rho(m) : hauteur dans le raffinement.
+%\newcommand{\haut}{\ensuremath{\mathit{haut}}}
+%% Ordre multiensemble.
+%\newcommand{\mulord}{\mathrel{<_{\mathrm{mul}}}}
 
 %% --------------------------------------------------------------------
 %% Élagage
@@ -204,9 +204,11 @@
 %% --------------------------------------------------------------------
 \newcommand*{\MissingHere}{\ensuremath{\mathit{U}}}
 \newcommand*{\MissingDep}{\ensuremath{\mathit{DepFrontiere}}}
-\newcommand*{\BlockingApp}{\ensuremath{\mathit{Bloquant}^{\mathsf{app}}}}
-\newcommand*{\BlockingCalc}{\ensuremath{\mathit{Bloquant}^{\mathsf{calc}}}}
-\newcommand*{\Blocking}{\ensuremath{\mathit{Bloquant}}}
+% Dépendances bloquantes : \Precise^\dagger_D, \Prune^\dagger_D et \Resolve^\dagger_D.
+% Ancienne notation Bloquant, remplacée par les précédentes.
+%\newcommand*{\BlockingApp}{\ensuremath{\mathit{Bloquant}^{\mathsf{app}}}}
+%\newcommand*{\BlockingCalc}{\ensuremath{\mathit{Bloquant}^{\mathsf{calc}}}}
+%\newcommand*{\Blocking}{\ensuremath{\mathit{Bloquant}}}
 % Ancienne notation Requis, conservée pour compatibilité.
 %\newcommand{\NeedFacts}{\ensuremath{\mathit{Requis}}}
 
@@ -219,14 +221,15 @@
 %% --------------------------------------------------------------------
 %% Notations des extensions : scénarios, branchement et cumul
 %% --------------------------------------------------------------------
-\newcommand{\Liste}{\ensuremath{\mathbf L}}
-\newcommand{\Brancher}{\ensuremath{\mathsf{Brancher}}}
-\newcommand{\Fusionner}{\ensuremath{\mathsf{Fusionner}}}
-\newcommand{\Echanger}{\ensuremath{\mathsf{Echanger}}}
-\newcommand{\Raffiner}{\ensuremath{\mathsf{Raffiner}}}
-\newcommand{\Cumuler}{\ensuremath{\mathsf{Cumuler}}}
-\newcommand{\conflit}{\mathbin{\#}}
+% Non utilisées dans cette version : branchement, cumul et fusion sont mis de côté.
+%\newcommand{\Liste}{\ensuremath{\mathbf L}}
+%\newcommand{\Brancher}{\ensuremath{\mathsf{Brancher}}}
+%\newcommand{\Fusionner}{\ensuremath{\mathsf{Fusionner}}}
+%\newcommand{\Echanger}{\ensuremath{\mathsf{Echanger}}}
+%\newcommand{\Raffiner}{\ensuremath{\mathsf{Raffiner}}}
+%\newcommand{\Cumuler}{\ensuremath{\mathsf{Cumuler}}}
+%\newcommand{\conflit}{\mathbin{\#}}
 % L’indice D est déjà intégré à cette macro.
-\newcommand{\Conf}{\ensuremath{\mathsf{Conf}_D}}
+%\newcommand{\Conf}{\ensuremath{\mathsf{Conf}_D}}
 
 \endinput
