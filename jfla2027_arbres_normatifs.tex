@@ -377,8 +377,7 @@ Une forêt d'arbres normatifs \(\mc F\) est \emph{cohérente} lorsque, pour $D\i
 La condition~(b) fait d'une séparation horizontale un \emph{conflit} : un même
 scénario factuel ne peut satisfaire deux prédicats frères, qui représentent
 des conventions collectives différentes ou des versions successives d'un
-même texte ; un candidat n'est jamais en conflit avec ses ancêtres, sources
-supérieures du même chemin. La condition~(c) garantit qu'aucun dossier
+même texte. La condition~(c) garantit qu'aucun dossier
 n'exclut tous les candidats d'un arbre : sous la racine subsiste une arête
 qui n'est pas fausse. Les conditions~(d) et~(e) assurent que les politiques
 d'arbitrage sont bien définies. Ces conditions sont quantifiées sur tous les
@@ -508,15 +507,12 @@ Pour toute matière $m\in\mc M_\rho$, on définit récursivement les prédicats 
 		\end{cases}  \\
 	\rho\not\vdash_D m &:=& \begin{cases} 
 			\false\hbox{ si } m=\Matter,\\ 
-			\rho \not\vdash_D m'  \wedge \pi(D)=\false,\hbox{ pour }m'\refby\pi m,\hbox{ sinon}
+			\rho \not\vdash_D m'  \vee \pi(D)=\false,\hbox{ pour }m'\refby\pi m,\hbox{ sinon}
 		\end{cases} \\
-	\rho\vdash_D^{\unknown} m &:=& \begin{cases} 
-			\false\hbox{ si } m=\Matter,\\ 
-			\rho \vdash_D^{\unknown} m'  \vee (\rho \vdash_D^{\unknown} m'\wedge \pi(D)=\true),\hbox{ pour }m'\refby\pi m,\hbox{ sinon}
-		\end{cases} \\
+	\rho\vdash_D^{\unknown} m &:=& \neg (\rho\vdash_D m) \wedge \neg (\rho\not\vdash_D m)
 \end{array}
 \]
-Une matière $\m\in\mc M_\rho$ est \emph{fondée} vis à vis d'un dossier $D$ si $\rho\vdash_D m$, \emph{infondée} si $\rho\not\vdash_D m$ et \emph{incertaine} si $\rho\vdash_D^{\unknown} m$. Les matières ouvertes infondées correspondent à des questions inapplicables au dossier client. Les matières incertaines nécessitent un enrichissement du dossier avant de conclure.
+Une matière $m\in\mc M_\rho$ est \emph{fondée} vis-à-vis d'un dossier $D$ si $\rho\vdash_D m$, \emph{infondée} si $\rho\not\vdash_D m$ et \emph{incertaine} si $\rho\vdash_D^{\unknown} m$. Les matières ouvertes infondées correspondent à des questions inapplicables au dossier client. Les matières incertaines nécessitent un enrichissement du dossier avant de conclure.
 \end{defi}
 %%
 %%
@@ -525,7 +521,7 @@ Un arbre de raffinement \(\rho=(\mc M_\rho,\refine,\tree)\) est \emph{cohérent}
 \begin{enumerate}
 \item \emph{Le raffinement est strict et compatible avec le sous-typage.} Si
   \(m\refby{\pi}m'\), alors \(m'\subtype m\) et \(m'\neq m\).
-\item \emph{Les matières factuelles sont exclusivement utilisées par ses prédicats.} $\mc M_\rho\cap\FMatter=\emptyset$ et $\dep(\rho)\subseteq \FMatter$.
+\item \emph{Les prédicats de $\rho$ ne portent que sur des matières factuelles, qui ne sont pas des nœuds.} $\mc M_\rho\cap\FMatter=\emptyset$ et $\dep(\rho)\subseteq \FMatter$.
 \item \emph{Ses feuilles sont concrètes.} Toute feuille de \(\rho\) appartient à \(\CMatter\).
 \item \emph{Les matières ouvertes de $D$ sont abstraites dans $\rho$, i.e.,} $\Ouverte_D \subseteq (\mc M_\rho\setminus\CMatter)$.
 \item \emph{Les matières indéterminées de $D$ sont des feuilles de $\rho$, et
@@ -632,7 +628,7 @@ qui le nécessitent. Quatre opérateurs élémentaires, que nous définissons à
 && \mid \Input_v(D,m)\quad m\in\Undef_D,\ v \text{ valide pour } m\ (\text{\autoref{sec:saisir}})\\
 && \mid \Precise(D,m)\quad m\in\Ouverte_D \text{ raffinable dans } D\ (\text{\autoref{sec:preciser}})\\
 && \mid \Prune(D,m)\quad m\in\Indet_D\ (\text{\autoref{sec:elagage}})\\
-&& \mid \Resolve(D,m)\quad m\in\Indet_D,\ (\text{\autoref{sec:dependances-bloquantes}}).
+&& \mid \Resolve(D,m)\quad m\in\Indet_D,\ (\text{\autoref{sec:resolution}}).
 \end{array}
 \]
 %Sur une liste, un opérateur élémentaire \(\mathit{op}\) s'applique à une
@@ -701,7 +697,7 @@ $m$ entre dans un dossier.
 %lorsqu'elle est fondée, i.e., $\rho\vdash_D m$ (voir \autoref{def:fondee}) et lorsque le dossier décide
 %chacun des prédicats qui gardent ses enfants, i.e., $\rho_{\unknown}(m)=\emptyset$. 
 %%
-Pour $m\in\mc M_\rho\setminus\CMatter$, on dit que $m$ est \emph{raffinable} lorsque $\rho_{\unknown}(m)=\emptyset$ et $\neg (\rho\vdash^{\unknown}_D m)$ (voir \autoref{def:fondee}). Pour toute matière $m$ raffinable, on pose :
+Pour $m\in\mc M_\rho\setminus\CMatter$, on dit que $m$ est \emph{raffinable} lorsqu'elle est non fondée (son raffinement est alors de la faire disparaître du dossier !), i.e., $\rho\not\vdash^{\unknown}_D m$, ou si elle est fondée, mais que tous ses fils dans $\rho$ sont décidés, i.e., $(\rho\vdash m) \wedge \rho_{\unknown}(m)=\emptyset$ (voir \autoref{def:fondee}). Pour toute matière $m$ raffinable, on pose :
 \begin{equation}\label{eq:precise}
 \Precise(D,m):= \begin{cases}
 	(\mc M_D\setminus\{m\},\nu_D-m)\ \hbox{si } \rho\not\vdash_D m \\
@@ -751,7 +747,7 @@ Pour une arête \(e=(u,v)\in E\), on définit
 La règle \((\Cut)\) retire une arête dont le prédicat est faux ainsi que le
 sous-arbre devenu inatteignable ; la règle \((\Select)\) retient la branche dont
 le prédicat est établi et écarte ses frères. Un \emph{élagué} de \(\theta\)
-dans \(D\) est un arbre \(\theta'\subseteq \theta\) tel que \(\theta\redD^{*}\theta'\). La
+dans \(D\) est un arbre \(\theta'\) tel que \(\theta\redD^{*}\theta'\). La
 relation \(\redD\) ne dépend du dossier que par les valeurs des prédicats ;
 les arbres d'un dossier sont des élagués, dans ce dossier, des arbres de
 \(\mc F_\rho\) (condition~5 de la \autoref{def:coh-raff}). Le lemme suivant
@@ -768,7 +764,7 @@ Soient \(\theta_0\in\mc F_\rho\) et \(\theta\) un élagué de \(\theta_0\) dans
 \item \(\theta\) vérifie les conditions~(a), (b), (d) et~(e) de la
   \autoref{def:consistency}, et sa racine reste exhaustive pour \(D\) : il
   existe \(v\in\child(r)\) tel que \(\pi((r,v))(D)\neq\false\).
-\item $\theta$ est une $D$-restriction de $\theta_0$ : $\theta\subseteq_D \theta$. 
+\item $\theta$ est une $D$-restriction de $\theta_0$ : $\theta\subseteq_D \theta_0$. 
 \end{enumerate}
 \end{lemm}
 
@@ -868,11 +864,18 @@ nécessaires à leur exécution (obstacles à l'exécution).
 %%
 \paragraph{Obstacle au raffinement.}
 %%
-Une matière $m\in\mc M_D\setminus\CMatter$ est non raffinable dans $D$ lorsque son fondement est incertain, i.e., $\rho\vdash^{\unknown}_D m$, ou lorsqu'un de ses raffinements ne peut être décidé, i.e., $\rho_{\unknown}(m)\neq\emptyset$. On pose $\mathit{Chemin}_\rho(m):=\Matter\refby{\pi_0}m_1\dots m_n\refby{\pi_n}m$ le chemin de raffinement menant à $m$ dans $\rho$.
+On rappelle qu'une matière $m\in\mc M_D\setminus\CMatter$ est raffinable dans $D$ sous la condition 
 \[
-\Precise^\dagger_D(m) := \left(\hspace{-0.1cm} \bigcup_{\substack{(m_i\refby\pi_i m_{i+1})\in\mathit{Chemin}_\rho(m) \\ \pi_i(D)=\unknown}}\hspace{-1cm} \dep(\pi_i) 
+(\rho\not\vdash m) \vee (\rho\vdash m \wedge \rho_{\unknown}(m)=\emptyset)
+\]
+Les cas bloquants sont (1) $m$ fondée mais certains de ses raffinements ne sont pas décidés, (2) $m$ est incertaine. On pose $\mathit{Chemin}_\rho(m):=\Matter\refby{\pi_0}m_1\dots m_n\refby{\pi_n}m$ le chemin de raffinement menant à $m$ dans $\rho$.
+\[
+\Precise^\dagger_D(m) := \begin{cases}
+\emptyset\hbox{ si } \rho\not\vdash m \\
+\left(\bigcup_{\substack{(m'\refby\pi m'')\in\mathit{Chemin}_\rho(m) \\ \pi(D)=\unknown}} \dep(\pi) 
 \bigcup_{\substack{m\refby\pi m'\\ \pi(D)=\unknown}}
-\dep(\pi)\right) \cap \Undef_D
+\dep(\pi)\right) \cap \Undef_D, \hbox{ sinon.}
+\end{cases}
 \]
 
 \paragraph{Obstacle à l'élagage.}
@@ -883,17 +886,18 @@ Pour ces matières nous allons construire les dépendances manquantes des premie
 \]
 Les dépendances des premiers prédicats bloquants de l'arbre sont définies par induction :
 \[
-\MissingDep_D(u,\theta) := \begin{cases}  \MissingHere_D(u,\theta) \hbox{ si } \MissingHere_D(u,\theta) \neq\emptyset \\ \bigcup_{(u,v)\in E} \MissingDep_D(v,\theta) \hbox{ sinon} \end{cases}
+\MissingDep_D(u,\theta) := \begin{cases}  \MissingHere_D(u,\theta) \hbox{ si } \MissingHere_D(u,\theta) \neq\emptyset \\ 
+\bigcup_{\substack{(u,v)\in E \\ \pi(u,v)(D)=\true}} \MissingDep_D(v,\theta) \hbox{ sinon} \end{cases}
 \]
-et on pose :
+et, pour $\theta:=\nu_D(m)$ de racine $r$, on définit :
 \[
 \Prune^\dagger_D(m) := \MissingDep_D(r,\theta) \cap (\Undef_D\cup\Indet_D)
 \]
 
 \paragraph{Obstacle à l'exécution.}
-Cette question se pose sur des arbres totalement élagués, lorsqu'on cherche à comparer les candidats restants en utilisant leurs politiques d'arbitrage. On collecte les signatures des fonctions candidates et on extrait les dépendances manquantes. Pour tout $m\in\mc M\cap\CMatter$ tel que $\nu_D(m)=(V,E,r,\lambda,\pi)$ on pose :
+Cette question se pose sur des arbres totalement élagués, lorsqu'on cherche à comparer les candidats restants en utilisant leurs politiques d'arbitrage. On collecte les signatures des fonctions candidates et on extrait les dépendances manquantes. Pour tout $m\in\mc M_D\cap\CMatter$ tel que $\nu_D(m)=(V,E,r,\lambda,\pi)$ on pose :
 \[
-\Resolve^\dagger_D(m) := \big(\bigcup_{u\in V} \dep(u)\big) \cap (\Undef_D\cup\Indet_D)
+\Resolve^\dagger_D(m) := \left(\bigcup_{u\in V\setminus\{r\}} \dep(u)\right) \cap (\Undef_D\cup\Indet_D)
 \]
 
 %L'ensemble des matières immédiatement bloquantes pour une étape de résolution de $m\in\mc M_D$ est défini par :
@@ -942,7 +946,7 @@ ces ajouts s'enchaînent au cours d'une boucle interactive.
 \section{Boucle interactive de \ALex}\label{sec:ALex}
 
 Soit $\rho$ un arbre de raffinement équipé d'une forêt normative
-\(\mc F_\rho := \{t_\rho(m)\mid m\in\mc M_\rho\cap\CMatter\}\) cohérente. Un état de \ALex{} est donné par $D$, le dossier courant, tel que $\rho$ soit $D$-cohérent. Étant donnée $m_0\in\mc M\setminus\CMatter$, une question initiale formulée sous forme d'une matière ouverte, l'assistant \ALex~, par l'intermédiaire d'une boucle interactive, donnée \autoref{alg:boucle}, va tenter de faire évoluer le dossier jusqu'à ce que toute les matières du dossier soient établies. Au sortir de cette boucle, \ALex~renvoie son dossier final (contenant toutes les matières concrètes requises par le dossier) ainsi que le vecteur de matières distinguées $(m\in\mc M_D)_{m<:m_0}$, correspondant aux raffinements de $m_0$ ayant été établis avec succès. Ce vecteur est vide lorsque la question ouverte ne peut s'appliquer au dossier client.
+\(\mc F_\rho := \{t_\rho(m)\mid m\in\mc M_\rho\cap\CMatter\}\) cohérente. Un état de \ALex{} est donné par $D$, le dossier courant, tel que $\rho$ soit $D$-cohérent. Étant donnée $m_0\in\mc M\setminus\CMatter$, une question initiale formulée sous forme d'une matière ouverte, l'assistant \ALex, par l'intermédiaire d'une boucle interactive, donnée \autoref{alg:boucle}, va tenter de faire évoluer le dossier jusqu'à ce que toute les matières du dossier soient établies. Au sortir de cette boucle, \ALex~renvoie son dossier final (contenant toutes les matières concrètes requises par le dossier) ainsi que le vecteur de matières distinguées $(m\in\mc M_D)_{m<:m_0}$, correspondant aux raffinements de $m_0$ ayant été établis avec succès. Ce vecteur est vide lorsque la question ouverte ne peut s'appliquer au dossier client.
 
 \begin{algorithm}[ht]
   \caption{Boucle interactive de résolution d'une question}
